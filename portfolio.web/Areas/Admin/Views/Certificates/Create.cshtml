@@ -1,0 +1,86 @@
+@model Portfolio.Core.DTOs.CertificateViewModel
+@{
+    ViewData["Title"] = "Create Certificate";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
+    <div>
+        <h1 class="h3 mb-1">Add certificate</h1>
+        <p class="text-gray-600 mb-0">Create a new credential for the public certificates section.</p>
+    </div>
+    <a asp-action="Index" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left me-1"></i> Back to list
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <form asp-action="Create" method="post" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label asp-for="NameEn" class="form-label"></label>
+                    <input asp-for="NameEn" class="form-control" />
+                    <span asp-validation-for="NameEn" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="NameAr" class="form-label"></label>
+                    <input asp-for="NameAr" class="form-control" dir="rtl" />
+                    <span asp-validation-for="NameAr" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Issuer" class="form-label"></label>
+                    <input asp-for="Issuer" class="form-control" placeholder="e.g., Information Technology Institute" />
+                    <span asp-validation-for="Issuer" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="IssueDate" class="form-label"></label>
+                    <input asp-for="IssueDate" type="date" class="form-control" />
+                    <span asp-validation-for="IssueDate" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-8">
+                    <label asp-for="CertificateUrl" class="form-label"></label>
+                    <input asp-for="CertificateUrl" class="form-control" placeholder="https://..." />
+                    <span class="input-hint">Optional link to the credential or certificate file.</span>
+                    <span asp-validation-for="CertificateUrl" class="text-danger small"></span>
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="Order" class="form-label"></label>
+                    <input asp-for="Order" type="number" class="form-control" min="0" />
+                    <span asp-validation-for="Order" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-8">
+                    <label asp-for="BadgeImageFile" class="form-label"></label>
+                    <input asp-for="BadgeImageFile" type="file" class="form-control" accept="image/*" data-preview="#badgePreview" />
+                    <span class="input-hint">Square images work best.</span>
+                    <span asp-validation-for="BadgeImageFile" class="text-danger small"></span>
+                    <img id="badgePreview" class="image-preview" alt="Selected badge preview" />
+                </div>
+                <div class="col-md-4 d-flex align-items-end">
+                    <div class="form-check mb-2">
+                        <input asp-for="IsActive" class="form-check-input" />
+                        <label asp-for="IsActive" class="form-check-label"></label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save me-1"></i> Create certificate
+                </button>
+                <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

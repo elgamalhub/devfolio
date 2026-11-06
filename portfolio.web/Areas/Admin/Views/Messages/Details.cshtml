@@ -1,4 +1,4 @@
-﻿@model Portfolio.Core.Entities.ContactMessage
+@model Portfolio.Core.Entities.ContactMessage
 @{
     ViewData["Title"] = "Message Details";
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
@@ -17,15 +17,6 @@
         </div>
     </div>
 
-    @if (TempData["Success"] != null)
-    {
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            @TempData["Success"]
-            <button type="button" class="close" data-dismiss="alert">
-                <span>&times;</span>
-            </button>
-        </div>
-    }
 
     <div class="row">
         <div class="col-lg-8">

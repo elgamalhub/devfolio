@@ -3,9 +3,6 @@
     ViewData["Title"] = "Create Blog Post";
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
 }
-@section HeadScripts {
-    <script src="https://cdn.tiny.cloud/1/5qzzpfks6yse3cnn737ncy7tnhwtev5ii4qpvuz4czr1tlsx/tinymce/8/tinymce.min.js" referrerpolicy="origin" crossorigin="anonymous"></script>
-}
 <div class="container-fluid">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="h3 mb-0 text-gray-800">Create New Blog Post</h1>
@@ -40,14 +37,16 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label asp-for="ContentEn"></label>
-                            <textarea asp-for="ContentEn" class="form-control" rows="10"></textarea>
+                            <textarea asp-for="ContentEn" class="form-control" rows="12"></textarea>
+                            <small class="form-text text-muted">HTML is supported (paragraphs, headings, lists, links).</small>
                             <span asp-validation-for="ContentEn" class="text-danger"></span>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
                             <label asp-for="ContentAr"></label>
-                            <textarea asp-for="ContentAr" class="form-control" rows="10" dir="rtl"></textarea>
+                            <textarea asp-for="ContentAr" class="form-control" rows="12" dir="rtl"></textarea>
+                            <small class="form-text text-muted">HTML is supported (paragraphs, headings, lists, links).</small>
                             <span asp-validation-for="ContentAr" class="text-danger"></span>
                         </div>
                     </div>
@@ -57,7 +56,8 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label>Featured Image</label>
-                            <input type="file" name="featuredImage" class="form-control-file" accept="image/*" />
+                            <input type="file" name="featuredImage" class="form-control-file" accept="image/*" data-preview="#featuredPreview" />
+                            <img id="featuredPreview" class="image-preview" alt="Selected featured image preview" />
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -88,12 +88,4 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
-    <script>
-        tinymce.init({
-            selector: 'textarea',
-            plugins: 'lists link image preview code',
-            toolbar: 'undo redo | formatselect | bold italic | alignleft aligncenter alignright | bullist numlist | link image | preview code',
-            height: 400
-        });
-    </script>
 }

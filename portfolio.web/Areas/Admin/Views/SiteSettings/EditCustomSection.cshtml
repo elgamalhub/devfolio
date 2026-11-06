@@ -3,9 +3,6 @@
     ViewData["Title"] = "Edit Custom Section";
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
 }
-@section HeadScripts {
-    <script src="https://cdn.tiny.cloud/1/5qzzpfks6yse3cnn737ncy7tnhwtev5ii4qpvuz4czr1tlsx/tinymce/8/tinymce.min.js" referrerpolicy="origin" crossorigin="anonymous"></script>
-}
 <div class="container-fluid">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="h3 mb-0 text-gray-800">Edit Custom Section: @Model.NameEn</h1>
@@ -25,8 +22,9 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Section Content (HTML)</label>
+                    <label for="customContent">Section Content (HTML)</label>
                     <textarea name="customContent" id="customContent" class="form-control" rows="15">@Model.CustomContent</textarea>
+                    <small class="form-text text-muted">Write HTML directly. The preview below updates as you type.</small>
                 </div>
 
                 <button type="submit" class="btn btn-primary">
@@ -50,16 +48,8 @@
 
 @section Scripts {
     <script>
-        tinymce.init({
-            selector: '#customContent',
-            plugins: 'lists link image code preview',
-            toolbar: 'undo redo | formatselect | bold italic | alignleft aligncenter alignright | bullist numlist | link image | code preview',
-            height: 500,
-            setup: function (editor) {
-                editor.on('change', function () {
-                    document.getElementById('preview').innerHTML = editor.getContent();
-                });
-            }
+        document.getElementById('customContent').addEventListener('input', function () {
+            document.getElementById('preview').innerHTML = this.value;
         });
     </script>
 }

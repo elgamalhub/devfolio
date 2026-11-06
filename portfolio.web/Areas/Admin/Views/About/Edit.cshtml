@@ -1,4 +1,4 @@
-﻿@model Portfolio.Core.Entities.About
+@model Portfolio.Core.Entities.About
 @{
     ViewData["Title"] = "Edit About";
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
@@ -10,13 +10,6 @@
         <h1 class="h3 mb-0 text-gray-800">Edit About Section</h1>
     </div>
 
-    @if (TempData["Success"] != null)
-    {
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            @TempData["Success"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    }
 
     <div class="row">
         <!-- Main About Form -->
@@ -121,7 +114,7 @@
                                             <img src="/images/default-avatar.jpg" alt="Profile" class="img-thumbnail" style="max-width: 200px;" id="profilePreview" />
                                         </div>
                                     }
-                                    <input type="file" name="profileImage" class="form-control-file" accept="image/*" id="profileImageInput" />
+                                    <input type="file" name="profileImage" class="form-control-file" accept="image/*" id="profileImageInput" data-preview="#profilePreview" />
                                     <small class="form-text text-muted">Leave empty to keep current image</small>
                                 </div>
                             </div>
@@ -228,17 +221,4 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
-    <script>
-        // Image Preview
-        document.getElementById('profileImageInput').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    document.getElementById('profilePreview').src = e.target.result;
-                }
-                reader.readAsDataURL(file);
-            }
-        });
-    </script>
 }

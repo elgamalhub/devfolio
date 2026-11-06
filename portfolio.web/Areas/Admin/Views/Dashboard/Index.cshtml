@@ -4,133 +4,137 @@
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
 }
 
-<div class="container-fluid">
-    <h1 class="h3 mb-4 text-gray-800">Dashboard</h1>
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
+    <div>
+        <h1 class="h3 mb-1">Dashboard</h1>
+        <p class="text-gray-600 mb-0">A quick overview of your portfolio activity.</p>
+    </div>
+    <div class="quick-actions">
+        <a class="btn btn-primary btn-sm" href="@Url.Action("Create", "Projects", new { area = "Admin" })">
+            <i class="fas fa-plus me-1"></i> New project
+        </a>
+        <a class="btn btn-outline-secondary btn-sm" href="@Url.Action("Create", "Blog", new { area = "Admin" })">
+            <i class="fas fa-pen me-1"></i> New post
+        </a>
+        <a class="btn btn-outline-secondary btn-sm" href="@Url.Action("Index", "SiteSettings", new { area = "Admin" })">
+            <i class="fas fa-cog me-1"></i> Settings
+        </a>
+    </div>
+</div>
 
-    <!-- Stats Cards -->
-    <div class="row">
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-primary shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total Projects</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.TotalProjects</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-project-diagram fa-2x text-gray-300"></i>
-                        </div>
-                    </div>
+<div class="row g-3 mb-4">
+    <div class="col-xl-3 col-md-6">
+        <div class="card stat-card border-left-primary h-100">
+            <div class="card-body d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="text-xs text-gray-600 text-uppercase mb-1">Total projects</div>
+                    <div class="stat-value">@Model.TotalProjects</div>
+                    <div class="text-gray-600 small mt-1">@Model.ActiveProjects active</div>
                 </div>
-            </div>
-        </div>
-
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-success shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Active Projects</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.ActiveProjects</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-check-circle fa-2x text-gray-300"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-warning shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Unread Messages</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.UnreadMessages</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-envelope fa-2x text-gray-300"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-info shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Page Views (Today)</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.TodayPageViews</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-eye fa-2x text-gray-300"></i>
-                        </div>
-                    </div>
-                </div>
+                <div class="stat-icon"><i class="fas fa-project-diagram"></i></div>
             </div>
         </div>
     </div>
 
-    <div class="row">
-        <!-- Top Projects -->
-        <div class="col-lg-6 mb-4">
-            <div class="card shadow mb-4">
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">Most Popular Projects</h6>
+    <div class="col-xl-3 col-md-6">
+        <div class="card stat-card border-left-warning h-100">
+            <div class="card-body d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="text-xs text-gray-600 text-uppercase mb-1">Unread messages</div>
+                    <div class="stat-value">@Model.UnreadMessages</div>
+                    <div class="text-gray-600 small mt-1">Contact form inbox</div>
                 </div>
-                <div class="card-body">
-                    @if (Model.TopProjects.Any())
-                    {
-                        <ul class="list-group">
-                            @foreach (var project in Model.TopProjects)
-                            {
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    @project.ProjectTitle
-                                    <span class="badge badge-primary badge-pill">@project.ClickCount clicks</span>
-                                </li>
-                            }
-                        </ul>
-                    }
-                    else
-                    {
-                        <p class="text-muted">No project clicks yet.</p>
-                    }
-                </div>
+                <div class="stat-icon"><i class="fas fa-envelope"></i></div>
             </div>
         </div>
+    </div>
 
-        <!-- Recent Messages -->
-        <div class="col-lg-6 mb-4">
-            <div class="card shadow mb-4">
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">Recent Messages</h6>
+    <div class="col-xl-3 col-md-6">
+        <div class="card stat-card border-left-info h-100">
+            <div class="card-body d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="text-xs text-gray-600 text-uppercase mb-1">Views today</div>
+                    <div class="stat-value">@Model.TodayPageViews</div>
+                    <div class="text-gray-600 small mt-1">@Model.TotalPageViews total</div>
                 </div>
-                <div class="card-body">
-                    @if (Model.RecentMessages.Any())
-                    {
-                        <ul class="list-group">
-                            @foreach (var msg in Model.RecentMessages)
-                            {
-                                <li class="list-group-item @(!msg.IsRead ? "font-weight-bold" : "")">
-                                    <div class="d-flex justify-content-between">
-                                        <div>
-                                            <strong>@msg.Name</strong> - @msg.Email
-                                        </div>
-                                        <small class="text-muted">@msg.ReceivedAt.ToString("MMM dd, HH:mm")</small>
+                <div class="stat-icon"><i class="fas fa-eye"></i></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="card stat-card border-left-success h-100">
+            <div class="card-body d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="text-xs text-gray-600 text-uppercase mb-1">Blog posts</div>
+                    <div class="stat-value">@Model.TotalBlogPosts</div>
+                    <div class="text-gray-600 small mt-1">Drafts and published</div>
+                </div>
+                <div class="stat-icon"><i class="fas fa-blog"></i></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-lg-6">
+        <div class="card h-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h2 class="h6 mb-0">Most popular projects</h2>
+                <a class="small text-decoration-none" href="@Url.Action("Index", "Projects", new { area = "Admin" })">Manage</a>
+            </div>
+            <div class="card-body">
+                @if (Model.TopProjects.Any())
+                {
+                    <ul class="list-group list-group-flush">
+                        @foreach (var project in Model.TopProjects)
+                        {
+                            <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                <span>@project.ProjectTitle</span>
+                                <span class="badge bg-primary rounded-pill">@project.ClickCount clicks</span>
+                            </li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <p class="text-gray-600 mb-0">No project clicks recorded yet.</p>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="card h-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h2 class="h6 mb-0">Recent messages</h2>
+                <a class="small text-decoration-none" href="@Url.Action("Index", "Messages", new { area = "Admin" })">Inbox</a>
+            </div>
+            <div class="card-body">
+                @if (Model.RecentMessages.Any())
+                {
+                    <ul class="list-group list-group-flush">
+                        @foreach (var msg in Model.RecentMessages)
+                        {
+                            <li class="list-group-item px-0 @(!msg.IsRead ? "fw-semibold" : "")">
+                                <div class="d-flex justify-content-between gap-3">
+                                    <div class="text-truncate">
+                                        <div class="text-truncate">@msg.Name</div>
+                                        <div class="text-gray-600 small text-truncate">@msg.Email</div>
                                     </div>
-                                    <a href="@Url.Action("Details", "Messages", new { id = msg.Id })" class="btn btn-sm btn-primary mt-2">View</a>
-                                </li>
-                            }
-                        </ul>
-                    }
-                    else
-                    {
-                        <p class="text-muted">No messages yet.</p>
-                    }
-                </div>
+                                    <div class="text-end flex-shrink-0">
+                                        <div class="text-gray-600 small">@msg.ReceivedAt.ToString("MMM dd, HH:mm")</div>
+                                        <a class="btn btn-sm btn-primary mt-1" href="@Url.Action("Details", "Messages", new { area = "Admin", id = msg.Id })">View</a>
+                                    </div>
+                                </div>
+                            </li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <p class="text-gray-600 mb-0">No messages yet.</p>
+                }
             </div>
         </div>
     </div>

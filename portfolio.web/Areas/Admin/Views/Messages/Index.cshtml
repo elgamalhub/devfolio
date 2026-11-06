@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Portfolio.Core.Entities.ContactMessage>
+@model IEnumerable<Portfolio.Core.Entities.ContactMessage>
 @{
     ViewData["Title"] = "Messages";
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
@@ -12,13 +12,6 @@
         </span>
     </div>
 
-    @if (TempData["Success"] != null)
-    {
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            @TempData["Success"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    }
 
     <div class="card shadow mb-4">
         <div class="card-body">

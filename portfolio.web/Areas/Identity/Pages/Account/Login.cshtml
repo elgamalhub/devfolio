@@ -2,7 +2,7 @@
 @model portfolio.web.Areas.Identity.Pages.Account.LoginModel
 @{
     Layout = null;
-    ViewData["Title"] = "Log in";
+    ViewData["Title"] = "Admin sign in";
 }
 
 <!DOCTYPE html>
@@ -10,110 +10,86 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Admin Login</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <style>
-        body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .login-container {
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-            padding: 40px;
-            max-width: 450px;
-            width: 100%;
-        }
-        .login-header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        .login-header i {
-            font-size: 4rem;
-            color: #667eea;
-            margin-bottom: 10px;
-        }
-        .login-header h2 {
-            color: #333;
-            font-weight: 700;
-        }
-        .form-control {
-            border-radius: 10px;
-            padding: 12px;
-            margin-bottom: 15px;
-        }
-        .btn-login {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            border: none;
-            border-radius: 10px;
-            color: white;
-            padding: 12px;
-            width: 100%;
-            font-weight: 600;
-            margin-top: 10px;
-        }
-        .btn-login:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-        }
-        .form-check {
-            margin: 15px 0;
-        }
-        .divider {
-            text-align: center;
-            margin: 20px 0;
-            color: #999;
-        }
-    </style>
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="theme-color" content="#4e54c8" />
+    <title>@ViewData["Title"] - Portfolio Admin</title>
+    <link href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/lib/fontawesome/css/all.min.css" rel="stylesheet" />
+    <link href="~/css/login.css" rel="stylesheet" />
 </head>
 <body>
-    <div class="login-container">
-        <div class="login-header">
-            <i class="fas fa-user-shield"></i>
-            <h2>Admin Login</h2>
-            <p class="text-muted">Enter your credentials to access the admin panel</p>
-        </div>
+    <div class="login-page">
+        <aside class="login-aside" aria-hidden="true">
+            <div class="login-brand">
+                <span class="login-brand-icon"><i class="fas fa-user-shield"></i></span>
+                <span>Portfolio Admin</span>
+            </div>
 
-        <section>
-            <form id="account" method="post">
+            <div class="login-copy">
+                <h1>Manage your portfolio with confidence.</h1>
+                <p>Update projects, articles, experience and site settings from one secure dashboard.</p>
+                <ul class="login-points">
+                    <li><i class="fas fa-check"></i> Secure administrator access</li>
+                    <li><i class="fas fa-check"></i> Live bilingual content</li>
+                    <li><i class="fas fa-check"></i> Uploads and analytics in one place</li>
+                </ul>
+            </div>
+
+            <div class="login-aside-footer">
+                &copy; @DateTime.Now.Year Portfolio Admin
+            </div>
+        </aside>
+
+        <main class="login-main">
+            <div class="login-card">
+                <div class="login-card-header">
+                    <span class="login-eyebrow">Administrator</span>
+                    <h2>Sign in</h2>
+                    <p>Use your administrator account to continue.</p>
+                </div>
+
+                <form id="account" method="post" novalidate>
                     @Html.AntiForgeryToken()
-                <div asp-validation-summary="All" class="text-danger" role="alert"></div>
 
-                <div class="form-floating mb-3">
-                    <input asp-for="Input.Email" class="form-control" autocomplete="username" placeholder="name@example.com" />
-                    <label asp-for="Input.Email" class="form-label">Email</label>
-                    <span asp-validation-for="Input.Email" class="text-danger"></span>
-                </div>
+                    <div asp-validation-summary="ModelOnly" class="validation-summary-errors" role="alert"></div>
 
-                <div class="form-floating mb-3">
-                    <input type="password" asp-for="Input.Password" class="form-control" autocomplete="current-password" placeholder="Password" />
-                    <label asp-for="Input.Password" class="form-label">Password</label>
-                    <span asp-validation-for="Input.Password" class="text-danger"></span>
-                </div>
+                    <div class="mb-3">
+                        <label asp-for="Input.Email" class="form-label">Email address</label>
+                        <input asp-for="Input.Email" class="form-control" autocomplete="username"
+                               inputmode="email" placeholder="name@example.com" />
+                        <span asp-validation-for="Input.Email" class="field-validation-error"></span>
+                    </div>
 
-                <div class="form-check">
-                    <input type="checkbox" class="form-check-input" asp-for="Input.RememberMe" />
-                    <label asp-for="Input.RememberMe" class="form-check-label">
-                        Remember me
-                    </label>
-                </div>
+                    <div class="mb-3">
+                        <label asp-for="Input.Password" class="form-label">Password</label>
+                        <input asp-for="Input.Password" type="password" class="form-control"
+                               autocomplete="current-password" placeholder="Enter your password" />
+                        <span asp-validation-for="Input.Password" class="field-validation-error"></span>
+                    </div>
 
-                <button id="login-submit" type="submit" class="btn btn-login">
-                    <i class="fas fa-sign-in-alt me-2"></i> Log in
-                </button>
+                    <div class="form-check mb-4">
+                        <input class="form-check-input" asp-for="Input.RememberMe" />
+                        <label class="form-check-label" asp-for="Input.RememberMe">Remember me on this device</label>
+                    </div>
 
-                <div class="text-center mt-3">
-                    <small class="text-muted">
-                        Administrators only. Contact the site owner if you need access.
-                    </small>
-                </div>
-            </form>
-        </section>
+                    <button id="login-submit" type="submit" class="btn btn-login">
+                        <i class="fas fa-sign-in-alt" aria-hidden="true"></i>
+                        Sign in
+                    </button>
+
+                    <p class="login-note">
+                        This area is restricted to the site owner. If you reached this page by mistake,
+                        you can return to the public site below.
+                    </p>
+                    <div class="text-center">
+                        <a class="login-home" href="@Url.Action("Index", "Home", new { area = "" })">
+                            <i class="fas fa-arrow-left" aria-hidden="true"></i>
+                            Back to portfolio
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </main>
     </div>
 </body>
 </html>

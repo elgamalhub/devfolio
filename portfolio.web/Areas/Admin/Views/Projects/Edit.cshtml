@@ -80,8 +80,9 @@
                     <div class="col-md-4">
                         <div class="form-group">
                             <label asp-for="Image"></label>
-                            <input asp-for="Image" type="file" class="form-control-file" accept="image/*" />
+                            <input asp-for="Image" type="file" class="form-control-file" accept="image/*" data-preview="#projectImagePreview" />
                             <small class="form-text text-muted">Leave empty to keep current image</small>
+                            <img id="projectImagePreview" class="image-preview" alt="Selected project image preview" />
                         </div>
                     </div>
                     <div class="col-md-4">

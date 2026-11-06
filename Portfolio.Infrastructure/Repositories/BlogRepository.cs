@@ -38,6 +38,17 @@ namespace Portfolio.Infrastructure.Repositories
                 .FirstOrDefaultAsync(b => b.Slug == slug && b.IsPublished);
         }
 
+        public async Task<bool> SlugExistsAsync(string slug, int? excludePostId = null)
+        {
+            if (string.IsNullOrWhiteSpace(slug))
+            {
+                return false;
+            }
+
+            return await _dbSet.AnyAsync(b =>
+                b.Slug == slug && (!excludePostId.HasValue || b.Id != excludePostId.Value));
+        }
+
         public async Task<IEnumerable<BlogPost>> GetPublishedPostsAsync()
         {
             return await _dbSet
@@ -66,7 +77,7 @@ namespace Portfolio.Infrastructure.Repositories
                 await _context.SaveChangesAsync();
             }
         }
-        public async Task<IEnumerable<BlogPost>> SearchPostsAsync(string searchTerm, string tag = null)
+        public async Task<IEnumerable<BlogPost>> SearchPostsAsync(string? searchTerm, string? tag = null)
         {
             var query = _dbSet
                 .Include(b => b.Tags)

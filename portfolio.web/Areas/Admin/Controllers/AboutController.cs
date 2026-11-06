@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Portfolio.Core.Entities;
 using Portfolio.Core.Interfaces;
+using portfolio.web.Services;
 
 namespace portfolio.web.Areas.Admin.Controllers
 {
@@ -11,13 +12,16 @@ namespace portfolio.web.Areas.Admin.Controllers
     {
         private readonly IRepository<About> _aboutRepo;
         private readonly IRepository<TypingTitle> _titleRepo;
-        private readonly IWebHostEnvironment _env;
+        private readonly IFileStorage _fileStorage;
 
-        public AboutController(IRepository<About> aboutRepo, IRepository<TypingTitle> titleRepo, IWebHostEnvironment env)
+        public AboutController(
+            IRepository<About> aboutRepo,
+            IRepository<TypingTitle> titleRepo,
+            IFileStorage fileStorage)
         {
             _aboutRepo = aboutRepo;
             _titleRepo = titleRepo;
-            _env = env;
+            _fileStorage = fileStorage;
         }
 
         public async Task<IActionResult> Edit()
@@ -42,64 +46,81 @@ namespace portfolio.web.Areas.Admin.Controllers
 
             if (ModelState.IsValid)
             {
-                var about = (await _aboutRepo.GetAllAsync()).FirstOrDefault();
-
-                if (about == null)
+                try
                 {
-                    // Create new
-                    about = new About
+                    var about = (await _aboutRepo.GetAllAsync()).FirstOrDefault();
+
+                    if (about == null)
                     {
-                        NameEn = model.NameEn,
-                        NameAr = model.NameAr,
-                        DescriptionEn = model.DescriptionEn,
-                        DescriptionAr = model.DescriptionAr,
-                        Email = model.Email,
-                        Phone = model.Phone,
-                        Location = model.Location,
-                        GitHubUrl = model.GitHubUrl ?? "",
-                        LinkedInUrl = model.LinkedInUrl ?? "",
-                        UpdatedAt = DateTime.UtcNow
-                    };
+                        // Create new
+                        about = new About
+                        {
+                            NameEn = model.NameEn,
+                            NameAr = model.NameAr,
+                            DescriptionEn = model.DescriptionEn,
+                            DescriptionAr = model.DescriptionAr,
+                            Email = model.Email,
+                            Phone = model.Phone,
+                            Location = model.Location,
+                            GitHubUrl = model.GitHubUrl ?? "",
+                            LinkedInUrl = model.LinkedInUrl ?? "",
+                            UpdatedAt = DateTime.UtcNow
+                        };
 
-                    if (profileImage != null)
-                        about.ProfileImage = await SaveFileAsync(profileImage, "images/profile");
+                        if (profileImage != null)
+                        {
+                            about.ProfileImage = await _fileStorage.SaveAsync(
+                                profileImage, "images/profile", FileUploadKind.Image);
+                        }
 
-                    if (cvFile != null)
-                        about.CVFilePath = await SaveFileAsync(cvFile, "files/cv");
+                        if (cvFile != null)
+                        {
+                            about.CVFilePath = await _fileStorage.SaveAsync(
+                                cvFile, "files/cv", FileUploadKind.Document);
+                        }
 
-                    await _aboutRepo.AddAsync(about);
-                }
-                else
-                {
-                    // Update existing
-                    about.NameEn = model.NameEn;
-                    about.NameAr = model.NameAr;
-                    about.DescriptionEn = model.DescriptionEn;
-                    about.DescriptionAr = model.DescriptionAr;
-                    about.Email = model.Email;
-                    about.Phone = model.Phone;
-                    about.Location = model.Location;
-                    about.GitHubUrl = model.GitHubUrl ?? "";
-                    about.LinkedInUrl = model.LinkedInUrl ?? "";
-                    about.UpdatedAt = DateTime.UtcNow;
-
-                    if (profileImage != null)
+                        await _aboutRepo.AddAsync(about);
+                    }
+                    else
                     {
-                        DeleteFile(about.ProfileImage);
-                        about.ProfileImage = await SaveFileAsync(profileImage, "images/profile");
+                        // Update existing
+                        about.NameEn = model.NameEn;
+                        about.NameAr = model.NameAr;
+                        about.DescriptionEn = model.DescriptionEn;
+                        about.DescriptionAr = model.DescriptionAr;
+                        about.Email = model.Email;
+                        about.Phone = model.Phone;
+                        about.Location = model.Location;
+                        about.GitHubUrl = model.GitHubUrl ?? "";
+                        about.LinkedInUrl = model.LinkedInUrl ?? "";
+                        about.UpdatedAt = DateTime.UtcNow;
+
+                        if (profileImage != null)
+                        {
+                            var newImage = await _fileStorage.SaveAsync(
+                                profileImage, "images/profile", FileUploadKind.Image);
+                            _fileStorage.Delete(about.ProfileImage);
+                            about.ProfileImage = newImage;
+                        }
+
+                        if (cvFile != null)
+                        {
+                            var newCv = await _fileStorage.SaveAsync(
+                                cvFile, "files/cv", FileUploadKind.Document);
+                            _fileStorage.Delete(about.CVFilePath);
+                            about.CVFilePath = newCv;
+                        }
+
+                        await _aboutRepo.UpdateAsync(about);
                     }
 
-                    if (cvFile != null)
-                    {
-                        DeleteFile(about.CVFilePath);
-                        about.CVFilePath = await SaveFileAsync(cvFile, "files/cv");
-                    }
-
-                    await _aboutRepo.UpdateAsync(about);
+                    TempData["Success"] = "About section updated successfully!";
+                    return RedirectToAction(nameof(Edit));
                 }
-
-                TempData["Success"] = "About section updated successfully!";
-                return RedirectToAction(nameof(Edit));
+                catch (FileValidationException ex)
+                {
+                    ModelState.AddModelError(string.Empty, ex.Message);
+                }
             }
 
             ViewBag.TypingTitles = await _titleRepo.GetAllAsync();
@@ -154,34 +175,6 @@ namespace portfolio.web.Areas.Admin.Controllers
             }
 
             return RedirectToAction(nameof(Edit));
-        }
-
-        private async Task<string> SaveFileAsync(IFormFile file, string folder)
-        {
-            var uploadsFolder = Path.Combine(_env.WebRootPath, folder);
-            Directory.CreateDirectory(uploadsFolder);
-
-            var uniqueFileName = Guid.NewGuid().ToString() + "_" + Path.GetFileName(file.FileName);
-            var filePath = Path.Combine(uploadsFolder, uniqueFileName);
-
-            using (var fileStream = new FileStream(filePath, FileMode.Create))
-            {
-                await file.CopyToAsync(fileStream);
-            }
-
-            return "/" + folder + "/" + uniqueFileName;
-        }
-
-        private void DeleteFile(string filePath)
-        {
-            if (string.IsNullOrEmpty(filePath))
-                return;
-
-            var fullPath = Path.Combine(_env.WebRootPath, filePath.TrimStart('/'));
-            if (System.IO.File.Exists(fullPath))
-            {
-                System.IO.File.Delete(fullPath);
-            }
         }
     }
 }

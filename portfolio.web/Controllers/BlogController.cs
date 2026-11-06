@@ -13,7 +13,7 @@ namespace portfolio.web.Controllers
             _blogRepo = blogRepo;
         }
 
-        public async Task<IActionResult> Index(string lang = "en", string search = null, string tag = null)
+        public async Task<IActionResult> Index(string lang = "en", string? search = null, string? tag = null)
         {
             Response.Cookies.Append("language", lang, new CookieOptions { Expires = DateTimeOffset.Now.AddYears(1) });
 

@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Portfolio.Core.DTOs;
 using Portfolio.Core.Entities;
@@ -22,6 +23,7 @@ namespace Portfolio.Web.Controllers
         private readonly IRepository<SiteSettings> _settingsRepo;
         private readonly IRepository<Section> _sectionRepo;
         private readonly ApplicationDbContext _context;
+        private readonly ILogger<HomeController> _logger;
 
         public HomeController(
             IRepository<About> aboutRepo,
@@ -35,7 +37,8 @@ namespace Portfolio.Web.Controllers
             IRepository<ContactMessage> messageRepo,
             IRepository<SiteSettings> settingsRepo,
             IRepository<Section> sectionRepo,
-            ApplicationDbContext context)
+            ApplicationDbContext context,
+            ILogger<HomeController> logger)
         {
             _aboutRepo = aboutRepo;
             _skillRepo = skillRepo;
@@ -49,28 +52,33 @@ namespace Portfolio.Web.Controllers
             _settingsRepo = settingsRepo;
             _sectionRepo = sectionRepo;
             _context = context;
+            _logger = logger;
         }
 
         public async Task<IActionResult> Index(string? lang, string? theme)
         {
             // Get site settings
-            var settings = (await _settingsRepo.GetAllAsync()).ToDictionary(s => s.Key, s => s.ValueEn);
+            var settings = (await _settingsRepo.GetAllAsync())
+                .ToDictionary(s => s.Key, s => s.ValueEn, StringComparer.OrdinalIgnoreCase);
 
             // Determine language (priority: query param > cookie > setting > default)
-            var currentLang = lang ?? Request.Cookies["language"] ?? settings.GetValueOrDefault("default_language", "en");
+            var currentLang = NormalizeLanguage(
+                lang ?? Request.Cookies["language"] ?? settings.GetValueOrDefault("default_language", "en"));
 
             // Determine theme (priority: query param > cookie > setting > default)
-            var currentTheme = theme ?? Request.Cookies["theme"] ?? settings.GetValueOrDefault("default_theme", "dark");
+            var currentTheme = NormalizeTheme(
+                theme ?? Request.Cookies["theme"] ?? settings.GetValueOrDefault("default_theme", "dark"));
 
-            // Set cookies if changed
+            // Persist explicit preferences only
             if (lang != null)
             {
-                Response.Cookies.Append("language", lang, new CookieOptions { Expires = DateTimeOffset.Now.AddYears(1) });
+                SetPreferenceCookie("language", currentLang);
             }
             if (theme != null)
             {
-                Response.Cookies.Append("theme", theme, new CookieOptions { Expires = DateTimeOffset.Now.AddYears(1) });
+                SetPreferenceCookie("theme", currentTheme);
             }
+
             // Get project categories
             var categories = (await _context.ProjectCategories.ToListAsync())
                 .Where(c => c.IsActive)
@@ -78,6 +86,7 @@ namespace Portfolio.Web.Controllers
                 .ToList();
 
             ViewBag.Categories = categories;
+
             // Get recent blog posts
             var recentPosts = await _context.BlogPosts
                 .Include(b => b.Tags)
@@ -87,7 +96,8 @@ namespace Portfolio.Web.Controllers
                 .ToListAsync();
 
             ViewBag.RecentPosts = recentPosts;
-            // Track page view
+
+            // Track page view (at most once per session, never for administrators or crawlers)
             await TrackPageView("/");
 
             // Get visible sections
@@ -135,43 +145,50 @@ namespace Portfolio.Web.Controllers
         }
 
         [HttpPost]
-        [IgnoreAntiforgeryToken]
+        [ValidateAntiForgeryToken]
+        [EnableRateLimiting("contact")]
         public async Task<IActionResult> SendMessage([FromBody] ContactMessageDto model)
         {
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState.Values
+                    .SelectMany(v => v.Errors)
+                    .Select(e => e.ErrorMessage)
+                    .Where(message => !string.IsNullOrWhiteSpace(message));
+
+                return BadRequest(new { success = false, message = string.Join(" ", errors) });
+            }
+
             try
             {
-                if (ModelState.IsValid)
+                var message = new ContactMessage
                 {
-                    var message = new ContactMessage
-                    {
-                        Name = model.Name,
-                        Email = model.Email,
-                        Message = model.Message,
-                        ReceivedAt = DateTime.UtcNow,
-                        IsRead = false
-                    };
+                    Name = model.Name.Trim(),
+                    Email = model.Email.Trim(),
+                    Message = model.Message.Trim(),
+                    ReceivedAt = DateTime.UtcNow,
+                    IsRead = false
+                };
 
-                    await _messageRepo.AddAsync(message);
+                await _messageRepo.AddAsync(message);
 
-                    return Json(new { success = true, message = "Message sent successfully!" });
-                }
-
-                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
-                return Json(new { success = false, message = string.Join(", ", errors) });
+                return Json(new { success = true, message = "Message sent successfully!" });
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error sending message: {ex.Message}");
-                return Json(new { success = false, message = "An error occurred while sending the message. Please try again." });
+                _logger.LogError(ex, "Error sending contact message.");
+                return StatusCode(
+                    StatusCodes.Status500InternalServerError,
+                    new { success = false, message = "An error occurred while sending the message. Please try again." });
             }
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetProjectsByCategory(string category)
+        public async Task<IActionResult> GetProjectsByCategory(string? category)
         {
             IEnumerable<Project> projects;
 
-            if (category == "all")
+            if (string.IsNullOrWhiteSpace(category) || category == "all")
             {
                 projects = await _projectRepo.GetActiveProjectsOrderedAsync();
             }
@@ -184,11 +201,26 @@ namespace Portfolio.Web.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> TrackProjectClick(int projectId)
+        [ValidateAntiForgeryToken]
+        [EnableRateLimiting("tracking")]
+        public async Task<IActionResult> TrackProjectClick([FromBody] ProjectClickDto model)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(new { success = false });
+            }
+
+            var projectExists = await _context.Projects
+                .AnyAsync(p => p.Id == model.ProjectId && p.IsActive);
+
+            if (!projectExists)
+            {
+                return NotFound(new { success = false });
+            }
+
             var click = new ProjectClick
             {
-                ProjectId = projectId,
+                ProjectId = model.ProjectId,
                 ClickedAt = DateTime.UtcNow,
                 IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString()
             };
@@ -212,16 +244,76 @@ namespace Portfolio.Web.Controllers
 
         private async Task TrackPageView(string pageUrl)
         {
-            var pageView = new PageView
+            if (User.IsInRole("Admin") || HttpContext.Session.GetString("PageViewTracked") != null)
             {
-                PageUrl = pageUrl,
-                IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString(),
-                UserAgent = HttpContext.Request.Headers["User-Agent"].ToString(),
-                ViewedAt = DateTime.UtcNow
+                return;
+            }
+
+            var userAgent = Request.Headers.UserAgent.ToString();
+            if (IsCrawler(userAgent))
+            {
+                return;
+            }
+
+            HttpContext.Session.SetString("PageViewTracked", "1");
+
+            try
+            {
+                var pageView = new PageView
+                {
+                    PageUrl = pageUrl,
+                    IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString(),
+                    UserAgent = userAgent.Length > 512 ? userAgent[..512] : userAgent,
+                    ViewedAt = DateTime.UtcNow
+                };
+
+                _context.PageViews.Add(pageView);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                // Analytics must never prevent the public page from loading.
+                _logger.LogWarning(ex, "Could not record page view for {PageUrl}.", pageUrl);
+            }
+        }
+
+        private void SetPreferenceCookie(string name, string value)
+        {
+            Response.Cookies.Append(name, value, new CookieOptions
+            {
+                Expires = DateTimeOffset.UtcNow.AddYears(1),
+                HttpOnly = true,
+                IsEssential = true,
+                SameSite = SameSiteMode.Lax,
+                Secure = Request.IsHttps,
+                Path = "/"
+            });
+        }
+
+        private static string NormalizeLanguage(string? language)
+        {
+            return string.Equals(language, "ar", StringComparison.OrdinalIgnoreCase) ? "ar" : "en";
+        }
+
+        private static string NormalizeTheme(string? theme)
+        {
+            return string.Equals(theme, "light", StringComparison.OrdinalIgnoreCase) ? "light" : "dark";
+        }
+
+        private static bool IsCrawler(string userAgent)
+        {
+            if (string.IsNullOrWhiteSpace(userAgent))
+            {
+                return false;
+            }
+
+            string[] markers =
+            {
+                "bot", "crawler", "spider", "slurp", "bingpreview",
+                "facebookexternalhit", "headless", "lighthouse", "pingdom"
             };
 
-            _context.PageViews.Add(pageView);
-            await _context.SaveChangesAsync();
+            return markers.Any(marker => userAgent.Contains(marker, StringComparison.OrdinalIgnoreCase));
         }
     }
 

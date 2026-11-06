@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Portfolio.Core.Entities;
 using Portfolio.Core.Interfaces;
+using portfolio.web.Services;
 
 namespace portfolio.web.Areas.Admin.Controllers
 {
@@ -10,12 +11,12 @@ namespace portfolio.web.Areas.Admin.Controllers
     public class TestimonialsController : Controller
     {
         private readonly IRepository<Testimonial> _testimonialRepo;
-        private readonly IWebHostEnvironment _env;
+        private readonly IFileStorage _fileStorage;
 
-        public TestimonialsController(IRepository<Testimonial> testimonialRepo, IWebHostEnvironment env)
+        public TestimonialsController(IRepository<Testimonial> testimonialRepo, IFileStorage fileStorage)
         {
             _testimonialRepo = testimonialRepo;
-            _env = env;
+            _fileStorage = fileStorage;
         }
 
         public async Task<IActionResult> Index()
@@ -35,12 +36,22 @@ namespace portfolio.web.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
-                if (clientImage != null)
-                    model.ClientImage = await SaveImageAsync(clientImage);
+                try
+                {
+                    if (clientImage != null)
+                    {
+                        model.ClientImage = await _fileStorage.SaveAsync(
+                            clientImage, "images/testimonials", FileUploadKind.Image);
+                    }
 
-                await _testimonialRepo.AddAsync(model);
-                TempData["Success"] = "Testimonial created successfully!";
-                return RedirectToAction(nameof(Index));
+                    await _testimonialRepo.AddAsync(model);
+                    TempData["Success"] = "Testimonial created successfully!";
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (FileValidationException ex)
+                {
+                    ModelState.AddModelError(string.Empty, ex.Message);
+                }
             }
 
             return View(model);
@@ -64,28 +75,37 @@ namespace portfolio.web.Areas.Admin.Controllers
 
             if (ModelState.IsValid)
             {
-                var testimonial = await _testimonialRepo.GetByIdAsync(id);
-                if (testimonial == null)
-                    return NotFound();
-
-                testimonial.ClientName = model.ClientName;
-                testimonial.Position = model.Position;
-                testimonial.Company = model.Company;
-                testimonial.TestimonialTextEn = model.TestimonialTextEn;
-                testimonial.TestimonialTextAr = model.TestimonialTextAr;
-                testimonial.Rating = model.Rating;
-                testimonial.IsActive = model.IsActive;
-                testimonial.Order = model.Order;
-
-                if (clientImage != null)
+                try
                 {
-                    DeleteImage(testimonial.ClientImage);
-                    testimonial.ClientImage = await SaveImageAsync(clientImage);
-                }
+                    var testimonial = await _testimonialRepo.GetByIdAsync(id);
+                    if (testimonial == null)
+                        return NotFound();
 
-                await _testimonialRepo.UpdateAsync(testimonial);
-                TempData["Success"] = "Testimonial updated successfully!";
-                return RedirectToAction(nameof(Index));
+                    testimonial.ClientName = model.ClientName;
+                    testimonial.Position = model.Position;
+                    testimonial.Company = model.Company;
+                    testimonial.TestimonialTextEn = model.TestimonialTextEn;
+                    testimonial.TestimonialTextAr = model.TestimonialTextAr;
+                    testimonial.Rating = model.Rating;
+                    testimonial.IsActive = model.IsActive;
+                    testimonial.Order = model.Order;
+
+                    if (clientImage != null)
+                    {
+                        var newImage = await _fileStorage.SaveAsync(
+                            clientImage, "images/testimonials", FileUploadKind.Image);
+                        _fileStorage.Delete(testimonial.ClientImage);
+                        testimonial.ClientImage = newImage;
+                    }
+
+                    await _testimonialRepo.UpdateAsync(testimonial);
+                    TempData["Success"] = "Testimonial updated successfully!";
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (FileValidationException ex)
+                {
+                    ModelState.AddModelError(string.Empty, ex.Message);
+                }
             }
 
             return View(model);
@@ -98,40 +118,12 @@ namespace portfolio.web.Areas.Admin.Controllers
             var testimonial = await _testimonialRepo.GetByIdAsync(id);
             if (testimonial != null)
             {
-                DeleteImage(testimonial.ClientImage);
+                _fileStorage.Delete(testimonial.ClientImage);
                 await _testimonialRepo.DeleteAsync(id);
                 TempData["Success"] = "Testimonial deleted successfully!";
             }
 
             return RedirectToAction(nameof(Index));
-        }
-
-        private async Task<string> SaveImageAsync(IFormFile image)
-        {
-            var uploadsFolder = Path.Combine(_env.WebRootPath, "images", "testimonials");
-            Directory.CreateDirectory(uploadsFolder);
-
-            var uniqueFileName = Guid.NewGuid().ToString() + "_" + Path.GetFileName(image.FileName);
-            var filePath = Path.Combine(uploadsFolder, uniqueFileName);
-
-            using (var fileStream = new FileStream(filePath, FileMode.Create))
-            {
-                await image.CopyToAsync(fileStream);
-            }
-
-            return "/images/testimonials/" + uniqueFileName;
-        }
-
-        private void DeleteImage(string imagePath)
-        {
-            if (string.IsNullOrEmpty(imagePath))
-                return;
-
-            var fullPath = Path.Combine(_env.WebRootPath, imagePath.TrimStart('/'));
-            if (System.IO.File.Exists(fullPath))
-            {
-                System.IO.File.Delete(fullPath);
-            }
         }
     }
 }

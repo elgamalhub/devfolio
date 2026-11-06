@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Portfolio.Core.Entities;
 using Portfolio.Core.Interfaces;
+using portfolio.web.Services;
 
 namespace Portfolio.Web.Areas.Admin.Controllers
 {
@@ -11,13 +12,16 @@ namespace Portfolio.Web.Areas.Admin.Controllers
     {
         private readonly IRepository<SiteSettings> _settingsRepo;
         private readonly IRepository<Section> _sectionRepo;
-        private readonly IWebHostEnvironment _env;
+        private readonly IFileStorage _fileStorage;
 
-        public SiteSettingsController(IRepository<SiteSettings> settingsRepo, IRepository<Section> sectionRepo, IWebHostEnvironment env)
+        public SiteSettingsController(
+            IRepository<SiteSettings> settingsRepo,
+            IRepository<Section> sectionRepo,
+            IFileStorage fileStorage)
         {
             _settingsRepo = settingsRepo;
             _sectionRepo = sectionRepo;
-            _env = env;
+            _fileStorage = fileStorage;
         }
 
         public async Task<IActionResult> Index()
@@ -199,48 +203,13 @@ namespace Portfolio.Web.Areas.Admin.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UploadHeroImage(IFormFile heroImage)
+        public Task<IActionResult> UploadHeroImage(IFormFile? heroImage)
         {
-            if (heroImage != null && heroImage.Length > 0)
-            {
-                var uploadsFolder = Path.Combine(_env.WebRootPath, "images", "hero");
-                Directory.CreateDirectory(uploadsFolder);
-
-                var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(heroImage.FileName);
-                var filePath = Path.Combine(uploadsFolder, uniqueFileName);
-
-                using (var fileStream = new FileStream(filePath, FileMode.Create))
-                {
-                    await heroImage.CopyToAsync(fileStream);
-                }
-
-                var imageUrl = "/images/hero/" + uniqueFileName;
-
-                // Update setting
-                var setting = (await _settingsRepo.GetAllAsync())
-                    .FirstOrDefault(s => s.Key == "hero_background_image");
-
-                if (setting != null)
-                {
-                    // Delete old image
-                    if (!string.IsNullOrEmpty(setting.ValueEn))
-                    {
-                        var oldPath = Path.Combine(_env.WebRootPath, setting.ValueEn.TrimStart('/'));
-                        if (System.IO.File.Exists(oldPath))
-                        {
-                            System.IO.File.Delete(oldPath);
-                        }
-                    }
-
-                    setting.ValueEn = imageUrl;
-                    setting.ValueAr = imageUrl;
-                    await _settingsRepo.UpdateAsync(setting);
-                }
-
-                TempData["Success"] = "Hero background image uploaded successfully!";
-            }
-
-            return RedirectToAction(nameof(Index));
+            return UploadImageSettingAsync(
+                heroImage,
+                "images/hero",
+                "hero_background_image",
+                "Hero background image uploaded successfully!");
         }
 
         [HttpPost]
@@ -252,13 +221,7 @@ namespace Portfolio.Web.Areas.Admin.Controllers
 
             if (setting != null && !string.IsNullOrEmpty(setting.ValueEn))
             {
-                // Delete image
-                var oldPath = Path.Combine(_env.WebRootPath, setting.ValueEn.TrimStart('/'));
-                if (System.IO.File.Exists(oldPath))
-                {
-                    System.IO.File.Delete(oldPath);
-                }
-
+                _fileStorage.Delete(setting.ValueEn);
                 setting.ValueEn = "";
                 setting.ValueAr = "";
                 await _settingsRepo.UpdateAsync(setting);
@@ -268,62 +231,17 @@ namespace Portfolio.Web.Areas.Admin.Controllers
 
             return RedirectToAction(nameof(Index));
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UploadPreloaderLogo(IFormFile preloaderLogo)
+        public Task<IActionResult> UploadPreloaderLogo(IFormFile? preloaderLogo)
         {
-            if (preloaderLogo != null && preloaderLogo.Length > 0)
-            {
-                var uploadsFolder = Path.Combine(_env.WebRootPath, "images", "preloader");
-                Directory.CreateDirectory(uploadsFolder);
-
-                var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(preloaderLogo.FileName);
-                var filePath = Path.Combine(uploadsFolder, uniqueFileName);
-
-                using (var fileStream = new FileStream(filePath, FileMode.Create))
-                {
-                    await preloaderLogo.CopyToAsync(fileStream);
-                }
-
-                var imageUrl = "/images/preloader/" + uniqueFileName;
-
-                // Update setting
-                var setting = (await _settingsRepo.GetAllAsync())
-                    .FirstOrDefault(s => s.Key == "preloader_logo");
-
-                if (setting != null)
-                {
-                    // Delete old logo
-                    if (!string.IsNullOrEmpty(setting.ValueEn))
-                    {
-                        var oldPath = Path.Combine(_env.WebRootPath, setting.ValueEn.TrimStart('/'));
-                        if (System.IO.File.Exists(oldPath))
-                        {
-                            System.IO.File.Delete(oldPath);
-                        }
-                    }
-
-                    setting.ValueEn = imageUrl;
-                    setting.ValueAr = imageUrl;
-                    await _settingsRepo.UpdateAsync(setting);
-                }
-                else
-                {
-                    // Create new setting if it doesn't exist
-                    await _settingsRepo.AddAsync(new SiteSettings
-                    {
-                        Key = "preloader_logo",
-                        ValueEn = imageUrl,
-                        ValueAr = imageUrl,
-                        Description = "Custom logo for preloader",
-                        DataType = "file"
-                    });
-                }
-
-                TempData["Success"] = "Preloader logo uploaded successfully!";
-            }
-
-            return RedirectToAction(nameof(Index));
+            return UploadImageSettingAsync(
+                preloaderLogo,
+                "images/preloader",
+                "preloader_logo",
+                "Preloader logo uploaded successfully!",
+                "Custom logo for preloader");
         }
 
         [HttpPost]
@@ -335,13 +253,7 @@ namespace Portfolio.Web.Areas.Admin.Controllers
 
             if (setting != null && !string.IsNullOrEmpty(setting.ValueEn))
             {
-                // Delete logo
-                var oldPath = Path.Combine(_env.WebRootPath, setting.ValueEn.TrimStart('/'));
-                if (System.IO.File.Exists(oldPath))
-                {
-                    System.IO.File.Delete(oldPath);
-                }
-
+                _fileStorage.Delete(setting.ValueEn);
                 setting.ValueEn = "";
                 setting.ValueAr = "";
                 await _settingsRepo.UpdateAsync(setting);
@@ -351,56 +263,17 @@ namespace Portfolio.Web.Areas.Admin.Controllers
 
             return RedirectToAction(nameof(Index));
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UploadPreloaderBackgroundImage(IFormFile backgroundImage)
+        public Task<IActionResult> UploadPreloaderBackgroundImage(IFormFile? backgroundImage)
         {
-            if (backgroundImage != null && backgroundImage.Length > 0)
-            {
-                var uploadsFolder = Path.Combine(_env.WebRootPath, "images", "preloader");
-                Directory.CreateDirectory(uploadsFolder);
-
-                var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(backgroundImage.FileName);
-                var filePath = Path.Combine(uploadsFolder, uniqueFileName);
-
-                using (var fileStream = new FileStream(filePath, FileMode.Create))
-                {
-                    await backgroundImage.CopyToAsync(fileStream);
-                }
-
-                var imageUrl = "/images/preloader/" + uniqueFileName;
-
-                var setting = (await _settingsRepo.GetAllAsync())
-                    .FirstOrDefault(s => s.Key == "preloader_background_image");
-
-                if (setting != null)
-                {
-                    if (!string.IsNullOrEmpty(setting.ValueEn))
-                    {
-                        var oldPath = Path.Combine(_env.WebRootPath, setting.ValueEn.TrimStart('/'));
-                        if (System.IO.File.Exists(oldPath))
-                            System.IO.File.Delete(oldPath);
-                    }
-                    setting.ValueEn = imageUrl;
-                    setting.ValueAr = imageUrl;
-                    await _settingsRepo.UpdateAsync(setting);
-                }
-                else
-                {
-                    await _settingsRepo.AddAsync(new SiteSettings
-                    {
-                        Key = "preloader_background_image",
-                        ValueEn = imageUrl,
-                        ValueAr = imageUrl,
-                        Description = "Custom background image for preloader",
-                        DataType = "file"
-                    });
-                }
-
-                TempData["Success"] = "Preloader background uploaded successfully!";
-            }
-
-            return RedirectToAction(nameof(Index));
+            return UploadImageSettingAsync(
+                backgroundImage,
+                "images/preloader",
+                "preloader_background_image",
+                "Preloader background uploaded successfully!",
+                "Custom background image for preloader");
         }
 
         [HttpPost]
@@ -412,15 +285,60 @@ namespace Portfolio.Web.Areas.Admin.Controllers
 
             if (setting != null && !string.IsNullOrEmpty(setting.ValueEn))
             {
-                var oldPath = Path.Combine(_env.WebRootPath, setting.ValueEn.TrimStart('/'));
-                if (System.IO.File.Exists(oldPath))
-                    System.IO.File.Delete(oldPath);
-
+                _fileStorage.Delete(setting.ValueEn);
                 setting.ValueEn = "";
                 setting.ValueAr = "";
                 await _settingsRepo.UpdateAsync(setting);
 
                 TempData["Success"] = "Preloader background removed successfully!";
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        private async Task<IActionResult> UploadImageSettingAsync(
+            IFormFile? file,
+            string folder,
+            string settingKey,
+            string successMessage,
+            string? description = null)
+        {
+            if (file == null || file.Length == 0)
+            {
+                TempData["Error"] = "Please choose an image to upload.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            try
+            {
+                var imageUrl = await _fileStorage.SaveAsync(file, folder, FileUploadKind.Image);
+                var setting = (await _settingsRepo.GetAllAsync())
+                    .FirstOrDefault(s => s.Key == settingKey);
+
+                if (setting != null)
+                {
+                    _fileStorage.Delete(setting.ValueEn);
+                    setting.ValueEn = imageUrl;
+                    setting.ValueAr = imageUrl;
+                    await _settingsRepo.UpdateAsync(setting);
+                }
+                else
+                {
+                    await _settingsRepo.AddAsync(new SiteSettings
+                    {
+                        Key = settingKey,
+                        ValueEn = imageUrl,
+                        ValueAr = imageUrl,
+                        Description = description ?? string.Empty,
+                        DataType = "file"
+                    });
+                }
+
+                TempData["Success"] = successMessage;
+            }
+            catch (FileValidationException ex)
+            {
+                TempData["Error"] = ex.Message;
             }
 
             return RedirectToAction(nameof(Index));

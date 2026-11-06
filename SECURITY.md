@@ -25,4 +25,4 @@ This is a personal portfolio project maintained on the `main` branch. Security f
 - [ ] Enable HTTPS and keep HSTS enabled outside Development.
 - [ ] Restrict write access to `wwwroot/images` and `wwwroot/files`.
 - [ ] Back up the database and uploads directory.
-- [ ] Review the Content-Security-Policy if you add new third-party scripts.
+- [ ] Review the security headers and any third-party scripts you add.

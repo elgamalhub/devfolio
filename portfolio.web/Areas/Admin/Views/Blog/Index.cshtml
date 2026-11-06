@@ -33,7 +33,7 @@
                         <option value="">All Tags</option>
                         @if (ViewBag.AllTags != null)
                         {
-                            @foreach (var tag in ViewBag.AllTags as IEnumerable<string>)
+                            @foreach (var tag in (ViewBag.AllTags as IEnumerable<string>) ?? Enumerable.Empty<string>())
                             {
                                 <option value="@tag" selected="@(ViewBag.Tag == tag)">@tag</option>
                             }

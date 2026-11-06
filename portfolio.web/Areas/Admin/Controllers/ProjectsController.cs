@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Portfolio.Core.DTOs;
 using Portfolio.Core.Entities;
 using Portfolio.Core.Interfaces;
+using portfolio.web.Services;
 
 namespace portfolio.web.Areas.Admin.Controllers
 {
@@ -10,13 +11,15 @@ namespace portfolio.web.Areas.Admin.Controllers
     [Authorize(Roles = "Admin")]
     public class ProjectsController : Controller
     {
-        private readonly IProjectRepository _projectRepo;
-        private readonly IWebHostEnvironment _env;
+        private const string DefaultProjectImage = "/images/projects/default-project.jpg";
 
-        public ProjectsController(IProjectRepository projectRepo, IWebHostEnvironment env)
+        private readonly IProjectRepository _projectRepo;
+        private readonly IFileStorage _fileStorage;
+
+        public ProjectsController(IProjectRepository projectRepo, IFileStorage fileStorage)
         {
             _projectRepo = projectRepo;
-            _env = env;
+            _fileStorage = fileStorage;
         }
 
         public async Task<IActionResult> Index()
@@ -36,49 +39,56 @@ namespace portfolio.web.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
-                // Save image only if uploaded
-                string imagePath = "/images/projects/default-project.jpg";
-                if (model.Image != null && model.Image.Length > 0)
+                try
                 {
-                    imagePath = await SaveImageAsync(model.Image);
-                }
-
-                var project = new Project
-                {
-                    TitleEn = model.TitleEn,
-                    TitleAr = model.TitleAr,
-                    ShortDescriptionEn = model.ShortDescriptionEn,
-                    ShortDescriptionAr = model.ShortDescriptionAr,
-                    FullDescriptionEn = model.FullDescriptionEn ?? "",
-                    FullDescriptionAr = model.FullDescriptionAr ?? "",
-                    ImagePath = imagePath,
-                    IconClass = model.IconClass ?? "fas fa-code",
-                    DemoUrl = model.DemoUrl ?? "",
-                    GithubUrl = model.GithubUrl ?? "",
-                    Category = model.Category,
-                    IsHidden = model.IsHidden,
-                    Order = model.Order,
-                    IsActive = model.IsActive,
-                    CreatedAt = DateTime.UtcNow,
-                    Technologies = new List<ProjectTechnology>() // Initialize the collection!
-                };
-
-                // Add technologies
-                if (!string.IsNullOrWhiteSpace(model.Technologies))
-                {
-                    var techList = model.Technologies.Split(',', StringSplitOptions.RemoveEmptyEntries);
-                    foreach (var tech in techList)
+                    var imagePath = DefaultProjectImage;
+                    if (model.Image != null && model.Image.Length > 0)
                     {
-                        project.Technologies.Add(new ProjectTechnology
-                        {
-                            TechnologyName = tech.Trim()
-                        });
+                        imagePath = await _fileStorage.SaveAsync(
+                            model.Image, "images/projects", FileUploadKind.Image);
                     }
-                }
 
-                await _projectRepo.AddAsync(project);
-                TempData["Success"] = "Project created successfully!";
-                return RedirectToAction(nameof(Index));
+                    var project = new Project
+                    {
+                        TitleEn = model.TitleEn,
+                        TitleAr = model.TitleAr,
+                        ShortDescriptionEn = model.ShortDescriptionEn,
+                        ShortDescriptionAr = model.ShortDescriptionAr,
+                        FullDescriptionEn = model.FullDescriptionEn ?? "",
+                        FullDescriptionAr = model.FullDescriptionAr ?? "",
+                        ImagePath = imagePath,
+                        IconClass = model.IconClass ?? "fas fa-code",
+                        DemoUrl = model.DemoUrl ?? "",
+                        GithubUrl = model.GithubUrl ?? "",
+                        Category = model.Category,
+                        IsHidden = model.IsHidden,
+                        Order = model.Order,
+                        IsActive = model.IsActive,
+                        CreatedAt = DateTime.UtcNow,
+                        Technologies = new List<ProjectTechnology>()
+                    };
+
+                    // Add technologies
+                    if (!string.IsNullOrWhiteSpace(model.Technologies))
+                    {
+                        var techList = model.Technologies.Split(',', StringSplitOptions.RemoveEmptyEntries);
+                        foreach (var tech in techList)
+                        {
+                            project.Technologies.Add(new ProjectTechnology
+                            {
+                                TechnologyName = tech.Trim()
+                            });
+                        }
+                    }
+
+                    await _projectRepo.AddAsync(project);
+                    TempData["Success"] = "Project created successfully!";
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (FileValidationException ex)
+                {
+                    ModelState.AddModelError(string.Empty, ex.Message);
+                }
             }
 
             return View(model);
@@ -122,50 +132,58 @@ namespace portfolio.web.Areas.Admin.Controllers
 
             if (ModelState.IsValid)
             {
-                var project = await _projectRepo.GetByIdAsync(id);
-                if (project == null)
-                    return NotFound();
-
-                project.TitleEn = model.TitleEn;
-                project.TitleAr = model.TitleAr;
-                project.ShortDescriptionEn = model.ShortDescriptionEn;
-                project.ShortDescriptionAr = model.ShortDescriptionAr;
-                project.FullDescriptionEn = model.FullDescriptionEn;
-                project.FullDescriptionAr = model.FullDescriptionAr;
-                project.IconClass = model.IconClass;
-                project.DemoUrl = model.DemoUrl;
-                project.GithubUrl = model.GithubUrl;
-                project.Category = model.Category;
-                project.IsHidden = model.IsHidden;
-                project.Order = model.Order;
-                project.IsActive = model.IsActive;
-
-                // Update image if new one uploaded
-                if (model.Image != null)
+                try
                 {
-                    // Delete old image
-                    DeleteImage(project.ImagePath);
-                    project.ImagePath = await SaveImageAsync(model.Image);
-                }
+                    var project = await _projectRepo.GetByIdAsync(id);
+                    if (project == null)
+                        return NotFound();
 
-                // Update technologies
-                project.Technologies.Clear();
-                if (!string.IsNullOrWhiteSpace(model.Technologies))
-                {
-                    var techList = model.Technologies.Split(',', StringSplitOptions.RemoveEmptyEntries);
-                    foreach (var tech in techList)
+                    project.TitleEn = model.TitleEn;
+                    project.TitleAr = model.TitleAr;
+                    project.ShortDescriptionEn = model.ShortDescriptionEn;
+                    project.ShortDescriptionAr = model.ShortDescriptionAr;
+                    project.FullDescriptionEn = model.FullDescriptionEn;
+                    project.FullDescriptionAr = model.FullDescriptionAr;
+                    project.IconClass = model.IconClass;
+                    project.DemoUrl = model.DemoUrl;
+                    project.GithubUrl = model.GithubUrl;
+                    project.Category = model.Category;
+                    project.IsHidden = model.IsHidden;
+                    project.Order = model.Order;
+                    project.IsActive = model.IsActive;
+
+                    // Save the replacement first so a rejected upload never removes the current image.
+                    if (model.Image != null)
                     {
-                        project.Technologies.Add(new ProjectTechnology
-                        {
-                            TechnologyName = tech.Trim(),
-                            ProjectId = project.Id
-                        });
+                        var newImage = await _fileStorage.SaveAsync(
+                            model.Image, "images/projects", FileUploadKind.Image);
+                        _fileStorage.Delete(project.ImagePath);
+                        project.ImagePath = newImage;
                     }
-                }
 
-                await _projectRepo.UpdateAsync(project);
-                TempData["Success"] = "Project updated successfully!";
-                return RedirectToAction(nameof(Index));
+                    // Update technologies
+                    project.Technologies.Clear();
+                    if (!string.IsNullOrWhiteSpace(model.Technologies))
+                    {
+                        var techList = model.Technologies.Split(',', StringSplitOptions.RemoveEmptyEntries);
+                        foreach (var tech in techList)
+                        {
+                            project.Technologies.Add(new ProjectTechnology
+                            {
+                                TechnologyName = tech.Trim(),
+                                ProjectId = project.Id
+                            });
+                        }
+                    }
+
+                    await _projectRepo.UpdateAsync(project);
+                    TempData["Success"] = "Project updated successfully!";
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (FileValidationException ex)
+                {
+                    ModelState.AddModelError(string.Empty, ex.Message);
+                }
             }
 
             return View(model);
@@ -196,43 +214,12 @@ namespace portfolio.web.Areas.Admin.Controllers
             var project = await _projectRepo.GetByIdAsync(id);
             if (project != null)
             {
-                DeleteImage(project.ImagePath);
+                _fileStorage.Delete(project.ImagePath);
                 await _projectRepo.DeleteAsync(id);
                 TempData["Success"] = "Project deleted successfully!";
             }
 
             return RedirectToAction(nameof(Index));
-        }
-
-        private async Task<string> SaveImageAsync(IFormFile? image)
-        {
-            if (image == null || image.Length == 0)
-                return "/images/projects/default-project.jpg";
-
-            var uploadsFolder = Path.Combine(_env.WebRootPath, "images", "projects");
-            Directory.CreateDirectory(uploadsFolder);
-
-            var uniqueFileName = Guid.NewGuid().ToString() + "_" + Path.GetFileName(image.FileName);
-            var filePath = Path.Combine(uploadsFolder, uniqueFileName);
-
-            using (var fileStream = new FileStream(filePath, FileMode.Create))
-            {
-                await image.CopyToAsync(fileStream);
-            }
-
-            return "/images/projects/" + uniqueFileName;
-        }
-
-        private void DeleteImage(string imagePath)
-        {
-            if (string.IsNullOrEmpty(imagePath) || imagePath.Contains("default-project"))
-                return;
-
-            var fullPath = Path.Combine(_env.WebRootPath, imagePath.TrimStart('/'));
-            if (System.IO.File.Exists(fullPath))
-            {
-                System.IO.File.Delete(fullPath);
-            }
         }
     }
 }

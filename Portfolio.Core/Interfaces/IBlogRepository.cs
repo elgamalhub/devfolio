@@ -13,7 +13,8 @@ namespace Portfolio.Core.Interfaces
         Task<BlogPost?> GetBySlugAsync(string slug);
         Task<IEnumerable<BlogPost>> GetRecentPostsAsync(int count);
         Task IncrementViewCountAsync(int id);
-        Task<IEnumerable<BlogPost>> SearchPostsAsync(string searchTerm, string tag = null);
+        Task<IEnumerable<BlogPost>> SearchPostsAsync(string? searchTerm, string? tag = null);
+        Task<bool> SlugExistsAsync(string slug, int? excludePostId = null);
         Task<IEnumerable<string>> GetAllTagsAsync();
     }
 }

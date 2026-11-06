@@ -1,9 +1,10 @@
+using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Portfolio.Core.Interfaces;
 using Portfolio.Infrastructure.Data;
 using Portfolio.Infrastructure.Repositories;
+using portfolio.web.Services;
 using Serilog;
 
 namespace portfolio.web
@@ -16,6 +17,7 @@ namespace portfolio.web
 
             // Configure Serilog
             Log.Logger = new LoggerConfiguration()
+                .WriteTo.Console()
                 .WriteTo.File("Logs/log-.txt", rollingInterval: RollingInterval.Day)
                 .CreateLogger();
 
@@ -37,33 +39,83 @@ namespace portfolio.web
                 options.Password.RequireLowercase = true;
                 options.Password.RequireUppercase = true;
                 options.Password.RequireNonAlphanumeric = false;
-                options.Password.RequiredLength = 6;
+                options.Password.RequiredLength = 8;
+                options.User.RequireUniqueEmail = true;
+                options.Lockout.MaxFailedAccessAttempts = 5;
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
+                options.Lockout.AllowedForNewUsers = true;
             })
                 .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
+
+            builder.Services.ConfigureApplicationCookie(options =>
+            {
+                options.Cookie.HttpOnly = true;
+                options.Cookie.SameSite = SameSiteMode.Lax;
+                options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+                options.ExpireTimeSpan = TimeSpan.FromDays(7);
+                options.SlidingExpiration = true;
+                options.LoginPath = "/Identity/Account/Login";
+                options.AccessDeniedPath = "/Identity/Account/Login";
+            });
+
             builder.Services.AddControllersWithViews();
             builder.Services.AddRazorPages().AddRazorPagesOptions(options =>
             {
                 options.Conventions.AuthorizePage("/Account/Logout");
             });
-            // Register Repositories
+
+            builder.Services.AddAntiforgery(options =>
+            {
+                options.HeaderName = "RequestVerificationToken";
+                options.Cookie.SameSite = SameSiteMode.Strict;
+                options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+            });
+
+            // Register repositories and application services
             builder.Services.AddScoped(typeof(IRepository<>), typeof(GenericRepository<>));
             builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
             builder.Services.AddScoped<IBlogRepository, BlogRepository>();
+            builder.Services.AddScoped<IFileStorage, FileStorage>();
 
-            // AutoMapper
-            builder.Services.AddAutoMapper(typeof(Program));
-
-            // Session for analytics
+            // Session for analytics and per-visitor state
             builder.Services.AddSession(options =>
             {
                 options.IdleTimeout = TimeSpan.FromMinutes(30);
                 options.Cookie.HttpOnly = true;
                 options.Cookie.IsEssential = true;
+                options.Cookie.SameSite = SameSiteMode.Lax;
+                options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
             });
 
             // Memory Cache
             builder.Services.AddMemoryCache();
+
+            // Basic abuse protection for public write endpoints
+            builder.Services.AddRateLimiter(options =>
+            {
+                options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+
+                options.AddPolicy("contact", httpContext =>
+                    RateLimitPartition.GetFixedWindowLimiter(
+                        partitionKey: httpContext.Connection.RemoteIpAddress?.ToString() ?? "anonymous",
+                        factory: _ => new FixedWindowRateLimiterOptions
+                        {
+                            PermitLimit = 5,
+                            Window = TimeSpan.FromMinutes(10),
+                            QueueLimit = 0
+                        }));
+
+                options.AddPolicy("tracking", httpContext =>
+                    RateLimitPartition.GetFixedWindowLimiter(
+                        partitionKey: httpContext.Connection.RemoteIpAddress?.ToString() ?? "anonymous",
+                        factory: _ => new FixedWindowRateLimiterOptions
+                        {
+                            PermitLimit = 60,
+                            Window = TimeSpan.FromMinutes(1),
+                            QueueLimit = 0
+                        }));
+            });
 
             var app = builder.Build();
 
@@ -76,8 +128,23 @@ namespace portfolio.web
                     var context = services.GetRequiredService<ApplicationDbContext>();
                     var userManager = services.GetRequiredService<UserManager<IdentityUser>>();
                     var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
-                    DbInitializer.Initialize(context, userManager, roleManager).GetAwaiter()
-                     .GetResult();
+
+                    var generatedPassword = DbInitializer.InitializeAsync(
+                        context,
+                        userManager,
+                        roleManager,
+                        app.Configuration["SeedAdmin:Email"],
+                        app.Configuration["SeedAdmin:Password"])
+                        .GetAwaiter()
+                        .GetResult();
+
+                    if (!string.IsNullOrEmpty(generatedPassword))
+                    {
+                        Log.Warning(
+                            "No SeedAdmin:Password was configured. A temporary admin password was generated: {Password}. " +
+                            "Sign in and change it, or set SeedAdmin:Email and SeedAdmin:Password in configuration.",
+                            generatedPassword);
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -99,8 +166,22 @@ namespace portfolio.web
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
+            app.UseSerilogRequestLogging();
+
+            app.Use(async (context, next) =>
+            {
+                var headers = context.Response.Headers;
+                headers["X-Content-Type-Options"] = "nosniff";
+                headers["X-Frame-Options"] = "SAMEORIGIN";
+                headers["Referrer-Policy"] = "strict-origin-when-cross-origin";
+                headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()";
+                headers["X-Permitted-Cross-Domain-Policies"] = "none";
+                await next();
+            });
+
             app.UseRouting();
 
+            app.UseRateLimiter();
             app.UseSession();
 
             app.UseAuthentication();

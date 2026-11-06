@@ -107,19 +107,13 @@
                     <i class="fas fa-sign-in-alt me-2"></i> Log in
                 </button>
 
-                <div class="divider">
-                    <small>Default credentials: admin@portfolio.com / Admin@123</small>
-                </div>
-
                 <div class="text-center mt-3">
-                    <a asp-page="./ForgotPassword" class="text-decoration-none">Forgot your password?</a>
+                    <small class="text-muted">
+                        Administrators only. Contact the site owner if you need access.
+                    </small>
                 </div>
             </form>
         </section>
     </div>
-
-    @section Scripts {
-        <partial name="_ValidationScriptsPartial" />
-    }
 </body>
 </html>

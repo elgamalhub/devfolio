@@ -29,32 +29,34 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 // Scroll Progress Bar
 window.addEventListener('scroll', function () {
-    const winScroll = document.documentElement.scrollTop;
-    const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-    const scrolled = (winScroll / height) * 100;
-    document.getElementById('scrollProgress').style.width = scrolled + '%';
+    const scrollProgress = document.getElementById('scrollProgress');
+    if (scrollProgress) {
+        const winScroll = document.documentElement.scrollTop;
+        const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        const scrolled = height > 0 ? (winScroll / height) * 100 : 0;
+        scrollProgress.style.width = scrolled + '%';
+    }
 
     // Back to Top Button
     const backToTop = document.getElementById('backToTop');
-    if (window.scrollY > 300) {
-        backToTop.classList.add('show');
-    } else {
-        backToTop.classList.remove('show');
+    if (backToTop) {
+        backToTop.classList.toggle('show', window.scrollY > 300);
     }
 
     // Navbar scroll effect
     const navbar = document.querySelector('.navbar');
-    if (window.scrollY > 50) {
-        navbar.classList.add('scrolled');
-    } else {
-        navbar.classList.remove('scrolled');
+    if (navbar) {
+        navbar.classList.toggle('scrolled', window.scrollY > 50);
     }
 });
 
 // Back to Top
-document.getElementById('backToTop').addEventListener('click', function () {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-});
+const backToTopButton = document.getElementById('backToTop');
+if (backToTopButton) {
+    backToTopButton.addEventListener('click', function () {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+}
 
 // Typing Animation - Multiple titles
 let textIndex = 0;
@@ -63,6 +65,10 @@ let isDeleting = false;
 
 function typeText() {
     const typingElement = document.getElementById('typingText');
+    if (!typingElement || typeof typingTitles === 'undefined' || !typingTitles.length) {
+        return;
+    }
+
     const currentText = typingTitles[textIndex];
 
     if (!isDeleting && charIndex <= currentText.length) {
@@ -90,10 +96,12 @@ setTimeout(typeText, 500);
 
 // Particles Animation
 const canvas = document.getElementById('particles-canvas');
-const ctx = canvas.getContext('2d');
+const ctx = canvas ? canvas.getContext('2d') : null;
 
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
+if (canvas && ctx) {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+}
 
 const particles = [];
 const particleCount = 80;
@@ -168,49 +176,52 @@ function animateParticles() {
     requestAnimationFrame(animateParticles);
 }
 
-canvas.addEventListener('mousemove', (e) => {
-    mouse.x = e.x;
-    mouse.y = e.y;
-});
+if (canvas) {
+    canvas.addEventListener('mousemove', (e) => {
+        mouse.x = e.x;
+        mouse.y = e.y;
+    });
 
-canvas.addEventListener('mouseleave', () => {
-    mouse.x = null;
-    mouse.y = null;
-});
+    canvas.addEventListener('mouseleave', () => {
+        mouse.x = null;
+        mouse.y = null;
+    });
 
-window.addEventListener('resize', () => {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-});
+    window.addEventListener('resize', () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    });
+}
 
-if (typeof enableParticles !== 'undefined' && enableParticles) {
-    // Your existing particle code
+if (canvas && ctx && typeof enableParticles !== 'undefined' && enableParticles) {
     initParticles();
     animateParticles();
 }
 
-// GSAP Scroll Animations
-gsap.registerPlugin(ScrollTrigger);
+// GSAP Scroll Animations (optional enhancement)
+if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+    gsap.registerPlugin(ScrollTrigger);
 
-gsap.utils.toArray('.timeline-item, .about-card, .skill-item').forEach(elem => {
-    gsap.fromTo(elem,
-        {
-            y: 50,
-            opacity: 0
-        },
-        {
-            scrollTrigger: {
-                trigger: elem,
-                start: 'top 85%',
-                toggleActions: 'play none none none'
+    gsap.utils.toArray('.timeline-item, .about-card, .skill-item').forEach(elem => {
+        gsap.fromTo(elem,
+            {
+                y: 50,
+                opacity: 0
             },
-            y: 0,
-            opacity: 1,
-            duration: 0.8,
-            ease: 'power2.out'
-        }
-    );
-});
+            {
+                scrollTrigger: {
+                    trigger: elem,
+                    start: 'top 85%',
+                    toggleActions: 'play none none none'
+                },
+                y: 0,
+                opacity: 1,
+                duration: 0.8,
+                ease: 'power2.out'
+            }
+        );
+    });
+}
 
 // Smooth scrolling
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
@@ -243,50 +254,79 @@ if (skillsSection) {
     skillsObserver.observe(skillsSection);
 }
 
-// Contact Form Submission - UPDATED VERSION
+function getAntiForgeryToken() {
+    const input = document.querySelector('input[name="__RequestVerificationToken"]');
+    return input ? input.value : '';
+}
+
+// Contact Form Submission
 const contactForm = document.getElementById('contactForm');
 if (contactForm) {
+    const statusElement = document.getElementById('contactFormStatus');
+    const submitButton = document.getElementById('contactSubmit');
+
+    const setStatus = (message, type) => {
+        if (!statusElement) return;
+        statusElement.textContent = message;
+        statusElement.classList.remove('is-success', 'is-error');
+        statusElement.classList.add(type === 'success' ? 'is-success' : 'is-error');
+    };
+
     contactForm.addEventListener('submit', async function (e) {
         e.preventDefault();
 
         const formData = new FormData(this);
-
-        // Get the anti-forgery token
-        const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
-
-        // Convert FormData to JSON
         const data = {
             Name: formData.get('Name'),
             Email: formData.get('Email'),
             Message: formData.get('Message')
         };
 
+        if (submitButton) {
+            submitButton.disabled = true;
+        }
+        setStatus(currentLang === 'en' ? 'Sending...' : 'جارٍ الإرسال...', 'success');
+
         try {
             const response = await fetch('/Home/SendMessage', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'RequestVerificationToken': token
+                    'RequestVerificationToken': getAntiForgeryToken()
                 },
                 body: JSON.stringify(data)
             });
 
-            if (response.ok) {
-                const result = await response.json();
+            const result = await response.json().catch(() => ({}));
 
-                if (result.success) {
-                    alert(currentLang === 'en' ? 'Message sent successfully!' : 'تم إرسال الرسالة بنجاح!');
-                    this.reset();
-                } else {
-                    alert(result.message || (currentLang === 'en' ? 'Failed to send message.' : 'فشل إرسال الرسالة.'));
-                }
+            if (response.ok && result.success) {
+                setStatus(
+                    currentLang === 'en' ? 'Message sent successfully!' : 'تم إرسال الرسالة بنجاح!',
+                    'success');
+                this.reset();
+            } else if (response.status === 429) {
+                setStatus(
+                    currentLang === 'en'
+                        ? 'Too many messages. Please try again later.'
+                        : 'عدد الرسائل كبير. يرجى المحاولة لاحقًا.',
+                    'error');
             } else {
-                console.error('Response status:', response.status);
-                alert(currentLang === 'en' ? 'An error occurred. Please try again.' : 'حدث خطأ. يرجى المحاولة مرة أخرى.');
+                setStatus(
+                    result.message ||
+                        (currentLang === 'en' ? 'Failed to send message.' : 'فشل إرسال الرسالة.'),
+                    'error');
             }
         } catch (error) {
-            console.error('Error:', error);
-            alert(currentLang === 'en' ? 'An error occurred. Please try again.' : 'حدث خطأ. يرجى المحاولة مرة أخرى.');
+            console.error('Contact form error:', error);
+            setStatus(
+                currentLang === 'en'
+                    ? 'An error occurred. Please try again.'
+                    : 'حدث خطأ. يرجى المحاولة مرة أخرى.',
+                'error');
+        } finally {
+            if (submitButton) {
+                submitButton.disabled = false;
+            }
         }
     });
 }
@@ -374,21 +414,25 @@ function toggleProjects() {
 
 // Track Project Click
 async function trackProjectClick(projectId, url) {
+    if (!url) {
+        return;
+    }
+
     try {
         await fetch('/Home/TrackProjectClick', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'RequestVerificationToken': getAntiForgeryToken()
             },
             body: JSON.stringify({ projectId })
         });
-
-        if (url) {
-            window.open(url, '_blank');
-        }
     } catch (error) {
         console.error('Error tracking click:', error);
     }
+
+    window.open(url, '_blank', 'noopener');
 }
+
 // Initialize on page load
 updateShowMoreButton();

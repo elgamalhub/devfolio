@@ -9,21 +9,21 @@ namespace Portfolio.Core.Entities
     public class Project
     {
         public int Id { get; set; }
-        public string TitleEn { get; set; }
-        public string TitleAr { get; set; }
-        public string ShortDescriptionEn { get; set; }
-        public string ShortDescriptionAr { get; set; }
-        public string FullDescriptionEn { get; set; }
-        public string FullDescriptionAr { get; set; }
-        public string ImagePath { get; set; }
-        public string IconClass { get; set; }
-        public string DemoUrl { get; set; }
-        public string GithubUrl { get; set; }
-        public string Category { get; set; } // web, desktop, other
+        public string TitleEn { get; set; } = string.Empty;
+        public string TitleAr { get; set; } = string.Empty;
+        public string ShortDescriptionEn { get; set; } = string.Empty;
+        public string ShortDescriptionAr { get; set; } = string.Empty;
+        public string FullDescriptionEn { get; set; } = string.Empty;
+        public string FullDescriptionAr { get; set; } = string.Empty;
+        public string ImagePath { get; set; } = string.Empty;
+        public string IconClass { get; set; } = "fas fa-code";
+        public string DemoUrl { get; set; } = string.Empty;
+        public string GithubUrl { get; set; } = string.Empty;
+        public string Category { get; set; } = "web";
         public bool IsHidden { get; set; } // for show more functionality
         public int Order { get; set; }
         public bool IsActive { get; set; }
         public DateTime CreatedAt { get; set; }
-        public ICollection<ProjectTechnology> Technologies { get; set; }
+        public ICollection<ProjectTechnology> Technologies { get; set; } = new List<ProjectTechnology>();
     }
 }

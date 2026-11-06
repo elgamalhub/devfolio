@@ -1,7 +1,10 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Globalization;
+using System.Text;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Portfolio.Core.Entities;
 using Portfolio.Core.Interfaces;
+using portfolio.web.Services;
 
 namespace portfolio.web.Areas.Admin.Controllers
 {
@@ -10,15 +13,15 @@ namespace portfolio.web.Areas.Admin.Controllers
     public class BlogController : Controller
     {
         private readonly IBlogRepository _blogRepo;
-        private readonly IWebHostEnvironment _env;
+        private readonly IFileStorage _fileStorage;
 
-        public BlogController(IBlogRepository blogRepo, IWebHostEnvironment env)
+        public BlogController(IBlogRepository blogRepo, IFileStorage fileStorage)
         {
             _blogRepo = blogRepo;
-            _env = env;
+            _fileStorage = fileStorage;
         }
 
-        public async Task<IActionResult> Index(string search = null, string tag = null)
+        public async Task<IActionResult> Index(string? search = null, string? tag = null)
         {
             IEnumerable<BlogPost> posts;
 
@@ -45,29 +48,39 @@ namespace portfolio.web.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(BlogPost model, IFormFile? featuredImage, string tags)
+        public async Task<IActionResult> Create(BlogPost model, IFormFile? featuredImage, string? tags)
         {
             if (ModelState.IsValid)
             {
-                if (featuredImage != null)
-                    model.FeaturedImage = await SaveImageAsync(featuredImage);
-
-                model.Slug = GenerateSlug(model.TitleEn);
-                model.PublishedAt = DateTime.UtcNow;
-
-                // Add tags
-                if (!string.IsNullOrWhiteSpace(tags))
+                try
                 {
-                    var tagList = tags.Split(',', StringSplitOptions.RemoveEmptyEntries);
-                    foreach (var tag in tagList)
+                    if (featuredImage != null)
                     {
-                        model.Tags.Add(new BlogTag { TagName = tag.Trim() });
+                        model.FeaturedImage = await _fileStorage.SaveAsync(
+                            featuredImage, "images/blog", FileUploadKind.Image);
                     }
-                }
 
-                await _blogRepo.AddAsync(model);
-                TempData["Success"] = "Blog post created successfully!";
-                return RedirectToAction(nameof(Index));
+                    model.Slug = await GenerateUniqueSlugAsync(model.TitleEn, model.TitleAr);
+                    model.PublishedAt = DateTime.UtcNow;
+
+                    // Add tags
+                    if (!string.IsNullOrWhiteSpace(tags))
+                    {
+                        var tagList = tags.Split(',', StringSplitOptions.RemoveEmptyEntries);
+                        foreach (var tag in tagList)
+                        {
+                            model.Tags.Add(new BlogTag { TagName = tag.Trim() });
+                        }
+                    }
+
+                    await _blogRepo.AddAsync(model);
+                    TempData["Success"] = "Blog post created successfully!";
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (FileValidationException ex)
+                {
+                    ModelState.AddModelError(string.Empty, ex.Message);
+                }
             }
 
             return View(model);
@@ -85,48 +98,59 @@ namespace portfolio.web.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, BlogPost model, IFormFile? featuredImage, string tags)
+        public async Task<IActionResult> Edit(int id, BlogPost model, IFormFile? featuredImage, string? tags)
         {
             if (id != model.Id)
                 return NotFound();
 
             if (ModelState.IsValid)
             {
-                var post = await _blogRepo.GetByIdAsync(id);
-                if (post == null)
-                    return NotFound();
-
-                post.TitleEn = model.TitleEn;
-                post.TitleAr = model.TitleAr;
-                post.ContentEn = model.ContentEn;
-                post.ContentAr = model.ContentAr;
-                post.IsPublished = model.IsPublished;
-                post.Slug = GenerateSlug(model.TitleEn);
-
-                if (featuredImage != null)
+                try
                 {
-                    DeleteImage(post.FeaturedImage);
-                    post.FeaturedImage = await SaveImageAsync(featuredImage);
-                }
+                    var post = await _blogRepo.GetByIdAsync(id);
+                    if (post == null)
+                        return NotFound();
 
-                // Update tags
-                post.Tags.Clear();
-                if (!string.IsNullOrWhiteSpace(tags))
-                {
-                    var tagList = tags.Split(',', StringSplitOptions.RemoveEmptyEntries);
-                    foreach (var tag in tagList)
+                    post.TitleEn = model.TitleEn;
+                    post.TitleAr = model.TitleAr;
+                    post.ContentEn = model.ContentEn;
+                    post.ContentAr = model.ContentAr;
+                    post.IsPublished = model.IsPublished;
+                    post.Slug = await GenerateUniqueSlugAsync(model.TitleEn, model.TitleAr, post.Id);
+
+                    if (featuredImage != null)
                     {
-                        post.Tags.Add(new BlogTag { TagName = tag.Trim(), BlogPostId = post.Id });
+                        var newImage = await _fileStorage.SaveAsync(
+                            featuredImage, "images/blog", FileUploadKind.Image);
+                        _fileStorage.Delete(post.FeaturedImage);
+                        post.FeaturedImage = newImage;
                     }
-                }
 
-                await _blogRepo.UpdateAsync(post);
-                TempData["Success"] = "Blog post updated successfully!";
-                return RedirectToAction(nameof(Index));
+                    // Update tags
+                    post.Tags.Clear();
+                    if (!string.IsNullOrWhiteSpace(tags))
+                    {
+                        var tagList = tags.Split(',', StringSplitOptions.RemoveEmptyEntries);
+                        foreach (var tag in tagList)
+                        {
+                            post.Tags.Add(new BlogTag { TagName = tag.Trim(), BlogPostId = post.Id });
+                        }
+                    }
+
+                    await _blogRepo.UpdateAsync(post);
+                    TempData["Success"] = "Blog post updated successfully!";
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (FileValidationException ex)
+                {
+                    ModelState.AddModelError(string.Empty, ex.Message);
+                }
             }
 
+            ViewBag.Tags = tags;
             return View(model);
         }
+
         public async Task<IActionResult> Details(int id)
         {
             var post = await _blogRepo.GetByIdAsync(id);
@@ -142,7 +166,7 @@ namespace portfolio.web.Areas.Admin.Controllers
             var post = await _blogRepo.GetByIdAsync(id);
             if (post != null)
             {
-                DeleteImage(post.FeaturedImage);
+                _fileStorage.Delete(post.FeaturedImage);
                 await _blogRepo.DeleteAsync(id);
                 TempData["Success"] = "Blog post deleted successfully!";
             }
@@ -150,42 +174,61 @@ namespace portfolio.web.Areas.Admin.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        private string GenerateSlug(string title)
+        private async Task<string> GenerateUniqueSlugAsync(string titleEn, string titleAr, int? excludePostId = null)
         {
-            return title.ToLower()
-                .Replace(" ", "-")
-                .Replace(".", "")
-                .Replace(",", "")
-                .Replace("'", "")
-                .Replace("\"", "");
-        }
-
-        private async Task<string> SaveImageAsync(IFormFile image)
-        {
-            var uploadsFolder = Path.Combine(_env.WebRootPath, "images", "blog");
-            Directory.CreateDirectory(uploadsFolder);
-
-            var uniqueFileName = Guid.NewGuid().ToString() + "_" + Path.GetFileName(image.FileName);
-            var filePath = Path.Combine(uploadsFolder, uniqueFileName);
-
-            using (var fileStream = new FileStream(filePath, FileMode.Create))
+            var baseSlug = Slugify(titleEn);
+            if (string.IsNullOrWhiteSpace(baseSlug))
             {
-                await image.CopyToAsync(fileStream);
+                baseSlug = Slugify(titleAr);
+            }
+            if (string.IsNullOrWhiteSpace(baseSlug))
+            {
+                baseSlug = "post";
             }
 
-            return "/images/blog/" + uniqueFileName;
+            var slug = baseSlug;
+            var suffix = 2;
+
+            while (await _blogRepo.SlugExistsAsync(slug, excludePostId))
+            {
+                slug = $"{baseSlug}-{suffix}";
+                suffix++;
+            }
+
+            return slug;
         }
 
-        private void DeleteImage(string imagePath)
+        private static string Slugify(string? value)
         {
-            if (string.IsNullOrEmpty(imagePath))
-                return;
-
-            var fullPath = Path.Combine(_env.WebRootPath, imagePath.TrimStart('/'));
-            if (System.IO.File.Exists(fullPath))
+            if (string.IsNullOrWhiteSpace(value))
             {
-                System.IO.File.Delete(fullPath);
+                return string.Empty;
             }
+
+            var normalized = value.Normalize(NormalizationForm.FormD);
+            var builder = new StringBuilder(normalized.Length);
+            var previousWasSeparator = false;
+
+            foreach (var character in normalized)
+            {
+                if (CharUnicodeInfo.GetUnicodeCategory(character) == UnicodeCategory.NonSpacingMark)
+                {
+                    continue;
+                }
+
+                if (char.IsLetterOrDigit(character))
+                {
+                    builder.Append(char.ToLowerInvariant(character));
+                    previousWasSeparator = false;
+                }
+                else if (!previousWasSeparator)
+                {
+                    builder.Append('-');
+                    previousWasSeparator = true;
+                }
+            }
+
+            return builder.ToString().Trim('-');
         }
     }
 }

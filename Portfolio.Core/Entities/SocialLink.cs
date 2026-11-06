@@ -9,9 +9,9 @@ namespace Portfolio.Core.Entities
     public class SocialLink
     {
         public int Id { get; set; }
-        public string Platform { get; set; } // GitHub, LinkedIn, Email, Phone
-        public string Url { get; set; }
-        public string IconClass { get; set; }
+        public string Platform { get; set; } = string.Empty; // GitHub, LinkedIn, Email, Phone
+        public string Url { get; set; } = string.Empty;
+        public string IconClass { get; set; } = string.Empty;
         public int Order { get; set; }
         public bool IsActive { get; set; }
     }

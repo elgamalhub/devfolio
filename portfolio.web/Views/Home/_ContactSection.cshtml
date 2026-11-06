@@ -70,6 +70,7 @@
             <div class="contact-form mt-5">
                 <h4 class="text-center mb-4">@(lang == "en" ? "Send Me a Message" : "أرسل لي رسالة")</h4>
                 <form id="contactForm">
+                    @Html.AntiForgeryToken()
                     <div class="row">
                         <div class="col-md-6">
                             <input type="text" class="form-control mb-3" name="Name"
@@ -82,10 +83,14 @@
                     </div>
                     <textarea class="form-control mb-3" name="Message" rows="5"
                               placeholder="@(lang == "en" ? "Your Message" : "رسالتك")" required></textarea>
-                    <button type="submit" class="btn btn-custom w-100">
+                    <button type="submit" class="btn btn-custom w-100" id="contactSubmit">
                         <i class="fas fa-paper-plane me-2"></i>
                         @(lang == "en" ? "Send Message" : "إرسال الرسالة")
                     </button>
+                    <div id="contactFormStatus"
+                         class="form-status mt-3"
+                         role="status"
+                         aria-live="polite"></div>
                 </form>
             </div>
         </div>

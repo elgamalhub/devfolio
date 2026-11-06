@@ -9,13 +9,13 @@ namespace Portfolio.Core.Entities
     public class About
     {
         public int Id { get; set; }
-        public string NameEn { get; set; }
-        public string NameAr { get; set; }
-        public string DescriptionEn { get; set; }
-        public string DescriptionAr { get; set; }
-        public string Email { get; set; }
-        public string Phone { get; set; }
-        public string Location { get; set; }
+        public string NameEn { get; set; } = string.Empty;
+        public string NameAr { get; set; } = string.Empty;
+        public string DescriptionEn { get; set; } = string.Empty;
+        public string DescriptionAr { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public string Phone { get; set; } = string.Empty;
+        public string Location { get; set; } = string.Empty;
         public string? CVFilePath { get; set; }
         public string? ProfileImage { get; set; }
         public string GitHubUrl { get; set; } = string.Empty;

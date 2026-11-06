@@ -10,7 +10,7 @@ namespace Portfolio.Core.Entities
     {
         public int Id { get; set; }
         public int ProjectId { get; set; }
-        public Project Project { get; set; }
-        public string TechnologyName { get; set; }
+        public Project Project { get; set; } = null!;
+        public string TechnologyName { get; set; } = string.Empty;
     }
 }

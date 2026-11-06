@@ -2,8 +2,8 @@
 @{
     ViewData["Title"] = "Portfolio";
     var lang = Model.CurrentLanguage;
-    var settings = ViewBag.Settings as Dictionary<string, string>;
-    var sections = ViewBag.Sections as List<Portfolio.Core.Entities.Section>;
+    var settings = ViewBag.Settings as Dictionary<string, string> ?? new Dictionary<string, string>();
+    var sections = ViewBag.Sections as List<Portfolio.Core.Entities.Section> ?? new List<Portfolio.Core.Entities.Section>();
     var theme = ViewBag.CurrentTheme ?? "dark";
 
     var siteTitle = lang == "en" ? settings.GetValueOrDefault("site_title_en", "Portfolio") : settings.GetValueOrDefault("site_title_ar", "محفظتي");

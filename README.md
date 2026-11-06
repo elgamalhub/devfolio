@@ -173,7 +173,7 @@ Migrations and seed data are applied automatically on startup. No manual `dotnet
 
 ### 4. Sign in
 
-Navigate to `/Identity/Account/Login`. In **Development**, the seeded credentials come from `appsettings.Development.json` (`SeedAdmin` section). Change them before exposing the app anywhere.
+Navigate to `/Identity/Account/Login`. The administrator account is controlled by the `SeedAdmin` section (see below). Configure it through environment variables or user secrets before exposing the app anywhere.
 
 ---
 
@@ -184,10 +184,8 @@ Settings live in `portfolio.web/appsettings.json` and environment-specific overr
 | Key | Purpose |
 | --- | --- |
 | `ConnectionStrings:DefaultConnection` | SQL Server connection string |
-| `SeedAdmin:Email` | Admin account e-mail created on first run |
-| `SeedAdmin:Password` | Admin password (must satisfy Identity policy) |
-| `SeedAdmin:CreateIfMissing` | Set `false` to disable automatic admin creation |
-| `SeedContent:Enabled` | Seed the bundled portfolio content on an empty database |
+| `SeedAdmin:Email` | Admin account e-mail created on first run (defaults to `admin@portfolio.local`) |
+| `SeedAdmin:Password` | Admin password (must satisfy Identity policy). When empty, a temporary password is generated and logged once |
 | `Serilog` | File logging configuration (optional override) |
 
 Use **environment variables** or **user secrets** for credentials. Never commit production passwords.
@@ -211,7 +209,7 @@ On startup the application:
 3. Creates the configured admin account **only when it does not already exist**.
 4. Seeds default sections, settings, categories, and portfolio content only when the relevant tables are empty.
 
-If `SeedAdmin:Email` or `SeedAdmin:Password` is missing in a non-development environment, the app skips admin creation and writes a warning to the log instead of falling back to hard-coded credentials.
+If `SeedAdmin:Password` is empty, the app generates a strong temporary password, creates the administrator, and writes the password to the log **once** at warning level. Set `SeedAdmin:Email` and `SeedAdmin:Password` through environment variables or user secrets to avoid this. No credentials are hard-coded and existing accounts are never overwritten.
 
 > The login page deliberately does **not** display credentials.
 
@@ -253,12 +251,13 @@ Implemented hardening:
 - Config-driven admin seeding; no credentials in source or UI.
 - Upload validation: extension allow-list, MIME type, size limit, and file-signature (magic byte) checks.
 - HTML-encoded output by default; blog rich text is restricted to authenticated admins.
-- Security headers (`X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, `Permissions-Policy`, CSP).
+- Security headers (`X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, `Permissions-Policy`, `X-Permitted-Cross-Domain-Policies`).
 - HTTPS redirection and HSTS outside Development.
 - Secure, HTTP-only, SameSite cookies.
-- Login lockout enabled for failed attempts.
-- Rate limiting on the contact endpoint.
-- Session-scoped page-view de-duplication.
+- Login lockout after five failed attempts for fifteen minutes.
+- Rate limiting on the contact form and project-click tracking endpoints.
+- Session-scoped page-view de-duplication with crawler and administrator exclusion.
+- File uploads validated by extension, content type, size, and magic bytes; filenames are replaced with GUIDs.
 
 Please report vulnerabilities privately — see [SECURITY.md](SECURITY.md).
 

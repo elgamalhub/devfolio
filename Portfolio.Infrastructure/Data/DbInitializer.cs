@@ -4,6 +4,7 @@ using Portfolio.Core.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -11,7 +12,18 @@ namespace Portfolio.Infrastructure.Data
 {
     public static class DbInitializer
     {
-        public static async Task Initialize(ApplicationDbContext context, UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager)
+        private const string DefaultAdminEmail = "admin@portfolio.local";
+
+        /// <summary>
+        /// Migrates and seeds the database. Returns a generated admin password when no
+        /// SeedAdmin:Password was supplied and a new administrator had to be created.
+        /// </summary>
+        public static async Task<string?> InitializeAsync(
+            ApplicationDbContext context,
+            UserManager<IdentityUser> userManager,
+            RoleManager<IdentityRole> roleManager,
+            string? adminEmail,
+            string? adminPassword)
         {
             // Ensure database is created
             await context.Database.MigrateAsync();
@@ -22,21 +34,39 @@ namespace Portfolio.Infrastructure.Data
                 await roleManager.CreateAsync(new IdentityRole("Admin"));
             }
 
-            // Create Admin user
-            if (await userManager.FindByEmailAsync("admin@portfolio.com") == null)
+            // Create or promote the administrator account from configuration
+            var email = string.IsNullOrWhiteSpace(adminEmail) ? DefaultAdminEmail : adminEmail.Trim();
+            string? generatedPassword = null;
+            var adminUser = await userManager.FindByEmailAsync(email);
+
+            if (adminUser == null)
             {
-                var adminUser = new IdentityUser
+                var password = adminPassword;
+                if (string.IsNullOrWhiteSpace(password))
                 {
-                    UserName = "admin@portfolio.com",
-                    Email = "admin@portfolio.com",
+                    password = GenerateSecurePassword();
+                    generatedPassword = password;
+                }
+
+                adminUser = new IdentityUser
+                {
+                    UserName = email,
+                    Email = email,
                     EmailConfirmed = true
                 };
 
-                var result = await userManager.CreateAsync(adminUser, "Admin@123");
-                if (result.Succeeded)
+                var result = await userManager.CreateAsync(adminUser, password);
+                if (!result.Succeeded)
                 {
-                    await userManager.AddToRoleAsync(adminUser, "Admin");
+                    throw new InvalidOperationException(
+                        "Could not create the administrator account: " +
+                        string.Join(" ", result.Errors.Select(e => e.Description)));
                 }
+            }
+
+            if (!await userManager.IsInRoleAsync(adminUser, "Admin"))
+            {
+                await userManager.AddToRoleAsync(adminUser, "Admin");
             }
 
             // Seed initial data if database is empty
@@ -246,14 +276,6 @@ namespace Portfolio.Infrastructure.Data
             ValueAr = "",
             Description = "Custom background image for preloader",
             DataType = "file"
-        },
-        new SiteSettings
-        {
-            Key = "hero_background_image",
-            ValueEn = "",
-            ValueAr = "",
-            Description = "Hero section background image",
-            DataType = "file"
         }
     };
                 context.SiteSettings.AddRange(settings);
@@ -392,6 +414,23 @@ namespace Portfolio.Infrastructure.Data
             }
 
             await context.SaveChangesAsync();
+
+            return generatedPassword;
+        }
+
+        private static string GenerateSecurePassword()
+        {
+            const string alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789";
+            const string symbols = "!@#$%^&*-_=+";
+            var chars = new char[20];
+
+            for (var i = 0; i < chars.Length - 1; i++)
+            {
+                chars[i] = alphabet[RandomNumberGenerator.GetInt32(alphabet.Length)];
+            }
+
+            chars[^1] = symbols[RandomNumberGenerator.GetInt32(symbols.Length)];
+            return new string(chars);
         }
     }
 }

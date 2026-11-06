@@ -1,0 +1,87 @@
+﻿@model IEnumerable<Portfolio.Core.Entities.Testimonial>
+@{
+    ViewData["Title"] = "Testimonials";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Testimonials</h1>
+        <a asp-action="Create" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Add New Testimonial
+        </a>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Order</th>
+                            <th>Client</th>
+                            <th>Position</th>
+                            <th>Company</th>
+                            <th>Rating</th>
+                            <th>Active</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var testimonial in Model)
+                        {
+                            <tr>
+                                <td>@testimonial.Order</td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(testimonial.ClientImage))
+                                    {
+                                        <img src="@testimonial.ClientImage" alt="@testimonial.ClientName"
+                                             class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;" />
+                                    }
+                                    @testimonial.ClientName
+                                </td>
+                                <td>@testimonial.Position</td>
+                                <td>@testimonial.Company</td>
+                                <td>
+                                    @for (int i = 0; i < testimonial.Rating; i++)
+                                    {
+                                        <i class="fas fa-star text-warning"></i>
+                                    }
+                                </td>
+                                <td>
+                                    @if (testimonial.IsActive)
+                                    {
+                                        <span class="badge badge-success">Active</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge badge-secondary">Inactive</span>
+                                    }
+                                </td>
+                                <td>
+                                    <a asp-action="Edit" asp-route-id="@testimonial.Id" class="btn btn-sm btn-warning">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <form asp-action="Delete" asp-route-id="@testimonial.Id" method="post" style="display:inline;"
+                                          onsubmit="return confirm('Are you sure you want to delete this testimonial?');">
+                                        <button type="submit" class="btn btn-sm btn-danger">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,98 @@
+﻿@{
+    ViewData["Title"] = "Export Portfolio";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Export Portfolio</h1>
+    </div>
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-file-export"></i> Export as Static HTML
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted">
+                        Export your portfolio as a standalone HTML website that can be deployed anywhere.
+                    </p>
+
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i>
+                        <strong>What's included:</strong>
+                        <ul class="mb-0 mt-2">
+                            <li>Single page HTML file with all visible sections</li>
+                            <li>CSS and JavaScript files</li>
+                            <li>All images and files</li>
+                            <li>README with deployment instructions</li>
+                        </ul>
+                    </div>
+
+                    <form asp-action="ExportAsZip" method="post">
+                        <div class="form-group mb-3">
+                            <label>Select Language:</label>
+                            <select name="language" class="form-control">
+                                <option value="en">English</option>
+                                <option value="ar">Arabic</option>
+                            </select>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-block w-100">
+                            <i class="fas fa-download"></i> Export as ZIP
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-success">
+                        <i class="fas fa-cloud-upload-alt"></i> Deployment Options
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <h6>Free Hosting Options:</h6>
+
+                    <div class="mb-3">
+                        <strong><i class="fab fa-github"></i> GitHub Pages</strong>
+                        <p class="small text-muted">Free hosting with custom domain support</p>
+                    </div>
+
+                    <div class="mb-3">
+                        <strong><i class="fas fa-bolt"></i> Netlify</strong>
+                        <p class="small text-muted">Instant deployment with drag-and-drop</p>
+                    </div>
+
+                    <div class="mb-3">
+                        <strong><i class="fas fa-triangle"></i> Vercel</strong>
+                        <p class="small text-muted">Fast deployment with automatic HTTPS</p>
+                    </div>
+
+                    <div class="mb-3">
+                        <strong><i class="fas fa-server"></i> Traditional Hosting</strong>
+                        <p class="small text-muted">Upload via FTP to any web host</p>
+                    </div>
+
+                    <div class="alert alert-warning mt-3">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <strong>Note:</strong> Contact form will be disabled in static export. Contact information will be displayed instead.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

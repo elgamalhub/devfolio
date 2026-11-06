@@ -1,0 +1,172 @@
+﻿/* Admin Panel Styles */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+#wrapper {
+    display: flex;
+}
+
+    #wrapper #content-wrapper {
+        overflow-x: hidden;
+        width: 100%;
+    }
+
+.sidebar {
+    width: 250px;
+    min-height: 100vh;
+    background: linear-gradient(180deg, #4e73df 10%, #224abe 100%);
+}
+
+    .sidebar .sidebar-brand {
+        height: 80px;
+        text-decoration: none;
+        font-size: 1rem;
+        font-weight: 800;
+        padding: 1.5rem 1rem;
+        color: #fff;
+    }
+
+    .sidebar .nav-item {
+        position: relative;
+    }
+
+        .sidebar .nav-item .nav-link {
+            text-align: left;
+            padding: 1rem;
+            width: 100%;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+            .sidebar .nav-item .nav-link:hover {
+                background-color: rgba(255, 255, 255, 0.1);
+                color: #fff;
+            }
+
+            .sidebar .nav-item .nav-link i {
+                font-size: 0.85rem;
+                margin-right: 0.5rem;
+            }
+
+        .sidebar .nav-item button {
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            padding: 0;
+        }
+
+.sidebar-divider {
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+    margin: 0.5rem 1rem;
+}
+
+.topbar {
+    height: 60px;
+    z-index: 1;
+}
+
+.border-left-primary {
+    border-left: 4px solid #4e73df !important;
+}
+
+.border-left-success {
+    border-left: 4px solid #1cc88a !important;
+}
+
+.border-left-info {
+    border-left: 4px solid #36b9cc !important;
+}
+
+.border-left-warning {
+    border-left: 4px solid #f6c23e !important;
+}
+
+.text-gray-800 {
+    color: #5a5c69 !important;
+}
+
+.text-gray-600 {
+    color: #858796 !important;
+}
+
+.sticky-footer {
+    flex-shrink: 0;
+}
+
+.badge-pill {
+    padding-right: 0.6em;
+    padding-left: 0.6em;
+    border-radius: 10rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 0;
+    }
+
+        .sidebar.toggled {
+            width: 250px;
+        }
+}
+/* Fix badge visibility */
+.badge {
+    color: #fff !important;
+}
+
+.badge-success {
+    background-color: #1cc88a !important;
+}
+
+.badge-secondary {
+    background-color: #858796 !important;
+}
+
+.badge-warning {
+    background-color: #f6c23e !important;
+    color: #000 !important;
+}
+
+.badge-danger {
+    background-color: #e74a3b !important;
+}
+
+.badge-info {
+    background-color: #36b9cc !important;
+}
+
+.badge-primary {
+    background-color: #4e73df !important;
+}
+
+/* Bootstrap 5 badge fixes */
+.bg-success {
+    background-color: #1cc88a !important;
+    color: #fff !important;
+}
+
+.bg-secondary {
+    background-color: #858796 !important;
+    color: #fff !important;
+}
+
+.bg-warning {
+    background-color: #f6c23e !important;
+    color: #000 !important;
+}
+
+.bg-danger {
+    background-color: #e74a3b !important;
+    color: #fff !important;
+}
+
+.bg-info {
+    background-color: #36b9cc !important;
+    color: #fff !important;
+}
+
+.bg-primary {
+    background-color: #4e73df !important;
+    color: #fff !important;
+}

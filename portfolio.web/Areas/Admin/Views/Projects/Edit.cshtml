@@ -1,0 +1,162 @@
+﻿@model Portfolio.Core.DTOs.ProjectViewModel
+@{
+    ViewData["Title"] = "Edit Project";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Edit Project</h1>
+        <a asp-action="Index" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Back to List
+        </a>
+    </div>
+
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <form asp-action="Edit" method="post" enctype="multipart/form-data">
+                <input type="hidden" asp-for="Id" />
+                <input type="hidden" asp-for="ExistingImagePath" />
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="TitleEn"></label>
+                            <input asp-for="TitleEn" class="form-control" />
+                            <span asp-validation-for="TitleEn" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="TitleAr"></label>
+                            <input asp-for="TitleAr" class="form-control" dir="rtl" />
+                            <span asp-validation-for="TitleAr" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="ShortDescriptionEn"></label>
+                            <textarea asp-for="ShortDescriptionEn" class="form-control" rows="3"></textarea>
+                            <span asp-validation-for="ShortDescriptionEn" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="ShortDescriptionAr"></label>
+                            <textarea asp-for="ShortDescriptionAr" class="form-control" rows="3" dir="rtl"></textarea>
+                            <span asp-validation-for="ShortDescriptionAr" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="FullDescriptionEn"></label>
+                            <textarea asp-for="FullDescriptionEn" class="form-control" rows="5"></textarea>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="FullDescriptionAr"></label>
+                            <textarea asp-for="FullDescriptionAr" class="form-control" rows="5" dir="rtl"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                @if (!string.IsNullOrEmpty(Model.ExistingImagePath))
+                {
+                    <div class="form-group">
+                        <label>Current Image:</label><br />
+                        <img src="@Model.ExistingImagePath" alt="Project Image" style="max-width: 200px; max-height: 200px;" class="img-thumbnail" />
+                    </div>
+                }
+
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label asp-for="Image"></label>
+                            <input asp-for="Image" type="file" class="form-control-file" accept="image/*" />
+                            <small class="form-text text-muted">Leave empty to keep current image</small>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label asp-for="IconClass"></label>
+                            <input asp-for="IconClass" class="form-control" placeholder="fas fa-code" />
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label asp-for="Category"></label>
+                            <select asp-for="Category" class="form-control">
+                                <option value="web">Web Apps</option>
+                                <option value="desktop">Desktop</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="DemoUrl"></label>
+                            <input asp-for="DemoUrl" class="form-control" placeholder="https://demo.com" />
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="GithubUrl"></label>
+                            <input asp-for="GithubUrl" class="form-control" placeholder="https://github.com/..." />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Technologies"></label>
+                    <input asp-for="Technologies" class="form-control" placeholder="React, Node.js, MongoDB" />
+                    <small class="form-text text-muted">Separate technologies with commas</small>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label asp-for="Order"></label>
+                            <input asp-for="Order" type="number" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-check mt-4">
+                            <input asp-for="IsHidden" class="form-check-input" />
+                            <label asp-for="IsHidden" class="form-check-label"></label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-check mt-4">
+                            <input asp-for="IsActive" class="form-check-input" />
+                            <label asp-for="IsActive" class="form-check-label"></label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group mt-4">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Update Project
+                    </button>
+                    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

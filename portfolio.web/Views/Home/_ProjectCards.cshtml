@@ -1,0 +1,32 @@
+﻿@model IEnumerable<Portfolio.Core.Entities.Project>
+@{
+    var lang = ViewBag.Language ?? "en";
+}
+
+@foreach (var project in Model)
+{
+    <div class="col-md-4 project-item @(project.IsHidden ? "hidden-project" : "")" data-category="@project.Category">
+        <div class="project-card" onclick="trackProjectClick(@project.Id, '@project.GithubUrl')">
+            <div class="project-image">
+                @if (!string.IsNullOrEmpty(project.ImagePath))
+                {
+                    <img src="@project.ImagePath" alt="@project.TitleEn" />
+                }
+                else
+                {
+                    <i class="@project.IconClass"></i>
+                }
+            </div>
+            <div class="project-content">
+                <h3 class="project-title">@(lang == "en" ? project.TitleEn : project.TitleAr)</h3>
+                <p class="project-desc">@(lang == "en" ? project.ShortDescriptionEn : project.ShortDescriptionAr)</p>
+                <div>
+                    @foreach (var tech in project.Technologies)
+                    {
+                        <span class="tech-tag">@tech.TechnologyName</span>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}

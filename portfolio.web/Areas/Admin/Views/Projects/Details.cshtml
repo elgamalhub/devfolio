@@ -1,0 +1,141 @@
+﻿@model Portfolio.Core.Entities.Project
+@{
+    ViewData["Title"] = "Project Details";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Project Details</h1>
+        <div>
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">
+                <i class="fas fa-edit"></i> Edit
+            </a>
+            <a asp-action="Index" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Back to List
+            </a>
+        </div>
+    </div>
+
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <h4>English Content</h4>
+                    <dl class="row">
+                        <dt class="col-sm-4">Title</dt>
+                        <dd class="col-sm-8">@Model.TitleEn</dd>
+
+                        <dt class="col-sm-4">Short Description</dt>
+                        <dd class="col-sm-8">@Model.ShortDescriptionEn</dd>
+
+                        <dt class="col-sm-4">Full Description</dt>
+                        <dd class="col-sm-8">@Model.FullDescriptionEn</dd>
+                    </dl>
+                </div>
+
+                <div class="col-md-6">
+                    <h4>Arabic Content</h4>
+                    <dl class="row">
+                        <dt class="col-sm-4">العنوان</dt>
+                        <dd class="col-sm-8" dir="rtl">@Model.TitleAr</dd>
+
+                        <dt class="col-sm-4">الوصف القصير</dt>
+                        <dd class="col-sm-8" dir="rtl">@Model.ShortDescriptionAr</dd>
+
+                        <dt class="col-sm-4">الوصف الكامل</dt>
+                        <dd class="col-sm-8" dir="rtl">@Model.FullDescriptionAr</dd>
+                    </dl>
+                </div>
+            </div>
+
+            <hr />
+
+            @if (!string.IsNullOrEmpty(Model.ImagePath))
+            {
+                <div class="mb-4">
+                    <h5>Project Image:</h5>
+                    <img src="@Model.ImagePath" alt="@Model.TitleEn" class="img-fluid" style="max-width: 400px;" />
+                </div>
+            }
+
+            <div class="row">
+                <div class="col-md-6">
+                    <dl class="row">
+                        <dt class="col-sm-4">Icon Class</dt>
+                        <dd class="col-sm-8">
+                            <i class="@Model.IconClass"></i> @Model.IconClass
+                        </dd>
+
+                        <dt class="col-sm-4">Category</dt>
+                        <dd class="col-sm-8">
+                            <span class="badge badge-info">@Model.Category</span>
+                        </dd>
+
+                        <dt class="col-sm-4">Order</dt>
+                        <dd class="col-sm-8">@Model.Order</dd>
+                    </dl>
+                </div>
+
+                <div class="col-md-6">
+                    <dl class="row">
+                        <dt class="col-sm-4">Demo URL</dt>
+                        <dd class="col-sm-8">
+                            @if (!string.IsNullOrEmpty(Model.DemoUrl))
+                            {
+                                <a href="@Model.DemoUrl" target="_blank">@Model.DemoUrl</a>
+                            }
+                            else
+                            {
+                                <span class="text-muted">N/A</span>
+                            }
+                        </dd>
+
+                        <dt class="col-sm-4">GitHub URL</dt>
+                        <dd class="col-sm-8">
+                            @if (!string.IsNullOrEmpty(Model.GithubUrl))
+                            {
+                                <a href="@Model.GithubUrl" target="_blank">@Model.GithubUrl</a>
+                            }
+                            else
+                            {
+                                <span class="text-muted">N/A</span>
+                            }
+                        </dd>
+
+                        <dt class="col-sm-4">Status</dt>
+                        <dd class="col-sm-8">
+                            @if (Model.IsActive)
+                            {
+                                <span class="badge badge-success">Active</span>
+                            }
+                            else
+                            {
+                                <span class="badge badge-secondary">Inactive</span>
+                            }
+
+                            @if (Model.IsHidden)
+                            {
+                                <span class="badge badge-warning">Hidden</span>
+                            }
+                        </dd>
+                    </dl>
+                </div>
+            </div>
+
+            <hr />
+
+            <h5>Technologies:</h5>
+            <div class="mb-3">
+                @foreach (var tech in Model.Technologies)
+                {
+                    <span class="badge badge-primary">@tech.TechnologyName</span>
+                }
+            </div>
+
+            <p class="text-muted">
+                <small>Created: @Model.CreatedAt.ToString("MMM dd, yyyy HH:mm")</small>
+            </p>
+        </div>
+    </div>
+</div>

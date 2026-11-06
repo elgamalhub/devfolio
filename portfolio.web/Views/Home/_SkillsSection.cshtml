@@ -1,0 +1,38 @@
+﻿@model Portfolio.Core.DTOs.HomeViewModel
+@{
+    var lang = Model.CurrentLanguage;
+}
+
+<div class="container">
+    <h2 class="section-title">@(lang == "en" ? "Skills" : "المهارات")</h2>
+    <div class="row">
+        @{
+            var skillsList = Model.Skills.ToList();
+            var half = (int)Math.Ceiling(skillsList.Count / 2.0);
+        }
+        <div class="col-md-6">
+            @for (int i = 0; i < half; i++)
+            {
+                var skill = skillsList[i];
+                <div class="skill-item">
+                    <div class="skill-name">@(lang == "en" ? skill.NameEn : skill.NameAr)</div>
+                    <div class="progress">
+                        <div class="progress-bar" role="progressbar" style="width: 0%" data-width="@skill.Percentage%"></div>
+                    </div>
+                </div>
+            }
+        </div>
+        <div class="col-md-6">
+            @for (int i = half; i < skillsList.Count; i++)
+            {
+                var skill = skillsList[i];
+                <div class="skill-item">
+                    <div class="skill-name">@(lang == "en" ? skill.NameEn : skill.NameAr)</div>
+                    <div class="progress">
+                        <div class="progress-bar" role="progressbar" style="width: 0%" data-width="@skill.Percentage%"></div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

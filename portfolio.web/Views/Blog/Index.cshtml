@@ -1,0 +1,395 @@
+﻿@model IEnumerable<Portfolio.Core.Entities.BlogPost>
+@{
+    ViewData["Title"] = "Blog";
+    var lang = ViewBag.Language ?? "en";
+    var allTags = ViewBag.AllTags as IEnumerable<string>;
+    var currentSearch = ViewBag.CurrentSearch as string;
+    var currentTag = ViewBag.CurrentTag as string;
+}
+
+<!DOCTYPE html>
+<html lang="@lang" dir="@(lang == "ar" ? "rtl" : "ltr")">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog - Portfolio</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .navbar {
+            background: rgba(255, 255, 255, 0.95) !important;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+        }
+
+        .navbar-brand {
+            color: #667eea !important;
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+
+        .blog-section {
+            padding: 120px 0 60px;
+        }
+
+        .search-filter-bar {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            margin-bottom: 40px;
+        }
+
+        .search-box {
+            position: relative;
+        }
+
+            .search-box input {
+                width: 100%;
+                padding: 15px 50px 15px 20px;
+                border: 2px solid #e9ecef;
+                border-radius: 30px;
+                font-size: 1rem;
+                transition: all 0.3s;
+            }
+
+                .search-box input:focus {
+                    outline: none;
+                    border-color: #667eea;
+                    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+                }
+
+            .search-box button {
+                position: absolute;
+                right: 10px;
+                top: 50%;
+                transform: translateY(-50%);
+                background: linear-gradient(135deg, #667eea, #764ba2);
+                border: none;
+                color: white;
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                cursor: pointer;
+                transition: transform 0.2s;
+            }
+
+                .search-box button:hover {
+                    transform: translateY(-50%) scale(1.1);
+                }
+
+        .tag-filter {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .tag-btn {
+            padding: 8px 20px;
+            border: 2px solid #e9ecef;
+            background: white;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+            text-decoration: none;
+            color: #666;
+        }
+
+            .tag-btn:hover,
+            .tag-btn.active {
+                background: linear-gradient(135deg, #667eea, #764ba2);
+                color: white;
+                border-color: transparent;
+                transform: translateY(-2px);
+            }
+
+        .blog-card {
+            border: none;
+            border-radius: 20px;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            background: white;
+            height: 100%;
+        }
+
+            .blog-card:hover {
+                transform: translateY(-10px);
+                box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            }
+
+            .blog-card .card-img-top {
+                height: 250px;
+                object-fit: cover;
+            }
+
+        .blog-placeholder-img {
+            height: 250px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .blog-card .card-body {
+            padding: 25px;
+        }
+
+        .blog-card .card-title {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 15px;
+            line-height: 1.3;
+        }
+
+        .blog-card .card-text {
+            color: #666;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .blog-card .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border: none;
+            border-radius: 25px;
+            padding: 10px 25px;
+            transition: transform 0.2s;
+        }
+
+            .blog-card .btn-primary:hover {
+                transform: scale(1.05);
+            }
+
+        .control-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid #667eea;
+            color: #667eea;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+            .control-btn:hover {
+                background: #667eea;
+                color: white;
+            }
+
+        h1 {
+            color: white;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .badge {
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            font-weight: normal;
+        }
+
+        .no-results {
+            background: white;
+            padding: 60px;
+            border-radius: 20px;
+            text-align: center;
+        }
+
+            .no-results i {
+                font-size: 5rem;
+                color: #e9ecef;
+                margin-bottom: 20px;
+            }
+
+        .active-filters {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+        }
+
+        .active-filter-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #667eea;
+            color: white;
+            padding: 6px 15px;
+            border-radius: 20px;
+            margin-right: 10px;
+            font-size: 0.9rem;
+        }
+
+            .active-filter-tag a {
+                color: white;
+                text-decoration: none;
+                margin-left: 5px;
+            }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="@Url.Action("Index", "Home")">
+                <i class="fas fa-code"></i> Portfolio
+            </a>
+            <div class="d-flex gap-2">
+                <a href="@Url.Action("Index", "Home")" class="control-btn">
+                    <i class="fas fa-home"></i> @(lang == "en" ? "Home" : "الرئيسية")
+                </a>
+                <a href="@Url.Action("Index", "Blog", new { lang = lang == "en" ? "ar" : "en" })" class="control-btn">
+                    <i class="fas fa-language"></i>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <section class="blog-section">
+        <div class="container">
+            <h1 class="text-center mb-5">
+                <i class="fas fa-blog"></i> @(lang == "en" ? "Blog Posts" : "المقالات")
+            </h1>
+
+            <!-- Search and Filter Bar -->
+            <div class="search-filter-bar">
+                <form method="get" asp-action="Index">
+                    <input type="hidden" name="lang" value="@lang" />
+                    <input type="hidden" name="tag" value="@currentTag" />
+
+                    <div class="search-box">
+                        <input type="text"
+                               name="search"
+                               value="@currentSearch"
+                               placeholder="@(lang == "en" ? "Search posts..." : "ابحث في المقالات...")" />
+                        <button type="submit">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </form>
+
+                @if (allTags != null && allTags.Any())
+                {
+                    <div class="tag-filter">
+                        <strong class="me-2" style="line-height: 2.5;">@(lang == "en" ? "Filter by tag:" : "تصفية حسب:")</strong>
+                        <a href="@Url.Action("Index", new { lang, search = currentSearch })"
+                           class="tag-btn @(string.IsNullOrEmpty(currentTag) ? "active" : "")">
+                            @(lang == "en" ? "All" : "الكل")
+                        </a>
+                        @foreach (var tag in allTags)
+                        {
+                            <a href="@Url.Action("Index", new { lang, search = currentSearch, tag })"
+                               class="tag-btn @(currentTag == tag ? "active" : "")">
+                                #@tag
+                            </a>
+                        }
+                    </div>
+                }
+
+                <!-- Active Filters Display -->
+                @if (!string.IsNullOrWhiteSpace(currentSearch) || !string.IsNullOrWhiteSpace(currentTag))
+                {
+                    <div class="active-filters">
+                        <strong>@(lang == "en" ? "Active filters:" : "الفلاتر النشطة:")</strong>
+                        @if (!string.IsNullOrWhiteSpace(currentSearch))
+                        {
+                            <span class="active-filter-tag">
+                                <i class="fas fa-search"></i> @currentSearch
+                                <a href="@Url.Action("Index", new { lang, tag = currentTag })">
+                                    <i class="fas fa-times"></i>
+                                </a>
+                            </span>
+                        }
+                        @if (!string.IsNullOrWhiteSpace(currentTag))
+                        {
+                            <span class="active-filter-tag">
+                                <i class="fas fa-tag"></i> @currentTag
+                                <a href="@Url.Action("Index", new { lang, search = currentSearch })">
+                                    <i class="fas fa-times"></i>
+                                </a>
+                            </span>
+                        }
+                        <a href="@Url.Action("Index", new { lang })" class="btn btn-sm btn-outline-secondary ms-2">
+                            @(lang == "en" ? "Clear all" : "مسح الكل")
+                        </a>
+                    </div>
+                }
+            </div>
+
+            @if (Model.Any())
+            {
+                <div class="row g-4">
+                    @foreach (var post in Model)
+                    {
+                        <div class="col-md-6 col-lg-4">
+                            <div class="card blog-card">
+                                @if (!string.IsNullOrEmpty(post.FeaturedImage))
+                                {
+                                    <img src="@post.FeaturedImage" class="card-img-top" alt="@post.TitleEn">
+                                }
+                                else
+                                {
+                                    <div class="blog-placeholder-img">
+                                        <i class="fas fa-blog fa-4x text-white"></i>
+                                    </div>
+                                }
+                                <div class="card-body">
+                                    <h5 class="card-title">@(lang == "en" ? post.TitleEn : post.TitleAr)</h5>
+                                    <p class="card-text">
+                                        @{
+                                            var content = lang == "en" ? post.ContentEn : post.ContentAr;
+                                            var preview = System.Text.RegularExpressions.Regex.Replace(content, "<.*?>", "");
+                                            preview = preview.Length > 120 ? preview.Substring(0, 120) + "..." : preview;
+                                        }
+                                        @preview
+                                    </p>
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <small class="text-muted">
+                                            <i class="fas fa-calendar"></i> @post.PublishedAt.ToString("MMM dd, yyyy")
+                                        </small>
+                                        <small class="text-muted">
+                                            <i class="fas fa-eye"></i> @post.ViewCount
+                                        </small>
+                                    </div>
+                                    <div class="mb-3">
+                                        @foreach (var tag in post.Tags.Take(3))
+                                        {
+                                            <span class="badge bg-secondary">#@tag.TagName</span>
+                                        }
+                                    </div>
+                                    <a asp-action="Post" asp-route-slug="@post.Slug" asp-route-lang="@lang"
+                                       class="btn btn-primary w-100">
+                                        <i class="fas fa-book-open"></i> @(lang == "en" ? "Read More" : "اقرأ المزيد")
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="no-results">
+                    <i class="fas fa-search"></i>
+                    <h3>@(lang == "en" ? "No posts found" : "لم يتم العثور على مقالات")</h3>
+                    <p class="text-muted">
+                        @(lang == "en" ? "Try adjusting your search or filters" : "حاول تعديل البحث أو الفلاتر")
+                    </p>
+                    <a href="@Url.Action("Index", new { lang })" class="btn btn-primary mt-3">
+                        @(lang == "en" ? "View All Posts" : "عرض جميع المقالات")
+                    </a>
+                </div>
+            }
+        </div>
+    </section>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

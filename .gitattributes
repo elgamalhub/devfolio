@@ -1,0 +1,19 @@
+* text=auto eol=crlf
+
+*.cs      text diff=csharp
+*.cshtml  text diff=html
+*.razor   text diff=html
+*.css     text diff=css
+*.js      text
+*.json    text
+*.md      text eol=lf
+*.yml     text eol=lf
+
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.pdf binary
+*.zip binary

@@ -1,0 +1,182 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Admin Panel</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="~/css/admin.css" rel="stylesheet" />
+    @await RenderSectionAsync("HeadScripts", required: false)
+</head>
+<body>
+    <div id="wrapper">
+        <!-- Sidebar -->
+        <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="@Url.Action("Index", "Dashboard", new { area = "Admin" })">
+                <div class="sidebar-brand-icon">
+                    <i class="fas fa-user-shield"></i>
+                </div>
+                <div class="sidebar-brand-text mx-3">Admin Panel</div>
+            </a>
+
+            <hr class="sidebar-divider my-0">
+
+            <li class="nav-item">
+                <a class="nav-link" href="@Url.Action("Index", "Dashboard", new { area = "Admin" })">
+                    <i class="fas fa-fw fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+
+            <hr class="sidebar-divider">
+
+            <li class="nav-item">
+                <a class="nav-link" href="@Url.Action("Edit", "About", new { area = "Admin" })">
+                    <i class="fas fa-fw fa-user"></i>
+                    <span>About</span>
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="@Url.Action("Index", "Skills", new { area = "Admin" })">
+                    <i class="fas fa-fw fa-code"></i>
+                    <span>Skills</span>
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="@Url.Action("Index", "Experience", new { area = "Admin" })">
+                    <i class="fas fa-fw fa-briefcase"></i>
+                    <span>Experience</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="@Url.Action("Index", "ProjectCategories", new { area = "Admin" })">
+                    <i class="fas fa-fw fa-folder-open"></i>
+                    <span>Project Categories</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="@Url.Action("Index", "Projects", new { area = "Admin" })">
+                    <i class="fas fa-fw fa-project-diagram"></i>
+                    <span>Projects</span>
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="@Url.Action("Index", "Messages", new { area = "Admin" })">
+                    <i class="fas fa-fw fa-envelope"></i>
+                    <span>Messages</span>
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="@Url.Action("Index", "Blog", new { area = "Admin" })">
+                    <i class="fas fa-fw fa-blog"></i>
+                    <span>Blog</span>
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="@Url.Action("Index", "Testimonials", new { area = "Admin" })">
+                    <i class="fas fa-fw fa-comments"></i>
+                    <span>Testimonials</span>
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="@Url.Action("Index", "SiteSettings", new { area = "Admin" })">
+                    <i class="fas fa-fw fa-cog"></i>
+                    <span>Site Settings</span>
+                </a>
+            </li>
+            <hr class="sidebar-divider">
+
+            <li class="nav-item">
+                <a class="nav-link" href="@Url.Action("Index", "Export", new { area = "Admin" })">
+                    <i class="fas fa-fw fa-file-export"></i>
+                    <span>Export Portfolio</span>
+                </a>
+            </li>
+            <hr class="sidebar-divider">
+
+            <li class="nav-item">
+                <a class="nav-link" href="@Url.Action("Index", "Home", new { area = "" })">
+                    <i class="fas fa-fw fa-globe"></i>
+                    <span>View Site</span>
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <form asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="/" method="post" class="nav-link">
+                    <button type="submit" class="btn btn-link text-white p-0">
+                        <i class="fas fa-fw fa-sign-out-alt"></i>
+                        <span>Logout</span>
+                    </button>
+                </form>
+            </li>
+        </ul>
+
+        <!-- Content Wrapper -->
+        <div id="content-wrapper" class="d-flex flex-column">
+            <div id="content">
+                <!-- Topbar -->
+                <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+                    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+                        <i class="fa fa-bars"></i>
+                    </button>
+
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item dropdown no-arrow">
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown">
+                                <span class="me-2 d-none d-lg-inline text-gray-600 small">@User.Identity?.Name</span>
+                                <i class="fas fa-user-circle fa-2x"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+
+                <!-- Page Content -->
+                <div class="container-fluid">
+                    @RenderBody()
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <footer class="sticky-footer bg-white">
+                <div class="container my-auto">
+                    <div class="copyright text-center my-auto">
+                        <span>Copyright &copy; Portfolio Admin @DateTime.Now.Year</span>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Auto-dismiss alerts after 5 seconds -->
+    <script>
+        $(document).ready(function() {
+            // Auto-dismiss alerts after 5 seconds
+            setTimeout(function() {
+                $('.alert').fadeOut('slow', function() {
+                    $(this).remove();
+                });
+            }, 5000);
+
+            // Enable manual close button
+            $('.alert .close, .alert .btn-close').on('click', function() {
+                $(this).closest('.alert').fadeOut('slow', function() {
+                    $(this).remove();
+                });
+            });
+        });
+    </script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

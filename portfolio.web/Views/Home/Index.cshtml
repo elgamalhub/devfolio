@@ -1,0 +1,330 @@
+﻿@model Portfolio.Core.DTOs.HomeViewModel
+@{
+    ViewData["Title"] = "Portfolio";
+    var lang = Model.CurrentLanguage;
+    var settings = ViewBag.Settings as Dictionary<string, string>;
+    var sections = ViewBag.Sections as List<Portfolio.Core.Entities.Section>;
+    var theme = ViewBag.CurrentTheme ?? "dark";
+
+    var siteTitle = lang == "en" ? settings.GetValueOrDefault("site_title_en", "Portfolio") : settings.GetValueOrDefault("site_title_ar", "محفظتي");
+    var primaryColor = settings.GetValueOrDefault("primary_color", "#667eea");
+    var secondaryColor = settings.GetValueOrDefault("secondary_color", "#764ba2");
+    var enableParticles = settings.GetValueOrDefault("enable_particles", "true") == "true";
+}
+
+<!DOCTYPE html>
+<html lang="@lang">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@siteTitle</title>
+    <meta name="description" content="@(lang == "en" ? settings.GetValueOrDefault("meta_description_en", "") : settings.GetValueOrDefault("meta_description_ar", ""))">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="~/css/portfolio.css" rel="stylesheet" />
+    <style>
+        :root {
+            --primary-color: @primaryColor;
+            --secondary-color: @secondaryColor;
+        }
+
+        /* Apply colors to hero section */
+        .hero {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%) !important;
+        }
+
+        /* Buttons */
+        .btn-custom {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)) !important;
+            border: none !important;
+        }
+
+        .btn-custom-outline {
+            border: 2px solid var(--primary-color) !important;
+            color: var(--primary-color) !important;
+        }
+
+            .btn-custom-outline:hover {
+                background: var(--primary-color) !important;
+                color: white !important;
+            }
+
+        /* Navbar brand and active links */
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: var(--primary-color) !important;
+        }
+
+        /* Progress bars */
+        .progress-bar {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)) !important;
+        }
+
+        /* Section titles */
+        .section-title::after {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)) !important;
+        }
+
+        /* Timeline */
+        .timeline::before {
+            background: var(--primary-color) !important;
+        }
+
+        .timeline-item .timeline-content {
+            border-left: 3px solid var(--primary-color) !important;
+        }
+
+        /* Project cards hover */
+        .project-card:hover {
+            border-top: 3px solid var(--primary-color) !important;
+        }
+
+        /* Filter buttons */
+        .filter-btn.active {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)) !important;
+            color: white !important;
+        }
+
+        .filter-btn:hover {
+            border-color: var(--primary-color) !important;
+            color: var(--primary-color) !important;
+        }
+
+
+        /* Scroll progress */
+        #scrollProgress {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)) !important;
+        }
+
+        /* Back to top button */
+        #backToTop {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)) !important;
+        }
+
+        /* Social icons */
+        .social-icon {
+            color: var(--primary-color) !important;
+        }
+
+            .social-icon:hover {
+                background: var(--primary-color) !important;
+                color: white !important;
+            }
+
+        /* Tech tags */
+        .tech-tag {
+            background: var(--primary-color) !important;
+            color: white !important;
+        }
+
+        /* Testimonial stars */
+        .rating i {
+            color: var(--primary-color) !important;
+        }
+
+        /* About card border */
+        .about-card {
+            border-top: 3px solid var(--primary-color) !important;
+        }
+
+        body.light-mode .hero-content h1,
+        body.light-mode .hero-content p {
+            color: white !important;
+        }
+    </style>
+</head>
+<body class="@(lang == "ar" ? "rtl" : "") @(theme == "light" ? "light-mode" : "")" data-theme="@theme">
+
+    @{
+        var enablePreloader = settings.GetValueOrDefault("enable_preloader", "true") == "true";
+        var preloaderStyle = settings.GetValueOrDefault("preloader_style", "spinner");
+        var preloaderColor = settings.GetValueOrDefault("preloader_color", "#667eea");
+        var preloaderDuration = settings.GetValueOrDefault("preloader_duration", "1000");
+        var preloaderLogo = settings.GetValueOrDefault("preloader_logo", "");
+        var preloaderBg = settings.GetValueOrDefault("preloader_background", "gradient");
+        var preloaderBgImage = settings.GetValueOrDefault("preloader_background_image", "");
+
+        string preloaderBackground = "";
+        if (preloaderBg == "image" && !string.IsNullOrEmpty(preloaderBgImage))
+        {
+            preloaderBackground = $"background-image: url('{preloaderBgImage}'); background-size: cover; background-position: center;";
+        }
+        else if (preloaderBg == "solid")
+        {
+            preloaderBackground = $"background: {primaryColor};";
+        }
+        else
+        {
+            preloaderBackground = $"background: linear-gradient(135deg, {primaryColor} 0%, {secondaryColor} 100%);";
+        }
+    }
+
+    <!-- Preloader -->
+    @if (enablePreloader)
+    {
+        <div id="preloader" data-duration="@preloaderDuration" style="@preloaderBackground">
+            @if (preloaderStyle == "spinner")
+            {
+                <div class="spinner" style="border-color: rgba(255,255,255,0.3); border-top-color: @preloaderColor;"></div>
+            }
+            else if (preloaderStyle == "dots")
+            {
+                <div class="dots-loader">
+                    <div style="background: @preloaderColor;"></div>
+                    <div style="background: @preloaderColor;"></div>
+                    <div style="background: @preloaderColor;"></div>
+                </div>
+            }
+            else if (preloaderStyle == "pulse")
+            {
+                <div class="pulse-loader" style="background: @preloaderColor;"></div>
+            }
+            else if (preloaderStyle == "bars")
+            {
+                <div class="bars-loader">
+                    <div style="background: @preloaderColor;"></div>
+                    <div style="background: @preloaderColor;"></div>
+                    <div style="background: @preloaderColor;"></div>
+                    <div style="background: @preloaderColor;"></div>
+                    <div style="background: @preloaderColor;"></div>
+                </div>
+            }
+            else if (preloaderStyle == "circle")
+            {
+                <div class="circle-loader" style="border-top-color: @preloaderColor; border-right-color: @preloaderColor;"></div>
+            }
+            else if (preloaderStyle == "logo" && !string.IsNullOrEmpty(preloaderLogo))
+            {
+                <div class="logo-loader">
+                    <img src="@preloaderLogo" alt="Loading..." style="max-width: 150px; animation: pulse 1.5s ease-in-out infinite;" />
+                </div>
+            }
+        </div>
+    }
+
+    <!-- Scroll Progress Bar -->
+    <div id="scrollProgress"></div>
+
+    <!-- Back to Top Button -->
+    @if (settings.GetValueOrDefault("show_back_to_top", "true") == "true")
+    {
+        <button id="backToTop">
+            <i class="fas fa-arrow-up"></i>
+        </button>
+    }
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#"><i class="fas fa-code"></i> @siteTitle</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    @foreach (var sect in sections.Where(s => s.ShowInNavbar))
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" href="#@sect.Identifier">
+                                @(lang == "en" ? sect.NameEn : sect.NameAr)
+                            </a>
+                        </li>
+                    }
+                </ul>
+                <div class="navbar-controls ms-3 d-flex gap-2">
+                    <a href="?lang=@(lang == "en" ? "ar" : "en")" class="control-btn" title="Toggle Language">
+                        <i class="fas fa-language"></i>
+                    </a>
+                    <button class="control-btn" id="themeToggle" title="Toggle Theme">
+                        <i class="fas @(theme == "dark" ? "fa-moon" : "fa-sun")"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Render Sections Dynamically -->
+    @foreach (var sect in sections)
+    {
+        <section id="@sect.Identifier">
+            @if (sect.Identifier == "home")
+            {
+                @await Html.PartialAsync("_HeroSection", Model)
+            }
+            else if (sect.Identifier == "about")
+            {
+                @await Html.PartialAsync("_AboutSection", Model)
+            }
+            else if (sect.Identifier == "experience")
+            {
+                @await Html.PartialAsync("_ExperienceSection", Model)
+            }
+            else if (sect.Identifier == "skills")
+            {
+                @await Html.PartialAsync("_SkillsSection", Model)
+            }
+            else if (sect.Identifier == "projects")
+            {
+                @await Html.PartialAsync("_ProjectsSection", Model)
+            }
+            else if (sect.Identifier == "blog" && ViewBag.RecentPosts != null)
+            {
+                @await Html.PartialAsync("_RecentBlogSection", Model)
+            }
+            else if (sect.Identifier == "testimonials" && Model.Testimonials.Any())
+            {
+                @await Html.PartialAsync("_TestimonialsSection", Model)
+            }
+            else if (sect.Identifier == "contact")
+            {
+                @await Html.PartialAsync("_ContactSection", Model)
+            }
+            else if (!sect.IsBuiltIn)
+            {
+                <!-- Custom Section -->
+                <div class="container">
+                    <h2 class="section-title">@(lang == "en" ? sect.NameEn : sect.NameAr)</h2>
+                    <div class="custom-section-content">
+                        @Html.Raw(sect.CustomContent ?? $"<p>Custom section: {sect.NameEn}</p>")
+                    </div>
+                </div>
+            }
+        </section>
+    }
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>&copy; @DateTime.Now.Year @(lang == "en" ? Model.About?.NameEn : Model.About?.NameAr). All rights reserved. | @Model.About?.Location</p>
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script>
+        const typingTitles = @Html.Raw(Json.Serialize(Model.TypingTitles.Select(t => lang == "en" ? t.TitleEn : t.TitleAr)));
+        const currentLang = '@lang';
+        const enableParticles = @enableParticles.ToString().ToLower();
+    </script>
+    <script src="~/js/portfolio.js"></script>
+    <script>
+        // Theme Toggle
+        document.getElementById('themeToggle')?.addEventListener('click', function() {
+            const body = document.body;
+            const isDark = body.classList.toggle('light-mode');
+            const newTheme = isDark ? 'light' : 'dark';
+
+            // Update icon
+            this.querySelector('i').className = isDark ? 'fas fa-sun' : 'fas fa-moon';
+
+            // Save preference
+            document.cookie = `theme=${newTheme}; path=/; max-age=31536000`;
+
+            // Update body data attribute
+            body.setAttribute('data-theme', newTheme);
+        });
+    </script>
+</body>
+</html>

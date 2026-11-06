@@ -1,0 +1,93 @@
+﻿@model Portfolio.Core.DTOs.HomeViewModel
+@{
+    var lang = Model.CurrentLanguage;
+}
+
+<div class="container">
+    <h2 class="section-title">@(lang == "en" ? "Get In Touch" : "تواصل معي")</h2>
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="row">
+                <!-- Contact Info Cards -->
+                @if (Model.About != null)
+                {
+                    <div class="col-md-4 mb-4">
+                        <div class="contact-info-card">
+                            <div class="contact-icon">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <h5>@(lang == "en" ? "Email" : "البريد الإلكتروني")</h5>
+                            <a href="mailto:@Model.About.Email">@Model.About.Email</a>
+                        </div>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(Model.About.Phone))
+                    {
+                        <div class="col-md-4 mb-4">
+                            <div class="contact-info-card">
+                                <div class="contact-icon">
+                                    <i class="fas fa-phone"></i>
+                                </div>
+                                <h5>@(lang == "en" ? "Phone" : "الهاتف")</h5>
+                                <a href="tel:@Model.About.Phone">@Model.About.Phone</a>
+                            </div>
+                        </div>
+                    }
+
+                    @if (!string.IsNullOrEmpty(Model.About.Location))
+                    {
+                        <div class="col-md-4 mb-4">
+                            <div class="contact-info-card">
+                                <div class="contact-icon">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                </div>
+                                <h5>@(lang == "en" ? "Location" : "الموقع")</h5>
+                                <p>@Model.About.Location</p>
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+
+            <!-- Social Links -->
+            @if (Model.SocialLinks.Any())
+            {
+                <div class="social-links-section text-center my-5">
+                    <h4 class="mb-4">@(lang == "en" ? "Connect With Me" : "تواصل معي")</h4>
+                    <div class="social-links-grid">
+                        @foreach (var link in Model.SocialLinks)
+                        {
+                            <a href="@link.Url" target="_blank" class="social-link-card" title="@link.Platform">
+                                <i class="@link.IconClass"></i>
+                                <span>@link.Platform</span>
+                            </a>
+                        }
+                    </div>
+                </div>
+            }
+
+            <!-- Contact Form -->
+            <div class="contact-form mt-5">
+                <h4 class="text-center mb-4">@(lang == "en" ? "Send Me a Message" : "أرسل لي رسالة")</h4>
+                <form id="contactForm">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <input type="text" class="form-control mb-3" name="Name"
+                                   placeholder="@(lang == "en" ? "Your Name" : "اسمك")" required>
+                        </div>
+                        <div class="col-md-6">
+                            <input type="email" class="form-control mb-3" name="Email"
+                                   placeholder="@(lang == "en" ? "Your Email" : "بريدك الإلكتروني")" required>
+                        </div>
+                    </div>
+                    <textarea class="form-control mb-3" name="Message" rows="5"
+                              placeholder="@(lang == "en" ? "Your Message" : "رسالتك")" required></textarea>
+                    <button type="submit" class="btn btn-custom w-100">
+                        <i class="fas fa-paper-plane me-2"></i>
+                        @(lang == "en" ? "Send Message" : "إرسال الرسالة")
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

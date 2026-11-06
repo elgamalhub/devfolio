@@ -1,0 +1,26 @@
+﻿@model Portfolio.Core.DTOs.HomeViewModel
+@{
+    var lang = Model.CurrentLanguage;
+}
+
+<div class="container">
+    <h2 class="section-title">@(lang == "en" ? "Experience Journey" : "رحلة الخبرات")</h2>
+    <div class="timeline">
+        @foreach (var exp in Model.Experiences)
+        {
+            var position = Model.Experiences.ToList().IndexOf(exp);
+            var alignment = position % 2 == 0 ? "left" : "right";
+
+            <div class="timeline-item @alignment">
+                <div class="timeline-content">
+                    <div class="timeline-date">
+                        @exp.StartDate.ToString("MMM yyyy") - @(exp.IsCurrent ? (lang == "en" ? "Present" : "الآن") : exp.EndDate?.ToString("MMM yyyy"))
+                    </div>
+                    <h3>@(lang == "en" ? exp.TitleEn : exp.TitleAr)</h3>
+                    <h4>@(lang == "en" ? exp.CompanyEn : exp.CompanyAr)</h4>
+                    <p>@(lang == "en" ? exp.DescriptionEn : exp.DescriptionAr)</p>
+                </div>
+            </div>
+        }
+    </div>
+</div>

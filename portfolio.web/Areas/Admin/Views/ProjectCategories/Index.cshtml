@@ -1,0 +1,80 @@
+﻿@model IEnumerable<Portfolio.Core.Entities.ProjectCategory>
+@{
+    ViewData["Title"] = "Project Categories";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Project Categories</h1>
+        <a asp-action="Create" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Add New Category
+        </a>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Order</th>
+                            <th>Icon</th>
+                            <th>Name (EN)</th>
+                            <th>Name (AR)</th>
+                            <th>Slug</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var category in Model)
+                        {
+                            <tr>
+                                <td>@category.Order</td>
+                                <td><i class="@category.IconClass fa-2x"></i></td>
+                                <td>@category.NameEn</td>
+                                <td dir="rtl">@category.NameAr</td>
+                                <td><code>@category.Slug</code></td>
+                                <td>
+                                    @if (category.IsActive)
+                                    {
+                                        <span class="badge bg-success">Active</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">Inactive</span>
+                                    }
+                                </td>
+                                <td>
+                                    <a asp-action="Edit" asp-route-id="@category.Id" class="btn btn-sm btn-warning">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <form asp-action="ToggleStatus" asp-route-id="@category.Id" method="post" style="display:inline;">
+                                        <button type="submit" class="btn btn-sm btn-info" title="Toggle Status">
+                                            <i class="fas fa-toggle-on"></i>
+                                        </button>
+                                    </form>
+                                    <form asp-action="Delete" asp-route-id="@category.Id" method="post" style="display:inline;"
+                                          onsubmit="return confirm('Delete this category? Projects using it may be affected.');">
+                                        <button type="submit" class="btn btn-sm btn-danger">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

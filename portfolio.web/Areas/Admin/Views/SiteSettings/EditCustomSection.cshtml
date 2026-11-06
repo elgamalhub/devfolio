@@ -1,0 +1,65 @@
+﻿@model Portfolio.Core.Entities.Section
+@{
+    ViewData["Title"] = "Edit Custom Section";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+@section HeadScripts {
+    <script src="https://cdn.tiny.cloud/1/5qzzpfks6yse3cnn737ncy7tnhwtev5ii4qpvuz4czr1tlsx/tinymce/8/tinymce.min.js" referrerpolicy="origin" crossorigin="anonymous"></script>
+}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Edit Custom Section: @Model.NameEn</h1>
+        <a asp-action="Index" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Back
+        </a>
+    </div>
+
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <form asp-action="EditCustomSection" method="post">
+                <input type="hidden" asp-for="Id" />
+
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i>
+                    <strong>Note:</strong> You can use HTML to format your custom section content.
+                </div>
+
+                <div class="form-group">
+                    <label>Section Content (HTML)</label>
+                    <textarea name="customContent" id="customContent" class="form-control" rows="15">@Model.CustomContent</textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Save Content
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="card shadow mb-4">
+        <div class="card-header">
+            <h6 class="m-0 font-weight-bold text-primary">Preview</h6>
+        </div>
+        <div class="card-body">
+            <div id="preview">
+                @Html.Raw(Model.CustomContent)
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        tinymce.init({
+            selector: '#customContent',
+            plugins: 'lists link image code preview',
+            toolbar: 'undo redo | formatselect | bold italic | alignleft aligncenter alignright | bullist numlist | link image | code preview',
+            height: 500,
+            setup: function (editor) {
+                editor.on('change', function () {
+                    document.getElementById('preview').innerHTML = editor.getContent();
+                });
+            }
+        });
+    </script>
+}

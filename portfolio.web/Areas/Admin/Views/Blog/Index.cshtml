@@ -1,0 +1,111 @@
+﻿@model IEnumerable<Portfolio.Core.Entities.BlogPost>
+@{
+    ViewData["Title"] = "Blog Posts";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Blog Posts</h1>
+        <a asp-action="Create" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Add New Post
+        </a>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+    <!-- Add this search bar before the table -->
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <form method="get" asp-action="Index" class="row g-3">
+                <div class="col-md-6">
+                    <input type="text" name="search" class="form-control"
+                           placeholder="Search posts by title or content..."
+                           value="@ViewBag.Search" />
+                </div>
+                <div class="col-md-3">
+                    <select name="tag" class="form-control">
+                        <option value="">All Tags</option>
+                        @if (ViewBag.AllTags != null)
+                        {
+                            @foreach (var tag in ViewBag.AllTags as IEnumerable<string>)
+                            {
+                                <option value="@tag" selected="@(ViewBag.Tag == tag)">@tag</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-search"></i> Search
+                    </button>
+                    <a asp-action="Index" class="btn btn-secondary">
+                        <i class="fas fa-times"></i> Clear
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Title (EN)</th>
+                            <th>Published</th>
+                            <th>Views</th>
+                            <th>Tags</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var post in Model)
+                        {
+                            <tr>
+                                <td>@post.TitleEn</td>
+                                <td>@post.PublishedAt.ToString("MMM dd, yyyy")</td>
+                                <td><span class="badge badge-info">@post.ViewCount views</span></td>
+                                <td>
+                                    @foreach (var tag in post.Tags.Take(3))
+                                    {
+                                        <span class="badge badge-secondary">@tag.TagName</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (post.IsPublished)
+                                    {
+                                        <span class="badge badge-success">Published</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge badge-warning">Draft</span>
+                                    }
+                                </td>
+                                <td>
+                                    <a asp-action="Details" asp-route-id="@post.Id" class="btn btn-sm btn-info">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a asp-action="Edit" asp-route-id="@post.Id" class="btn btn-sm btn-warning">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <form asp-action="Delete" asp-route-id="@post.Id" method="post" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this post?');">
+                                        <button type="submit" class="btn btn-sm btn-danger">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

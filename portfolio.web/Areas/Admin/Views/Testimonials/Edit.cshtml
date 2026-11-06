@@ -1,0 +1,119 @@
+﻿@model Portfolio.Core.Entities.Testimonial
+@{
+    ViewData["Title"] = "Edit Testimonial";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Edit Testimonial</h1>
+        <a asp-action="Index" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Back to List
+        </a>
+    </div>
+
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <form asp-action="Edit" method="post" enctype="multipart/form-data">
+                <input type="hidden" asp-for="Id" />
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label asp-for="ClientName"></label>
+                            <input asp-for="ClientName" class="form-control" />
+                            <span asp-validation-for="ClientName" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label asp-for="Position"></label>
+                            <input asp-for="Position" class="form-control" />
+                            <span asp-validation-for="Position" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label asp-for="Company"></label>
+                            <input asp-for="Company" class="form-control" />
+                            <span asp-validation-for="Company" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="TestimonialTextEn"></label>
+                            <textarea asp-for="TestimonialTextEn" class="form-control" rows="4"></textarea>
+                            <span asp-validation-for="TestimonialTextEn" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="TestimonialTextAr"></label>
+                            <textarea asp-for="TestimonialTextAr" class="form-control" rows="4" dir="rtl"></textarea>
+                            <span asp-validation-for="TestimonialTextAr" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                @if (!string.IsNullOrEmpty(Model.ClientImage))
+                {
+                    <div class="form-group">
+                        <label>Current Image:</label><br />
+                        <img src="@Model.ClientImage" alt="@Model.ClientName"
+                             class="rounded-circle" style="width: 100px; height: 100px; object-fit: cover;" />
+                    </div>
+                }
+
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Client Image</label>
+                            <input type="file" name="clientImage" class="form-control-file" accept="image/*" />
+                            <small class="form-text text-muted">Leave empty to keep current image</small>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label asp-for="Rating"></label>
+                            <select asp-for="Rating" class="form-control">
+                                <option value="5">5 Stars</option>
+                                <option value="4">4 Stars</option>
+                                <option value="3">3 Stars</option>
+                                <option value="2">2 Stars</option>
+                                <option value="1">1 Star</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label asp-for="Order"></label>
+                            <input asp-for="Order" type="number" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-check mb-3">
+                    <input asp-for="IsActive" class="form-check-input" />
+                    <label asp-for="IsActive" class="form-check-label"></label>
+                </div>
+
+                <div class="form-group mt-4">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Update Testimonial
+                    </button>
+                    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

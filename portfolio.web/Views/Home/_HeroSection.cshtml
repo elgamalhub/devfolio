@@ -1,0 +1,53 @@
+﻿@model Portfolio.Core.DTOs.HomeViewModel
+@{
+    var lang = Model.CurrentLanguage;
+    var settings = ViewBag.Settings as Dictionary<string, string>;
+    var heroImage = settings?.GetValueOrDefault("hero_background_image", "");
+}
+
+<div class="hero" style="@(!string.IsNullOrEmpty(heroImage) ? $"background-image: url('{heroImage}'); background-size: cover; background-position: center;" : "")">
+    @if (string.IsNullOrEmpty(heroImage))
+    {
+        <canvas id="particles-canvas"></canvas>
+    }
+    <div class="hero-content">
+        <h1>@(lang == "en" ? $"Hi, I'm {Model.About?.NameEn}" : $"مرحباً، أنا {Model.About?.NameAr}")</h1>
+        <p class="tagline">
+            <span class="typing-text" id="typingText"></span>
+        </p>
+        <div class="hero-buttons">
+            <button class="btn btn-custom me-3" onclick="document.getElementById('contact').scrollIntoView({behavior: 'smooth'})">
+                @(lang == "en" ? "Get In Touch" : "تواصل معي") <i class="fas fa-arrow-right ms-2"></i>
+            </button>
+            @if (!string.IsNullOrEmpty(Model.About?.CVFilePath))
+            {
+                <a href="@Model.About.CVFilePath" download class="btn btn-custom-outline">
+                    <i class="fas fa-download me-2"></i> @(lang == "en" ? "Download CV" : "تحميل السيرة الذاتية")
+                </a>
+            }
+        </div>
+    </div>
+</div>
+
+<style>
+.hero {
+    position: relative;
+    overflow: hidden;
+}
+
+.hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 1;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+}
+</style>

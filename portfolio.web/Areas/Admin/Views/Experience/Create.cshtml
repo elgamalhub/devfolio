@@ -1,0 +1,136 @@
+﻿@model Portfolio.Core.Entities.Experience
+@{
+    ViewData["Title"] = "Create Experience";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Create New Experience</h1>
+        <a asp-action="Index" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Back to List
+        </a>
+    </div>
+
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <form asp-action="Create" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="TitleEn"></label>
+                            <input asp-for="TitleEn" class="form-control" placeholder="e.g., Full Stack Developer" />
+                            <span asp-validation-for="TitleEn" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="TitleAr"></label>
+                            <input asp-for="TitleAr" class="form-control" dir="rtl" placeholder="مثال: مطور متكامل" />
+                            <span asp-validation-for="TitleAr" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="CompanyEn"></label>
+                            <input asp-for="CompanyEn" class="form-control" placeholder="e.g., Tech Company Inc." />
+                            <span asp-validation-for="CompanyEn" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="CompanyAr"></label>
+                            <input asp-for="CompanyAr" class="form-control" dir="rtl" placeholder="مثال: شركة التكنولوجيا" />
+                            <span asp-validation-for="CompanyAr" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="DescriptionEn"></label>
+                            <textarea asp-for="DescriptionEn" class="form-control" rows="4"></textarea>
+                            <span asp-validation-for="DescriptionEn" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="DescriptionAr"></label>
+                            <textarea asp-for="DescriptionAr" class="form-control" rows="4" dir="rtl"></textarea>
+                            <span asp-validation-for="DescriptionAr" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label asp-for="StartDate"></label>
+                            <input asp-for="StartDate" type="date" class="form-control" />
+                            <span asp-validation-for="StartDate" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label asp-for="EndDate"></label>
+                            <input asp-for="EndDate" type="date" class="form-control" id="endDate" />
+                            <span asp-validation-for="EndDate" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-check mt-4">
+                            <input asp-for="IsCurrent" class="form-check-input" id="isCurrent" />
+                            <label asp-for="IsCurrent" class="form-check-label"></label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="Order"></label>
+                            <input asp-for="Order" type="number" class="form-control" />
+                            <span asp-validation-for="Order" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-check mt-4">
+                            <input asp-for="IsActive" class="form-check-input" checked />
+                            <label asp-for="IsActive" class="form-check-label"></label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group mt-4">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Create Experience
+                    </button>
+                    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        document.getElementById('isCurrent').addEventListener('change', function() {
+            const endDate = document.getElementById('endDate');
+            if (this.checked) {
+                endDate.disabled = true;
+                endDate.value = '';
+            } else {
+                endDate.disabled = false;
+            }
+        });
+    </script>
+}

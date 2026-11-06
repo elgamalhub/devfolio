@@ -1,0 +1,99 @@
+﻿@model Portfolio.Core.Entities.BlogPost
+@{
+    ViewData["Title"] = "Create Blog Post";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+@section HeadScripts {
+    <script src="https://cdn.tiny.cloud/1/5qzzpfks6yse3cnn737ncy7tnhwtev5ii4qpvuz4czr1tlsx/tinymce/8/tinymce.min.js" referrerpolicy="origin" crossorigin="anonymous"></script>
+}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Create New Blog Post</h1>
+        <a asp-action="Index" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Back to List
+        </a>
+    </div>
+
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <form asp-action="Create" method="post" enctype="multipart/form-data">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="TitleEn"></label>
+                            <input asp-for="TitleEn" class="form-control" placeholder="Enter post title in English" />
+                            <span asp-validation-for="TitleEn" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="TitleAr"></label>
+                            <input asp-for="TitleAr" class="form-control" dir="rtl" placeholder="أدخل عنوان المقال بالعربية" />
+                            <span asp-validation-for="TitleAr" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="ContentEn"></label>
+                            <textarea asp-for="ContentEn" class="form-control" rows="10"></textarea>
+                            <span asp-validation-for="ContentEn" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="ContentAr"></label>
+                            <textarea asp-for="ContentAr" class="form-control" rows="10" dir="rtl"></textarea>
+                            <span asp-validation-for="ContentAr" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Featured Image</label>
+                            <input type="file" name="featuredImage" class="form-control-file" accept="image/*" />
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Tags (comma separated)</label>
+                            <input type="text" name="tags" class="form-control" placeholder="asp.net, c#, web development" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-check mb-3">
+                    <input asp-for="IsPublished" class="form-check-input" />
+                    <label asp-for="IsPublished" class="form-check-label"></label>
+                </div>
+
+                <div class="form-group mt-4">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Create Post
+                    </button>
+                    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        tinymce.init({
+            selector: 'textarea',
+            plugins: 'lists link image preview code',
+            toolbar: 'undo redo | formatselect | bold italic | alignleft aligncenter alignright | bullist numlist | link image | preview code',
+            height: 400
+        });
+    </script>
+}

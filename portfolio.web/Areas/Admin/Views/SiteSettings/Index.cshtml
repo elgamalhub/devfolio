@@ -1,0 +1,579 @@
+﻿@model IEnumerable<Portfolio.Core.Entities.SiteSettings>
+@{
+    ViewData["Title"] = "Site Settings";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    var sections = ViewBag.Sections as IEnumerable<Portfolio.Core.Entities.Section>;
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Site Settings & Section Management</h1>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="row">
+        <!-- Left Column: General Settings -->
+        <div class="col-lg-6">
+            <!-- General Settings Card -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-cog"></i> General Settings
+                    </h6>
+                    <form asp-action="ResetToDefaults" method="post" onsubmit="return confirm('Reset all settings to default values?');">
+                        <button type="submit" class="btn btn-sm btn-warning">
+                            <i class="fas fa-undo"></i> Reset to Defaults
+                        </button>
+                    </form>
+                </div>
+                <div class="card-body">
+                    <form asp-action="UpdateSettings" method="post">
+                        @foreach (var setting in Model.Where(s => !s.Key.StartsWith("preloader_")).OrderBy(s => s.Key))
+                        {
+                            <div class="form-group mb-3">
+                                <label class="form-label fw-bold">
+                                    @setting.Key.Replace("_", " ").ToUpper()
+                                </label>
+                                <small class="d-block text-muted mb-2">@setting.Description</small>
+
+                                @if (setting.DataType == "boolean")
+                                {
+                                    <select name="@setting.Key" class="form-control">
+                                        <option value="true" selected="@(setting.ValueEn == "true")">Enabled</option>
+                                        <option value="false" selected="@(setting.ValueEn == "false")">Disabled</option>
+                                    </select>
+                                }
+                                else if (setting.DataType == "select" && setting.Key == "default_language")
+                                {
+                                    <select name="@setting.Key" class="form-control">
+                                        <option value="en" selected="@(setting.ValueEn == "en")">English</option>
+                                        <option value="ar" selected="@(setting.ValueEn == "ar")">Arabic</option>
+                                    </select>
+                                }
+                                else if (setting.DataType == "select" && setting.Key == "default_theme")
+                                {
+                                    <select name="@setting.Key" class="form-control">
+                                        <option value="dark" selected="@(setting.ValueEn == "dark")">Dark Mode</option>
+                                        <option value="light" selected="@(setting.ValueEn == "light")">Light Mode</option>
+                                    </select>
+                                }
+                                else if (setting.DataType == "color")
+                                {
+                                    <input type="color" name="@setting.Key" class="form-control form-control-color" value="@setting.ValueEn" />
+                                }
+                                else if (setting.DataType == "textarea")
+                                {
+                                    <textarea name="@setting.Key" class="form-control" rows="3">@setting.ValueEn</textarea>
+                                }
+                                else
+                                {
+                                    <input type="text" name="@setting.Key" class="form-control" value="@setting.ValueEn" />
+                                }
+                            </div>
+                        }
+
+                        <button type="submit" class="btn btn-primary w-100 mt-3">
+                            <i class="fas fa-save"></i> Save General Settings
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Preloader Settings Card -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-spinner"></i> Preloader Settings
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <form asp-action="UpdateSettings" method="post">
+                        @foreach (var setting in Model.Where(s => s.Key.StartsWith("preloader_") && s.Key != "preloader_logo" && s.Key != "preloader_background").OrderBy(s => s.Key))
+                        {
+                            <div class="form-group mb-3">
+                                <label class="form-label fw-bold">@setting.Key.Replace("_", " ").Replace("preloader ", "").ToUpper()</label>
+                                <small class="d-block text-muted mb-2">@setting.Description</small>
+
+                                @if (setting.Key == "preloader_style")
+                                {
+                                    <select name="@setting.Key" class="form-control" id="preloaderStyleSelect">
+                                        <option value="spinner" selected="@(setting.ValueEn == "spinner")">Classic Spinner</option>
+                                        <option value="dots" selected="@(setting.ValueEn == "dots")">Bouncing Dots</option>
+                                        <option value="pulse" selected="@(setting.ValueEn == "pulse")">Pulse Circle</option>
+                                        <option value="bars" selected="@(setting.ValueEn == "bars")">Wave Bars</option>
+                                        <option value="circle" selected="@(setting.ValueEn == "circle")">Circle Loader</option>
+                                        <option value="logo" selected="@(setting.ValueEn == "logo")">Custom Logo</option>
+                                    </select>
+                                }
+                                else if (setting.DataType == "color")
+                                {
+                                    <input type="color" name="@setting.Key" class="form-control form-control-color" value="@setting.ValueEn" id="preloaderColorInput" />
+                                }
+                                else if (setting.DataType == "number")
+                                {
+                                    <input type="number" name="@setting.Key" class="form-control" value="@setting.ValueEn" min="500" max="5000" step="100" />
+                                }
+                                else if (setting.DataType == "boolean")
+                                {
+                                    <select name="@setting.Key" class="form-control">
+                                        <option value="true" selected="@(setting.ValueEn == "true")">Enabled</option>
+                                        <option value="false" selected="@(setting.ValueEn == "false")">Disabled</option>
+                                    </select>
+                                }
+                                else
+                                {
+                                    <input type="text" name="@setting.Key" class="form-control" value="@setting.ValueEn" />
+                                }
+                            </div>
+                        }
+
+                        <!-- Preloader Background -->
+                        <div class="form-group mb-3">
+                            <label class="form-label fw-bold">PRELOADER BACKGROUND</label>
+                            <small class="d-block text-muted mb-2">Choose background style</small>
+                            @{
+                                var preloaderBg = Model.FirstOrDefault(s => s.Key == "preloader_background")?.ValueEn ?? "gradient";
+                            }
+                            <select name="preloader_background" class="form-control" id="preloaderBackgroundSelect">
+                                <option value="gradient" selected="@(preloaderBg == "gradient")">Gradient (Primary/Secondary)</option>
+                                <option value="solid" selected="@(preloaderBg == "solid")">Solid Color</option>
+                                <option value="image" selected="@(preloaderBg == "image")">Custom Image</option>
+                            </select>
+                        </div>
+
+                        <!-- Logo Upload Section -->
+                        <div id="logoUploadSection" style="display: none;">
+                            <hr />
+                            <h6 class="text-primary">Custom Logo</h6>
+                            @{
+                                var preloaderLogo = Model.FirstOrDefault(s => s.Key == "preloader_logo")?.ValueEn ?? "";
+                            }
+                            @if (!string.IsNullOrEmpty(preloaderLogo))
+                            {
+                                <div class="mb-2">
+                                    <img src="@preloaderLogo" alt="Preloader Logo" class="img-thumbnail" style="max-width: 150px; background: #f8f9fa;" />
+                                </div>
+                            }
+                            <div class="d-flex gap-2 mb-3">
+                                <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#uploadLogoModal">
+                                    <i class="fas fa-upload"></i> Upload Logo
+                                </button>
+                                @if (!string.IsNullOrEmpty(preloaderLogo))
+                                {
+                                    <button type="button" class="btn btn-sm btn-danger" onclick="removePreloaderLogo()">
+                                        <i class="fas fa-trash"></i> Remove
+                                    </button>
+                                }
+                            </div>
+                        </div>
+
+                        <!-- Background Image Upload Section -->
+                        <div id="bgImageUploadSection" style="display: none;">
+                            <hr />
+                            <h6 class="text-primary">Background Image</h6>
+                            @{
+                                var preloaderBgImage = Model.FirstOrDefault(s => s.Key == "preloader_background_image")?.ValueEn ?? "";
+                            }
+                            @if (!string.IsNullOrEmpty(preloaderBgImage))
+                            {
+                                <div class="mb-2">
+                                    <img src="@preloaderBgImage" alt="Background" class="img-thumbnail" style="max-width: 200px;" />
+                                </div>
+                            }
+                            <div class="d-flex gap-2 mb-3">
+                                <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#uploadBgImageModal">
+                                    <i class="fas fa-upload"></i> Upload Background
+                                </button>
+                                @if (!string.IsNullOrEmpty(preloaderBgImage))
+                                {
+                                    <button type="button" class="btn btn-sm btn-danger" onclick="removePreloaderBgImage()">
+                                        <i class="fas fa-trash"></i> Remove
+                                    </button>
+                                }
+                            </div>
+                        </div>
+
+                        <!-- Preview -->
+                        <hr />
+                        <div class="card bg-light">
+                            <div class="card-body text-center">
+                                <h6>Preview</h6>
+                                <div id="preloaderPreview" style="width: 100px; height: 100px; margin: 20px auto;"></div>
+                                <button type="button" class="btn btn-sm btn-secondary" onclick="refreshPreview()">
+                                    <i class="fas fa-sync"></i> Refresh
+                                </button>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100 mt-3">
+                            <i class="fas fa-save"></i> Save Preloader Settings
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: Images and Sections -->
+        <div class="col-lg-6">
+            <!-- Hero Background Card -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-image"></i> Hero Background Image
+                    </h6>
+                </div>
+                <div class="card-body">
+                    @{
+                        var heroImage = Model.FirstOrDefault(s => s.Key == "hero_background_image");
+                    }
+                    @if (heroImage != null && !string.IsNullOrEmpty(heroImage.ValueEn))
+                    {
+                        <div class="mb-3">
+                            <img src="@heroImage.ValueEn" alt="Hero Background" class="img-fluid rounded" />
+                        </div>
+                        <form asp-action="RemoveHeroImage" method="post">
+                            <button type="submit" class="btn btn-danger btn-sm">
+                                <i class="fas fa-trash"></i> Remove Image
+                            </button>
+                        </form>
+                    }
+                    else
+                    {
+                        <p class="text-muted">No background image set. Using gradient.</p>
+                    }
+                    <hr />
+                    <form asp-action="UploadHeroImage" method="post" enctype="multipart/form-data">
+                        <div class="form-group">
+                            <label>Upload New Background</label>
+                            <input type="file" name="heroImage" class="form-control-file" accept="image/*" required />
+                            <small class="text-muted">Recommended: 1920x1080px</small>
+                        </div>
+                        <button type="submit" class="btn btn-primary mt-3">
+                            <i class="fas fa-upload"></i> Upload
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Section Management Card -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-th-large"></i> Section Management
+                    </h6>
+                    <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#addSectionModal">
+                        <i class="fas fa-plus"></i> Add Section
+                    </button>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted">
+                        <i class="fas fa-info-circle"></i> Manage visible sections
+                    </p>
+                    <div id="sectionsList" class="list-group">
+                        @foreach (var sect in sections)
+                        {
+                            <div class="list-group-item" data-section-id="@sect.Id">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div class="flex-grow-1">
+                                        <div class="d-flex align-items-center mb-2">
+                                            <i class="@sect.IconClass me-2"></i>
+                                            <strong>@sect.NameEn</strong>
+                                            <span class="ms-2 text-muted" dir="rtl">(@sect.NameAr)</span>
+                                            @if (sect.IsBuiltIn)
+                                            {
+                                                <span class="badge bg-info ms-2">Built-in</span>
+                                            }
+                                        </div>
+                                        <div class="d-flex gap-2 flex-wrap">
+                                            @if (sect.IsVisible)
+                                            {
+                                                <span class="badge bg-success">Visible</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-secondary">Hidden</span>
+                                            }
+                                            @if (sect.ShowInNavbar)
+                                            {
+                                                <span class="badge bg-primary">In Navbar</span>
+                                            }
+                                            <span class="badge bg-dark">Order: @sect.Order</span>
+                                        </div>
+                                    </div>
+                                    <div class="btn-group-vertical btn-group-sm">
+                                        <button type="button" class="btn btn-sm btn-warning" data-bs-toggle="modal"
+                                                data-bs-target="#editSectionModal" onclick="editSection(@sect.Id, '@sect.NameEn', '@sect.NameAr', '@sect.IconClass', @sect.IsVisible.ToString().ToLower(), @sect.ShowInNavbar.ToString().ToLower(), @sect.Order)">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <form asp-action="ToggleSectionVisibility" asp-route-id="@sect.Id" method="post" style="display:inline;">
+                                            <button type="submit" class="btn btn-sm btn-info">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                        </form>
+                                        @if (!sect.IsBuiltIn)
+                                        {
+                                            <a asp-action="EditCustomSection" asp-route-id="@sect.Id" class="btn btn-sm btn-primary">
+                                                <i class="fas fa-file-alt"></i>
+                                            </a>
+                                            <form asp-action="DeleteSection" asp-route-id="@sect.Id" method="post"
+                                                  onsubmit="return confirm('Delete this section?');" style="display:inline;">
+                                                <button type="submit" class="btn btn-sm btn-danger">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </form>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                    <div class="alert alert-info mt-3 mb-0">
+                        <i class="fas fa-info-circle"></i>
+                        <strong>Tip:</strong> Drag to reorder sections
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Upload Logo Modal -->
+<div class="modal fade" id="uploadLogoModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form asp-action="UploadPreloaderLogo" method="post" enctype="multipart/form-data">
+                <div class="modal-header">
+                    <h5 class="modal-title">Upload Preloader Logo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="file" name="preloaderLogo" class="form-control" accept="image/*" required />
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Upload</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Upload Background Image Modal -->
+<div class="modal fade" id="uploadBgImageModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form asp-action="UploadPreloaderBackgroundImage" method="post" enctype="multipart/form-data">
+                <div class="modal-header">
+                    <h5 class="modal-title">Upload Background Image</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="file" name="backgroundImage" class="form-control" accept="image/*" required />
+                    <small class="text-muted">This will be the preloader background</small>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Upload</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Add/Edit Section Modals (keep existing) -->
+<div class="modal fade" id="addSectionModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form asp-action="AddSection" method="post">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add New Section</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group mb-3">
+                        <label>Name (English)</label>
+                        <input type="text" name="NameEn" class="form-control" required />
+                    </div>
+                    <div class="form-group mb-3">
+                        <label>Name (Arabic)</label>
+                        <input type="text" name="NameAr" class="form-control" dir="rtl" required />
+                    </div>
+                    <div class="form-group mb-3">
+                        <label>Identifier</label>
+                        <input type="text" name="Identifier" class="form-control" pattern="[a-z-]+" required />
+                        <small class="text-muted">Lowercase and hyphens only</small>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label>Icon Class</label>
+                        <input type="text" name="IconClass" class="form-control" value="fas fa-section" />
+                    </div>
+                    <div class="form-check mb-2">
+                        <input type="checkbox" name="IsVisible" class="form-check-input" checked />
+                        <label class="form-check-label">Visible</label>
+                    </div>
+                    <div class="form-check">
+                        <input type="checkbox" name="ShowInNavbar" class="form-check-input" checked />
+                        <label class="form-check-label">Show in Navbar</label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="editSectionModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form asp-action="UpdateSection" method="post">
+                <input type="hidden" id="editSectionId" name="id" />
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Section</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group mb-3">
+                        <label>Name (English)</label>
+                        <input type="text" id="editNameEn" name="nameEn" class="form-control" required />
+                    </div>
+                    <div class="form-group mb-3">
+                        <label>Name (Arabic)</label>
+                        <input type="text" id="editNameAr" name="nameAr" class="form-control" dir="rtl" required />
+                    </div>
+                    <div class="form-group mb-3">
+                        <label>Icon Class</label>
+                        <input type="text" id="editIconClass" name="iconClass" class="form-control" />
+                    </div>
+                    <div class="form-group mb-3">
+                        <label>Order</label>
+                        <input type="number" id="editOrder" name="order" class="form-control" min="1" />
+                    </div>
+                    <div class="form-check mb-2">
+                        <input type="checkbox" id="editIsVisible" name="isVisible" class="form-check-input" />
+                        <label class="form-check-label">Visible</label>
+                    </div>
+                    <div class="form-check">
+                        <input type="checkbox" id="editShowInNavbar" name="showInNavbar" class="form-check-input" />
+                        <label class="form-check-label">Show in Navbar</label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Update</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+    <script>
+        function editSection(id, nameEn, nameAr, iconClass, isVisible, showInNavbar, order) {
+            document.getElementById('editSectionId').value = id;
+            document.getElementById('editNameEn').value = nameEn;
+            document.getElementById('editNameAr').value = nameAr;
+            document.getElementById('editIconClass').value = iconClass;
+            document.getElementById('editIsVisible').checked = isVisible;
+            document.getElementById('editShowInNavbar').checked = showInNavbar;
+            document.getElementById('editOrder').value = order;
+        }
+
+        // Sortable sections
+        var el = document.getElementById('sectionsList');
+        if (el) {
+            Sortable.create(el, {
+                animation: 150,
+                onEnd: function(evt) {
+                    var items = el.querySelectorAll('.list-group-item');
+                    var sectionIds = Array.from(items).map(item => item.getAttribute('data-section-id'));
+
+                    fetch('@Url.Action("ReorderSections")', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(sectionIds)
+                    }).then(response => response.json())
+                      .then(data => { if (data.success) location.reload(); });
+                }
+            });
+        }
+
+        // Preloader controls
+        const styleSelect = document.getElementById('preloaderStyleSelect');
+        const bgSelect = document.getElementById('preloaderBackgroundSelect');
+        const logoSection = document.getElementById('logoUploadSection');
+        const bgImageSection = document.getElementById('bgImageUploadSection');
+        const colorInput = document.getElementById('preloaderColorInput');
+
+        function updateSections() {
+            logoSection.style.display = styleSelect.value === 'logo' ? 'block' : 'none';
+            bgImageSection.style.display = bgSelect.value === 'image' ? 'block' : 'none';
+            refreshPreview();
+        }
+
+        styleSelect.addEventListener('change', updateSections);
+        bgSelect.addEventListener('change', updateSections);
+        colorInput.addEventListener('change', refreshPreview);
+
+        document.addEventListener('DOMContentLoaded', updateSections);
+
+        function refreshPreview() {
+            const style = styleSelect.value;
+            const color = colorInput.value;
+            const preview = document.getElementById('preloaderPreview');
+            preview.innerHTML = '';
+
+            const animations = {
+                spinner: `<div style="width:60px;height:60px;border:5px solid rgba(0,0,0,0.1);border-top-color:${color};border-radius:50%;animation:spin 1s linear infinite;margin:0 auto"></div>`,
+                dots: `<div style="display:flex;gap:10px;justify-content:center">${['-0.32s', '-0.16s', '0s'].map(delay => `<div style="width:15px;height:15px;background:${color};border-radius:50%;animation:bounce 1.4s infinite ease-in-out both;animation-delay:${delay}"></div>`).join('')}</div>`,
+                pulse: `<div style="width:60px;height:60px;background:${color};border-radius:50%;margin:0 auto;animation:pulse 1.5s ease-in-out infinite"></div>`,
+                bars: `<div style="display:flex;gap:5px;justify-content:center;align-items:flex-end;height:60px">${['-1.2s', '-1.1s', '-1s', '-0.9s', '-0.8s'].map(delay => `<div style="width:8px;background:${color};animation:wave 1.2s infinite ease-in-out;animation-delay:${delay}"></div>`).join('')}</div>`,
+                circle: `<div style="width:60px;height:60px;border:3px solid transparent;border-top-color:${color};border-right-color:${color};border-radius:50%;margin:0 auto;animation:spin 0.8s linear infinite"></div>`,
+                logo: `<div style="text-align:center;color:${color}"><i class="fas fa-code fa-3x" style="animation:pulse 1.5s ease-in-out infinite"></i><p class="mt-2 small">Logo preview</p></div>`
+            };
+
+            preview.innerHTML = animations[style] || '';
+        }
+
+        function removePreloaderLogo() {
+            if (confirm('Remove preloader logo?')) {
+                fetch('@Url.Action("RemovePreloaderLogo")', { method: 'POST' })
+                    .then(() => location.reload());
+            }
+        }
+
+        function removePreloaderBgImage() {
+            if (confirm('Remove background image?')) {
+                fetch('@Url.Action("RemovePreloaderBackgroundImage")', { method: 'POST' })
+                    .then(() => location.reload());
+            }
+        }
+
+        const style = document.createElement('style');
+        style.textContent = `
+            @@keyframes spin { to { transform: rotate(360deg); } }
+            @@keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
+            @@keyframes pulse { 0%, 100% { transform: scale(0.8); opacity: 0.5; } 50% { transform: scale(1); opacity: 1; } }
+            @@keyframes wave { 0%, 40%, 100% { height: 10px; } 20% { height: 60px; } }
+        `;
+        document.head.appendChild(style);
+    </script>
+}

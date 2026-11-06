@@ -1,0 +1,244 @@
+﻿@model Portfolio.Core.Entities.About
+@{
+    ViewData["Title"] = "Edit About";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    var typingTitles = ViewBag.TypingTitles as IEnumerable<Portfolio.Core.Entities.TypingTitle>;
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Edit About Section</h1>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="row">
+        <!-- Main About Form -->
+        <div class="col-lg-8">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Basic Information</h6>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Edit" method="post" enctype="multipart/form-data">
+                        <input type="hidden" asp-for="Id" />
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="NameEn"></label>
+                                    <input asp-for="NameEn" class="form-control" />
+                                    <span asp-validation-for="NameEn" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="NameAr"></label>
+                                    <input asp-for="NameAr" class="form-control" dir="rtl" />
+                                    <span asp-validation-for="NameAr" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="DescriptionEn"></label>
+                                    <textarea asp-for="DescriptionEn" class="form-control" rows="6"></textarea>
+                                    <span asp-validation-for="DescriptionEn" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="DescriptionAr"></label>
+                                    <textarea asp-for="DescriptionAr" class="form-control" rows="6" dir="rtl"></textarea>
+                                    <span asp-validation-for="DescriptionAr" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label asp-for="Email"></label>
+                                    <input asp-for="Email" type="email" class="form-control" />
+                                    <span asp-validation-for="Email" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label asp-for="Phone"></label>
+                                    <input asp-for="Phone" class="form-control" />
+                                    <span asp-validation-for="Phone" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label asp-for="Location"></label>
+                                    <input asp-for="Location" class="form-control" />
+                                    <span asp-validation-for="Location" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="GitHubUrl"></label>
+                                    <input asp-for="GitHubUrl" class="form-control" placeholder="https://github.com/..." />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="LinkedInUrl"></label>
+                                    <input asp-for="LinkedInUrl" class="form-control" placeholder="https://linkedin.com/in/..." />
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr />
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Profile Image</label>
+                                    @if (!string.IsNullOrEmpty(Model.ProfileImage))
+                                    {
+                                        <div class="mb-2">
+                                            <img src="@Model.ProfileImage" alt="Profile" class="img-thumbnail" style="max-width: 200px;" id="profilePreview" />
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="mb-2">
+                                            <img src="/images/default-avatar.jpg" alt="Profile" class="img-thumbnail" style="max-width: 200px;" id="profilePreview" />
+                                        </div>
+                                    }
+                                    <input type="file" name="profileImage" class="form-control-file" accept="image/*" id="profileImageInput" />
+                                    <small class="form-text text-muted">Leave empty to keep current image</small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>CV File (PDF)</label>
+                                    @if (!string.IsNullOrEmpty(Model.CVFilePath))
+                                    {
+                                        <div class="mb-2">
+                                            <a href="@Model.CVFilePath" target="_blank" class="btn btn-sm btn-info">
+                                                <i class="fas fa-file-pdf"></i> View Current CV
+                                            </a>
+                                        </div>
+                                    }
+                                    <input type="file" name="cvFile" class="form-control-file" accept=".pdf" />
+                                    <small class="form-text text-muted">Leave empty to keep current CV</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group mt-4">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Update About Section
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Typing Titles Management -->
+        <div class="col-lg-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Typing Animation Titles</h6>
+                </div>
+                <div class="card-body">
+                    <!-- Add New Title Form -->
+                    <form asp-action="AddTitle" method="post" class="mb-4">
+                        <div class="form-group">
+                            <label>Title (English)</label>
+                            <input type="text" name="titleEn" class="form-control form-control-sm" placeholder="Full Stack Developer" required />
+                        </div>
+                        <div class="form-group">
+                            <label>Title (Arabic)</label>
+                            <input type="text" name="titleAr" class="form-control form-control-sm" dir="rtl" placeholder="مطور متكامل" required />
+                        </div>
+                        <button type="submit" class="btn btn-success btn-sm w-100">
+                            <i class="fas fa-plus"></i> Add Title
+                        </button>
+                    </form>
+
+                    <hr />
+
+                    <!-- Existing Titles List -->
+                    <h6 class="mb-3">Current Titles:</h6>
+                    @if (typingTitles != null && typingTitles.Any())
+                    {
+                        <div class="list-group">
+                            @foreach (var title in typingTitles.OrderBy(t => t.Order))
+                            {
+                                <div class="list-group-item d-flex justify-content-between align-items-start">
+                                    <div class="flex-grow-1">
+                                        <div class="fw-bold">@title.TitleEn</div>
+                                        <small class="text-muted" dir="rtl">@title.TitleAr</small>
+                                        <br />
+                                        @if (title.IsActive)
+                                        {
+                                            <span class="badge bg-success">Active</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">Inactive</span>
+                                        }
+                                    </div>
+                                    <div class="btn-group-vertical btn-group-sm">
+                                        <form asp-action="ToggleTitleStatus" asp-route-id="@title.Id" method="post" style="display:inline;">
+                                            <button type="submit" class="btn btn-warning btn-sm" title="Toggle Status">
+                                                <i class="fas fa-toggle-on"></i>
+                                            </button>
+                                        </form>
+                                        <form asp-action="DeleteTitle" asp-route-id="@title.Id" method="post" style="display:inline;"
+                                              onsubmit="return confirm('Delete this title?');">
+                                            <button type="submit" class="btn btn-danger btn-sm" title="Delete">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted">No typing titles added yet.</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        // Image Preview
+        document.getElementById('profileImageInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('profilePreview').src = e.target.result;
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+    </script>
+}

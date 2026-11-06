@@ -145,6 +145,8 @@ namespace portfolio.web
                             "Sign in and change it, or set SeedAdmin:Email and SeedAdmin:Password in configuration.",
                             generatedPassword);
                     }
+
+                    ContentSeeder.SeedAsync(context).GetAwaiter().GetResult();
                 }
                 catch (Exception ex)
                 {

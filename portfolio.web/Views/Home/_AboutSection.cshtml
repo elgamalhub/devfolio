@@ -1,29 +1,75 @@
 ﻿@model Portfolio.Core.DTOs.HomeViewModel
 @{
     var lang = Model.CurrentLanguage;
+    var title = Model.TypingTitles.FirstOrDefault();
+    var headline = lang == "en" ? title?.TitleEn : title?.TitleAr;
+    var name = lang == "en" ? Model.About?.NameEn : Model.About?.NameAr;
+    var description = lang == "en" ? Model.About?.DescriptionEn : Model.About?.DescriptionAr;
+    var location = Model.About?.Location;
 }
 
 <div class="container">
     <h2 class="section-title">@(lang == "en" ? "About Me" : "عني")</h2>
+
     <div class="row justify-content-center">
-        <div class="col-lg-8">
+        <div class="col-lg-9">
             <div class="about-card">
-                @if (!string.IsNullOrEmpty(Model.About?.ProfileImage))
-                {
-                    <div class="text-center mb-4">
-                        <img src="@Model.About.ProfileImage" alt="@Model.About.NameEn"
-                             class="rounded-circle" style="width: 200px; height: 200px; object-fit: cover; border: 5px solid var(--primary-color);">
+                <div class="about-header">
+                    @if (!string.IsNullOrWhiteSpace(Model.About?.ProfileImage))
+                    {
+                        <img src="@Model.About.ProfileImage" alt="@name" class="about-avatar" width="132" height="132" loading="lazy" />
+                    }
+
+                    <div class="about-headline">
+                        <h3>@name</h3>
+                        @if (!string.IsNullOrWhiteSpace(headline))
+                        {
+                            <p>@headline</p>
+                        }
                     </div>
-                }
-                <p class="lead">@(lang == "en" ? Model.About?.DescriptionEn : Model.About?.DescriptionAr)</p>
+                </div>
+
+                <p class="lead">@description</p>
+
+                <div class="info-chips">
+                    @if (!string.IsNullOrWhiteSpace(location))
+                    {
+                        <span class="info-chip">
+                            <i class="fas fa-map-marker-alt" aria-hidden="true"></i>
+                            @location
+                        </span>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(Model.About?.Email))
+                    {
+                        <a class="info-chip" href="mailto:@Model.About.Email">
+                            <i class="fas fa-envelope" aria-hidden="true"></i>
+                            @Model.About.Email
+                        </a>
+                    }
+                </div>
+
+                <div class="about-actions">
+                    @if (!string.IsNullOrWhiteSpace(Model.About?.CVFilePath))
+                    {
+                        <a href="@Model.About.CVFilePath" download class="btn btn-custom">
+                            <i class="fas fa-download" aria-hidden="true"></i>
+                            @(lang == "en" ? "Download CV" : "تحميل السيرة الذاتية")
+                        </a>
+                    }
+                    <a href="#contact" class="btn btn-custom-outline">
+                        <i class="fas fa-paper-plane" aria-hidden="true"></i>
+                        @(lang == "en" ? "Let's talk" : "لنتحدث")
+                    </a>
+                </div>
 
                 @if (Model.SocialLinks.Any())
                 {
-                    <div class="social-links mt-4 text-center">
+                    <div class="social-links mt-4">
                         @foreach (var link in Model.SocialLinks)
                         {
-                            <a href="@link.Url" target="_blank" class="social-icon" title="@link.Platform">
-                                <i class="@link.IconClass"></i>
+                            <a class="social-icon" href="@link.Url" target="_blank" rel="noopener noreferrer"
+                               title="@link.Platform" aria-label="@link.Platform">
+                                <i class="@link.IconClass" aria-hidden="true"></i>
                             </a>
                         }
                     </div>

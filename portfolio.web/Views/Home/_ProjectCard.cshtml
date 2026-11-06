@@ -1,0 +1,60 @@
+@model Portfolio.Core.Entities.Project
+@{
+    var lang = ViewBag.Language as string ?? "en";
+    var title = lang == "en" ? Model.TitleEn : Model.TitleAr;
+    var description = lang == "en" ? Model.ShortDescriptionEn : Model.ShortDescriptionAr;
+}
+
+<div class="col-md-6 col-lg-4 project-item @(Model.IsHidden ? "hidden-project" : "")"
+     data-category="@Model.Category"
+     style="display: @(Model.IsHidden ? "none" : "block")">
+    <article class="project-card">
+        <div class="project-image">
+            @if (!string.IsNullOrWhiteSpace(Model.ImagePath))
+            {
+                <img src="@Model.ImagePath" alt="@title" loading="lazy" />
+            }
+            else
+            {
+                <i class="@(string.IsNullOrWhiteSpace(Model.IconClass) ? "fas fa-code" : Model.IconClass)" aria-hidden="true"></i>
+            }
+        </div>
+
+        <div class="project-content">
+            <h3 class="project-title">@title</h3>
+            <p class="project-desc">@description</p>
+
+            @if (Model.Technologies.Any())
+            {
+                <div class="tech-tags">
+                    @foreach (var tech in Model.Technologies)
+                    {
+                        <span class="tech-tag">@tech.TechnologyName</span>
+                    }
+                </div>
+            }
+
+            @if (!string.IsNullOrWhiteSpace(Model.DemoUrl) || !string.IsNullOrWhiteSpace(Model.GithubUrl))
+            {
+                <div class="project-actions">
+                    @if (!string.IsNullOrWhiteSpace(Model.DemoUrl))
+                    {
+                        <a class="project-link is-primary" href="@Model.DemoUrl" target="_blank" rel="noopener noreferrer"
+                           data-track-project="@Model.Id">
+                            <i class="fas fa-arrow-up-right-from-square" aria-hidden="true"></i>
+                            @(lang == "en" ? "Live demo" : "معاينة مباشرة")
+                        </a>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(Model.GithubUrl))
+                    {
+                        <a class="project-link" href="@Model.GithubUrl" target="_blank" rel="noopener noreferrer"
+                           data-track-project="@Model.Id">
+                            <i class="fab fa-github" aria-hidden="true"></i>
+                            @(lang == "en" ? "Source code" : "الكود المصدري")
+                        </a>
+                    }
+                </div>
+            }
+        </div>
+    </article>
+</div>

@@ -4,61 +4,55 @@
 }
 
 <div class="container">
-    <h2 class="section-title">@(lang == "en" ? "Get In Touch" : "تواصل معي")</h2>
+    <h2 class="section-title">@(lang == "en" ? "Get in Touch" : "تواصل معي")</h2>
+    <p class="section-subtitle">@(lang == "en" ? "Have a project, a role, or a question? I usually reply within a day." : "لديك مشروع أو فرصة عمل أو سؤال؟ عادةً أرد خلال يوم.")</p>
+
     <div class="row justify-content-center">
-        <div class="col-lg-8">
-            <div class="row">
-                <!-- Contact Info Cards -->
-                @if (Model.About != null)
-                {
-                    <div class="col-md-4 mb-4">
+        <div class="col-lg-9">
+            @if (Model.About != null)
+            {
+                <div class="row g-4 mb-5">
+                    <div class="col-md-4">
                         <div class="contact-info-card">
-                            <div class="contact-icon">
-                                <i class="fas fa-envelope"></i>
-                            </div>
+                            <div class="contact-icon"><i class="fas fa-envelope" aria-hidden="true"></i></div>
                             <h5>@(lang == "en" ? "Email" : "البريد الإلكتروني")</h5>
                             <a href="mailto:@Model.About.Email">@Model.About.Email</a>
                         </div>
                     </div>
 
-                    @if (!string.IsNullOrEmpty(Model.About.Phone))
+                    @if (!string.IsNullOrWhiteSpace(Model.About.Phone))
                     {
-                        <div class="col-md-4 mb-4">
+                        <div class="col-md-4">
                             <div class="contact-info-card">
-                                <div class="contact-icon">
-                                    <i class="fas fa-phone"></i>
-                                </div>
+                                <div class="contact-icon"><i class="fas fa-phone" aria-hidden="true"></i></div>
                                 <h5>@(lang == "en" ? "Phone" : "الهاتف")</h5>
-                                <a href="tel:@Model.About.Phone">@Model.About.Phone</a>
+                                <a href="tel:@Model.About.Phone" dir="ltr">@Model.About.Phone</a>
                             </div>
                         </div>
                     }
 
-                    @if (!string.IsNullOrEmpty(Model.About.Location))
+                    @if (!string.IsNullOrWhiteSpace(Model.About.Location))
                     {
-                        <div class="col-md-4 mb-4">
+                        <div class="col-md-4">
                             <div class="contact-info-card">
-                                <div class="contact-icon">
-                                    <i class="fas fa-map-marker-alt"></i>
-                                </div>
+                                <div class="contact-icon"><i class="fas fa-map-marker-alt" aria-hidden="true"></i></div>
                                 <h5>@(lang == "en" ? "Location" : "الموقع")</h5>
                                 <p>@Model.About.Location</p>
                             </div>
                         </div>
                     }
-                }
-            </div>
+                </div>
+            }
 
-            <!-- Social Links -->
             @if (Model.SocialLinks.Any())
             {
-                <div class="social-links-section text-center my-5">
-                    <h4 class="mb-4">@(lang == "en" ? "Connect With Me" : "تواصل معي")</h4>
+                <div class="social-links-section text-center mb-5">
                     <div class="social-links-grid">
                         @foreach (var link in Model.SocialLinks)
                         {
-                            <a href="@link.Url" target="_blank" class="social-link-card" title="@link.Platform">
-                                <i class="@link.IconClass"></i>
+                            <a class="social-link-card" href="@link.Url" target="_blank" rel="noopener noreferrer"
+                               title="@link.Platform" aria-label="@link.Platform">
+                                <i class="@link.IconClass" aria-hidden="true"></i>
                                 <span>@link.Platform</span>
                             </a>
                         }
@@ -66,31 +60,43 @@
                 </div>
             }
 
-            <!-- Contact Form -->
-            <div class="contact-form mt-5">
-                <h4 class="text-center mb-4">@(lang == "en" ? "Send Me a Message" : "أرسل لي رسالة")</h4>
-                <form id="contactForm">
+            <div class="contact-form">
+                <h4>@(lang == "en" ? "Send me a message" : "أرسل لي رسالة")</h4>
+                <form id="contactForm" novalidate>
                     @Html.AntiForgeryToken()
+
                     <div class="row">
-                        <div class="col-md-6">
-                            <input type="text" class="form-control mb-3" name="Name"
-                                   placeholder="@(lang == "en" ? "Your Name" : "اسمك")" required>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label" for="contactName">@(lang == "en" ? "Your name" : "اسمك")</label>
+                            <input id="contactName" type="text" class="form-control" name="Name"
+                                   autocomplete="name" maxlength="100" required
+                                   placeholder="@(lang == "en" ? "Ahmed Ali" : "أحمد علي")" />
                         </div>
-                        <div class="col-md-6">
-                            <input type="email" class="form-control mb-3" name="Email"
-                                   placeholder="@(lang == "en" ? "Your Email" : "بريدك الإلكتروني")" required>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label" for="contactEmail">@(lang == "en" ? "Email address" : "البريد الإلكتروني")</label>
+                            <input id="contactEmail" type="email" class="form-control" name="Email"
+                                   autocomplete="email" maxlength="200" required
+                                   placeholder="name@example.com" dir="ltr" />
                         </div>
                     </div>
-                    <textarea class="form-control mb-3" name="Message" rows="5"
-                              placeholder="@(lang == "en" ? "Your Message" : "رسالتك")" required></textarea>
+
+                    <div class="mb-3">
+                        <label class="form-label" for="contactMessage">@(lang == "en" ? "Message" : "الرسالة")</label>
+                        <textarea id="contactMessage" class="form-control" name="Message" rows="5"
+                                  maxlength="1000" required
+                                  placeholder="@(lang == "en" ? "Tell me a little about the project or role..." : "أخبرني قليلًا عن المشروع أو الوظيفة...")"></textarea>
+                    </div>
+
                     <button type="submit" class="btn btn-custom w-100" id="contactSubmit">
-                        <i class="fas fa-paper-plane me-2"></i>
-                        @(lang == "en" ? "Send Message" : "إرسال الرسالة")
+                        <i class="fas fa-paper-plane me-2" aria-hidden="true"></i>
+                        @(lang == "en" ? "Send message" : "إرسال الرسالة")
                     </button>
-                    <div id="contactFormStatus"
-                         class="form-status mt-3"
-                         role="status"
-                         aria-live="polite"></div>
+
+                    <div id="contactFormStatus" class="form-status mt-3" role="status" aria-live="polite"></div>
+
+                    <p class="text-muted small text-center mt-3 mb-0">
+                        @(lang == "en" ? "Your details are only used to reply to you." : "تُستخدم بياناتك للرد عليك فقط.")
+                    </p>
                 </form>
             </div>
         </div>

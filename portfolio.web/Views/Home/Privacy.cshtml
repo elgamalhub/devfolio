@@ -1,6 +1,54 @@
 ﻿@{
     ViewData["Title"] = "Privacy Policy";
+    ViewData["Description"] = "How this portfolio handles contact messages and basic analytics.";
 }
-<h1>@ViewData["Title"]</h1>
 
-<p>Use this page to detail your site's privacy policy.</p>
+<div class="page-hero">
+    <div class="container">
+        <h1>@ViewData["Title"]</h1>
+        <p>@ViewData["Description"]</p>
+    </div>
+</div>
+
+<section>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-9">
+                <div class="about-card post-content">
+                    <p><strong>Last updated:</strong> @DateTime.Now.ToString("MMMM yyyy")</p>
+
+                    <h2>What is collected</h2>
+                    <p>
+                        When you submit the contact form, the name, email address, and message you provide are stored so
+                        I can reply. Basic technical data such as the page visited, time of visit, IP address, and browser
+                        user agent may be recorded for aggregate traffic statistics.
+                    </p>
+
+                    <h2>How it is used</h2>
+                    <p>
+                        Contact details are used only to respond to your message. Analytics data is used to understand
+                        which pages are useful and to keep the site fast and secure. Data is not sold or shared with
+                        advertisers.
+                    </p>
+
+                    <h2>Cookies</h2>
+                    <p>
+                        The site stores your language, theme, and session preferences in first-party cookies. These
+                        cookies are used only to remember your choices and to prevent duplicate page-view counts.
+                    </p>
+
+                    <h2>Retention and removal</h2>
+                    <p>
+                        Messages are kept only as long as needed to handle the conversation. You can request deletion of
+                        any message or analytics data associated with you by using the contact form.
+                    </p>
+
+                    <h2>Contact</h2>
+                    <p>
+                        For privacy questions, use the contact form on the <a href="@Url.Action("Index", "Home")#contact">home page</a>.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

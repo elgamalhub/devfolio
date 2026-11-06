@@ -1,0 +1,45 @@
+@model Portfolio.Core.DTOs.HomeViewModel
+@{
+    var lang = Model.CurrentLanguage;
+    var certificates = Model.Certificates.ToList();
+}
+
+<div class="container">
+    <h2 class="section-title">@(lang == "en" ? "Certifications" : "الشهادات")</h2>
+    <p class="section-subtitle">@(lang == "en" ? "Programs and certifications that back the work." : "برامج وشهادات تدعم الخبرة العملية.")</p>
+
+    <div class="certificates-grid">
+        @foreach (var certificate in certificates)
+        {
+            var name = lang == "en" ? certificate.NameEn : certificate.NameAr;
+            <article class="certificate-card">
+                <div class="certificate-badge">
+                    @if (!string.IsNullOrWhiteSpace(certificate.BadgeImage))
+                    {
+                        <img src="@certificate.BadgeImage" alt="" loading="lazy" width="58" height="58" />
+                    }
+                    else
+                    {
+                        <i class="fas fa-certificate" aria-hidden="true"></i>
+                    }
+                </div>
+
+                <div class="certificate-body">
+                    <h3>@name</h3>
+                    <p class="certificate-issuer">@certificate.Issuer</p>
+                    <time class="certificate-date" datetime="@certificate.IssueDate.ToString("yyyy-MM")">
+                        @certificate.IssueDate.ToString("MMMM yyyy")
+                    </time>
+
+                    @if (!string.IsNullOrWhiteSpace(certificate.CertificateUrl))
+                    {
+                        <a class="certificate-link" href="@certificate.CertificateUrl" target="_blank" rel="noopener noreferrer">
+                            <i class="fas fa-arrow-up-right-from-square" aria-hidden="true"></i>
+                            @(lang == "en" ? "View credential" : "عرض الشهادة")
+                        </a>
+                    }
+                </div>
+            </article>
+        }
+    </div>
+</div>

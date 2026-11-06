@@ -1,327 +1,148 @@
 ﻿@model Portfolio.Core.Entities.BlogPost
 @{
-    ViewData["Title"] = Model.TitleEn;
-    var lang = ViewBag.Language ?? "en";
+    var lang = ViewBag.Language as string ?? "en";
+    var title = lang == "en" ? Model.TitleEn : Model.TitleAr;
+    var readMinutes = ViewBag.ReadingTime is int minutes ? minutes : 1;
+    var relatedPosts = ViewBag.RelatedPosts as List<Portfolio.Core.Entities.BlogPost> ?? new List<Portfolio.Core.Entities.BlogPost>();
+
+    ViewData["Title"] = title;
+
+    var image = Model.FeaturedImage;
+    var hasImage = !string.IsNullOrWhiteSpace(image)
+        && (image.StartsWith("/", StringComparison.Ordinal) || image.StartsWith("http", StringComparison.OrdinalIgnoreCase))
+        && !image.Contains('\'');
+
+    var absoluteUrl = Url.Action("Post", "Blog", new { slug = Model.Slug, lang }, Context.Request.Scheme) ?? string.Empty;
+    var encodedUrl = Uri.EscapeDataString(absoluteUrl);
+    var encodedTitle = Uri.EscapeDataString(title);
+
+    var facebookUrl = $"https://www.facebook.com/sharer/sharer.php?u={encodedUrl}";
+    var twitterUrl = $"https://twitter.com/intent/tweet?url={encodedUrl}&text={encodedTitle}";
+    var linkedinUrl = $"https://www.linkedin.com/sharing/share-offsite/?url={encodedUrl}";
+    var whatsappUrl = $"https://wa.me/?text={Uri.EscapeDataString($"{title} {absoluteUrl}")}";
+    var arrowIcon = lang == "ar" ? "fa-arrow-left" : "fa-arrow-right";
 }
 
-<!DOCTYPE html>
-<html lang="@lang" dir="@(lang == "ar" ? "rtl" : "ltr")">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@(lang == "en" ? Model.TitleEn : Model.TitleAr)</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
-    <style>
-        body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
+<div class="post-container">
+    <div class="container">
+        <ul class="breadcrumbs mb-4">
+            <li><a href="@Url.Action("Index", "Home", new { lang })">@(lang == "en" ? "Home" : "الرئيسية")</a></li>
+            <li><a href="@Url.Action("Index", "Blog", new { lang })">@(lang == "en" ? "Blog" : "المدونة")</a></li>
+            <li aria-current="page">@title</li>
+        </ul>
 
-        .navbar {
-            background: rgba(255, 255, 255, 0.95) !important;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
-        }
-
-        .post-container {
-            padding: 120px 0 60px;
-        }
-
-        .post-card {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            overflow: hidden;
-        }
-
-        .post-header {
-            position: relative;
-            height: 400px;
-            overflow: hidden;
-        }
-
-            .post-header img {
-                width: 100%;
-                height: 100%;
-                object-fit: cover;
-            }
-
-        .post-header-overlay {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
-            padding: 40px;
-            color: white;
-        }
-
-            .post-header-overlay h1 {
-                font-size: 2.5rem;
-                font-weight: bold;
-                margin-bottom: 1rem;
-            }
-
-        .post-meta {
-            display: flex;
-            gap: 20px;
-            flex-wrap: wrap;
-        }
-
-        .post-meta-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: rgba(255,255,255,0.9);
-        }
-
-        .post-content {
-            padding: 40px;
-        }
-
-            .post-content p {
-                font-size: 1.1rem;
-                line-height: 1.8;
-                margin-bottom: 1.5rem;
-                color: #333;
-            }
-
-            .post-content h2,
-            .post-content h3,
-            .post-content h4 {
-                margin-top: 2rem;
-                margin-bottom: 1rem;
-                color: #2c3e50;
-            }
-
-            .post-content img {
-                max-width: 100%;
-                height: auto;
-                border-radius: 10px;
-                margin: 2rem 0;
-            }
-
-            .post-content pre {
-                background: #2d2d2d;
-                padding: 20px;
-                border-radius: 10px;
-                overflow-x: auto;
-            }
-
-            .post-content code {
-                background: #f8f9fa;
-                padding: 2px 8px;
-                border-radius: 4px;
-                color: #e83e8c;
-            }
-
-        .post-tags {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin: 30px 0;
-        }
-
-        .post-tag {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            padding: 8px 16px;
-            border-radius: 20px;
-            text-decoration: none;
-            font-size: 0.9rem;
-            transition: transform 0.2s;
-        }
-
-            .post-tag:hover {
-                transform: scale(1.05);
-                color: white;
-            }
-
-        .post-footer {
-            background: #f8f9fa;
-            padding: 30px;
-            border-top: 2px solid #e9ecef;
-        }
-
-        .share-buttons {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            margin-top: 20px;
-        }
-
-        .share-btn {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            transition: transform 0.2s;
-        }
-
-            .share-btn:hover {
-                transform: scale(1.1);
-                color: white;
-            }
-
-            .share-btn.facebook {
-                background: #3b5998;
-            }
-
-            .share-btn.twitter {
-                background: #1da1f2;
-            }
-
-            .share-btn.linkedin {
-                background: #0077b5;
-            }
-
-            .share-btn.whatsapp {
-                background: #25d366;
-            }
-
-        .related-posts {
-            padding: 40px;
-            background: #f8f9fa;
-        }
-
-        .related-post-card {
-            background: white;
-            border-radius: 15px;
-            overflow: hidden;
-            transition: transform 0.3s;
-            height: 100%;
-        }
-
-            .related-post-card:hover {
-                transform: translateY(-5px);
-                box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            }
-
-        .related-post-img {
-            height: 200px;
-            object-fit: cover;
-        }
-
-        .control-btn {
-            background: rgba(255, 255, 255, 0.2);
-            border: 2px solid #667eea;
-            color: #667eea;
-            padding: 0.5rem 1rem;
-            border-radius: 25px;
-            text-decoration: none;
-            transition: all 0.3s ease;
-        }
-
-            .control-btn:hover {
-                background: #667eea;
-                color: white;
-            }
-    </style>
-</head>
-<body>
-    <nav class="navbar navbar-expand-lg navbar-light fixed-top">
-        <div class="container">
-            <a class="navbar-brand" href="@Url.Action("Index", "Home")" style="color: #667eea; font-weight: bold;">
-                <i class="fas fa-code"></i> Portfolio
-            </a>
-            <div class="d-flex gap-2">
-                <a href="@Url.Action("Index", "Blog", new { lang })" class="control-btn">
-                    <i class="fas fa-arrow-left"></i> @(lang == "en" ? "Back to Blog" : "العودة للمدونة")
-                </a>
-                <a href="@Url.Action("Post", new { slug = Model.Slug, lang = lang == "en" ? "ar" : "en" })" class="control-btn">
-                    <i class="fas fa-language"></i>
-                </a>
-            </div>
-        </div>
-    </nav>
-
-    <div class="post-container">
-        <div class="container">
-            <article class="post-card">
-                <!-- Post Header with Featured Image -->
-                <div class="post-header">
-                    @if (!string.IsNullOrEmpty(Model.FeaturedImage))
-                    {
-                        <img src="@Model.FeaturedImage" alt="@(lang == "en" ? Model.TitleEn : Model.TitleAr)">
-                    }
-                    else
-                    {
-                        <div style="background: linear-gradient(135deg, #667eea, #764ba2); width: 100%; height: 100%;"></div>
-                    }
-                    <div class="post-header-overlay">
-                        <h1>@(lang == "en" ? Model.TitleEn : Model.TitleAr)</h1>
-                        <div class="post-meta">
-                            <span class="post-meta-item">
-                                <i class="fas fa-calendar"></i>
-                                @Model.PublishedAt.ToString("MMMM dd, yyyy")
-                            </span>
-                            <span class="post-meta-item">
-                                <i class="fas fa-eye"></i>
-                                @Model.ViewCount @(lang == "en" ? "views" : "مشاهدة")
-                            </span>
-                            <span class="post-meta-item">
-                                <i class="fas fa-clock"></i>
-                                @(lang == "en" ? $"{(Model.ContentEn.Length / 1000)} min read" : $"{(Model.ContentAr.Length / 1000)} دقيقة قراءة")
-                            </span>
-                        </div>
+        <article class="post-card">
+            <header class="post-header @(hasImage ? "" : "post-header-gradient")"
+                    style="@(hasImage ? $"background-image:url('{image}');" : "")">
+                <div class="post-header-inner">
+                    <h1>@title</h1>
+                    <div class="post-meta">
+                        <span class="post-meta-item">
+                            <i class="fas fa-calendar" aria-hidden="true"></i>
+                            <time datetime="@Model.PublishedAt.ToString("yyyy-MM-dd")">@Model.PublishedAt.ToString("MMMM dd, yyyy")</time>
+                        </span>
+                        <span class="post-meta-item">
+                            <i class="fas fa-clock" aria-hidden="true"></i>
+                            @readMinutes @(lang == "en" ? "min read" : "دقيقة قراءة")
+                        </span>
+                        <span class="post-meta-item">
+                            <i class="fas fa-eye" aria-hidden="true"></i>
+                            @Model.ViewCount @(lang == "en" ? "views" : "مشاهدة")
+                        </span>
                     </div>
                 </div>
+            </header>
 
-                <!-- Post Tags -->
+            <div class="post-body">
                 @if (Model.Tags.Any())
                 {
-                    <div class="post-content">
-                        <div class="post-tags">
-                            @foreach (var tag in Model.Tags)
-                            {
-                                <a href="#" class="post-tag">
-                                    <i class="fas fa-tag"></i> @tag.TagName
-                                </a>
-                            }
-                        </div>
+                    <div class="post-tags">
+                        @foreach (var tag in Model.Tags)
+                        {
+                            <a class="post-tag" href="@Url.Action("Index", "Blog", new { lang, tag = tag.TagName })">
+                                <i class="fas fa-tag" aria-hidden="true"></i> @tag.TagName
+                            </a>
+                        }
                     </div>
                 }
 
-                <!-- Post Content -->
                 <div class="post-content">
                     @Html.Raw(lang == "en" ? Model.ContentEn : Model.ContentAr)
                 </div>
+            </div>
 
-                <!-- Post Footer with Share Buttons -->
-                <div class="post-footer">
-                    <h5 class="text-center mb-3">@(lang == "en" ? "Share this post" : "شارك هذا المقال")</h5>
-                    <div class="share-buttons">
-                        <a href="https://www.facebook.com/sharer/sharer.php?u=@Url.Action("Post", "Blog", new { slug = Model.Slug }, Context.Request.Scheme)"
-                           target="_blank" class="share-btn facebook">
-                            <i class="fab fa-facebook-f"></i>
-                        </a>
-                        <a href="https://twitter.com/intent/tweet?url=@Url.Action("Post", "Blog", new { slug = Model.Slug }, Context.Request.Scheme)&text=@Model.TitleEn"
-                           target="_blank" class="share-btn twitter">
-                            <i class="fab fa-twitter"></i>
-                        </a>
-                        <a href="https://www.linkedin.com/sharing/share-offsite/?url=@Url.Action("Post", "Blog", new { slug = Model.Slug }, Context.Request.Scheme)"
-                           target="_blank" class="share-btn linkedin">
-                            <i class="fab fa-linkedin-in"></i>
-                        </a>
-                        <a href="https://wa.me/?text=@Model.TitleEn%20@Url.Action("Post", "Blog" , new { slug=Model.Slug }, Request.Scheme)"
-                           target="_blank" class="share-btn whatsapp">
-                            <i class="fab fa-whatsapp"></i>
-                        </a>
-                    </div>
+            <footer class="post-footer">
+                <h2 class="h5 mb-0">@(lang == "en" ? "Share this article" : "شارك هذا المقال")</h2>
+
+                <div class="share-buttons">
+                    <a class="share-btn facebook" href="@facebookUrl" target="_blank" rel="noopener noreferrer"
+                       aria-label="@(lang == "en" ? "Share on Facebook" : "شارك على فيسبوك")">
+                        <i class="fab fa-facebook-f" aria-hidden="true"></i>
+                    </a>
+                    <a class="share-btn twitter" href="@twitterUrl" target="_blank" rel="noopener noreferrer"
+                       aria-label="@(lang == "en" ? "Share on X" : "شارك على X")">
+                        <i class="fab fa-x-twitter" aria-hidden="true"></i>
+                    </a>
+                    <a class="share-btn linkedin" href="@linkedinUrl" target="_blank" rel="noopener noreferrer"
+                       aria-label="@(lang == "en" ? "Share on LinkedIn" : "شارك على لينكدإن")">
+                        <i class="fab fa-linkedin-in" aria-hidden="true"></i>
+                    </a>
+                    <a class="share-btn whatsapp" href="@whatsappUrl" target="_blank" rel="noopener noreferrer"
+                       aria-label="@(lang == "en" ? "Share on WhatsApp" : "شارك على واتساب")">
+                        <i class="fab fa-whatsapp" aria-hidden="true"></i>
+                    </a>
+                    <button class="share-btn copy" type="button" data-copy-url="@absoluteUrl"
+                            aria-label="@(lang == "en" ? "Copy article link" : "نسخ رابط المقال")">
+                        <i class="fas fa-link" aria-hidden="true"></i>
+                    </button>
                 </div>
-            </article>
-        </div>
-    </div>
+            </footer>
+        </article>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-csharp.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
-</body>
-</html>
+        <div class="text-center mt-4">
+            <a href="@Url.Action("Index", "Blog", new { lang })" class="btn btn-custom-outline">
+                <i class="fas @arrowIcon" aria-hidden="true"></i>
+                @(lang == "en" ? "Back to all articles" : "العودة إلى جميع المقالات")
+            </a>
+        </div>
+
+        @if (relatedPosts.Any())
+        {
+            <section class="related-posts">
+                <h2>@(lang == "en" ? "Related articles" : "مقالات ذات صلة")</h2>
+
+                <div class="related-grid">
+                    @foreach (var related in relatedPosts)
+                    {
+                        var relatedTitle = lang == "en" ? related.TitleEn : related.TitleAr;
+                        var relatedImage = related.FeaturedImage;
+                        var relatedHasImage = !string.IsNullOrWhiteSpace(relatedImage)
+                            && (relatedImage.StartsWith("/", StringComparison.Ordinal) || relatedImage.StartsWith("http", StringComparison.OrdinalIgnoreCase))
+                            && !relatedImage.Contains('\'');
+
+                        <article class="related-card">
+                            @if (relatedHasImage)
+                            {
+                                <div class="related-card-image" style="background-image:url('@relatedImage')" role="img" aria-label="@relatedTitle"></div>
+                            }
+                            else
+                            {
+                                <div class="related-card-image"></div>
+                            }
+
+                            <div class="related-card-body">
+                                <h3>
+                                    <a href="@Url.Action("Post", "Blog", new { slug = related.Slug, lang })">@relatedTitle</a>
+                                </h3>
+                                <span class="related-card-date">
+                                    <i class="fas fa-calendar me-1" aria-hidden="true"></i>
+                                    @related.PublishedAt.ToString("MMM dd, yyyy")
+                                </span>
+                            </div>
+                        </article>
+                    }
+                </div>
+            </section>
+        }
+    </div>
+</div>

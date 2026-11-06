@@ -1,3 +1,6 @@
+using System.Diagnostics;
+using System.Text.Encodings.Web;
+using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
@@ -5,12 +8,16 @@ using Portfolio.Core.DTOs;
 using Portfolio.Core.Entities;
 using Portfolio.Core.Interfaces;
 using Portfolio.Infrastructure.Data;
-using System.Diagnostics;
 
 namespace Portfolio.Web.Controllers
 {
     public class HomeController : Controller
     {
+        private static readonly JsonSerializerOptions JsonOptions = new()
+        {
+            Encoder = JavaScriptEncoder.Default
+        };
+
         private readonly IRepository<About> _aboutRepo;
         private readonly IRepository<Skill> _skillRepo;
         private readonly IRepository<Experience> _expRepo;
@@ -57,27 +64,7 @@ namespace Portfolio.Web.Controllers
 
         public async Task<IActionResult> Index(string? lang, string? theme)
         {
-            // Get site settings
-            var settings = (await _settingsRepo.GetAllAsync())
-                .ToDictionary(s => s.Key, s => s.ValueEn, StringComparer.OrdinalIgnoreCase);
-
-            // Determine language (priority: query param > cookie > setting > default)
-            var currentLang = NormalizeLanguage(
-                lang ?? Request.Cookies["language"] ?? settings.GetValueOrDefault("default_language", "en"));
-
-            // Determine theme (priority: query param > cookie > setting > default)
-            var currentTheme = NormalizeTheme(
-                theme ?? Request.Cookies["theme"] ?? settings.GetValueOrDefault("default_theme", "dark"));
-
-            // Persist explicit preferences only
-            if (lang != null)
-            {
-                SetPreferenceCookie("language", currentLang);
-            }
-            if (theme != null)
-            {
-                SetPreferenceCookie("theme", currentTheme);
-            }
+            var (currentLang, currentTheme, settings) = await LoadPublicPreferencesAsync(lang, theme);
 
             // Get project categories
             var categories = (await _context.ProjectCategories.ToListAsync())
@@ -137,9 +124,41 @@ namespace Portfolio.Web.Controllers
                 CurrentLanguage = currentLang
             };
 
-            ViewBag.Settings = settings;
             ViewBag.Sections = visibleSections;
             ViewBag.CurrentTheme = currentTheme;
+            ViewBag.IsHomePage = true;
+            ViewBag.SocialLinks = viewModel.SocialLinks;
+            ViewBag.HasCertificates = viewModel.Certificates.Any();
+            ViewBag.TypingTitles = viewModel.TypingTitles
+                .Select(t => currentLang == "ar" ? t.TitleAr : t.TitleEn)
+                .Where(t => !string.IsNullOrWhiteSpace(t))
+                .ToList();
+
+            ViewData["CanonicalUrl"] = Url.Action("Index", "Home", new { lang = currentLang }, Request.Scheme);
+
+            var baseUrl = $"{Request.Scheme}://{Request.Host}";
+            var name = currentLang == "ar" ? viewModel.About?.NameAr : viewModel.About?.NameEn;
+            var jobTitle = currentLang == "ar"
+                ? viewModel.TypingTitles.FirstOrDefault()?.TitleAr
+                : viewModel.TypingTitles.FirstOrDefault()?.TitleEn;
+
+            ViewData["StructuredData"] = JsonSerializer.Serialize(new
+            {
+                @context = "https://schema.org",
+                @type = "Person",
+                name,
+                url = baseUrl,
+                image = ToAbsoluteUrl(viewModel.About?.ProfileImage, baseUrl),
+                jobTitle,
+                email = viewModel.About?.Email,
+                address = new
+                {
+                    @type = "PostalAddress",
+                    addressLocality = viewModel.About?.Location
+                },
+                sameAs = viewModel.SocialLinks.Select(s => s.Url).Where(u => !string.IsNullOrWhiteSpace(u)).ToArray(),
+                knowsLanguage = new[] { "en", "ar" }
+            }, JsonOptions);
 
             return View(viewModel);
         }
@@ -186,6 +205,8 @@ namespace Portfolio.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> GetProjectsByCategory(string? category)
         {
+            ViewBag.Language = NormalizeLanguage(Request.Cookies["language"] ?? "en");
+
             IEnumerable<Project> projects;
 
             if (string.IsNullOrWhiteSpace(category) || category == "all")
@@ -231,8 +252,20 @@ namespace Portfolio.Web.Controllers
             return Json(new { success = true });
         }
 
-        public IActionResult Privacy()
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult SetTheme([FromBody] ThemePreferenceDto? model)
         {
+            var theme = NormalizeTheme(model?.Theme);
+            SetPreferenceCookie("theme", theme);
+            return Json(new { success = true, theme });
+        }
+
+        public async Task<IActionResult> Privacy()
+        {
+            await LoadPublicPreferencesAsync(null, null);
+            ViewData["Title"] = "Privacy Policy";
+            ViewData["Description"] = "How this portfolio handles contact messages, cookies, and basic analytics.";
             return View();
         }
 
@@ -240,6 +273,47 @@ namespace Portfolio.Web.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+
+        private async Task<(string Language, string Theme, Dictionary<string, string> Settings)> LoadPublicPreferencesAsync(
+            string? lang,
+            string? theme)
+        {
+            var settingEntities = (await _settingsRepo.GetAllAsync()).ToList();
+            var defaults = settingEntities.ToDictionary(
+                s => s.Key,
+                s => s.ValueEn,
+                StringComparer.OrdinalIgnoreCase);
+
+            // Priority: explicit query parameter > cookie > site default.
+            var currentLang = NormalizeLanguage(
+                lang ?? Request.Cookies["language"] ?? defaults.GetValueOrDefault("default_language", "en"));
+
+            var currentTheme = NormalizeTheme(
+                theme ?? Request.Cookies["theme"] ?? defaults.GetValueOrDefault("default_theme", "dark"));
+
+            // Persist explicit preferences only.
+            if (lang != null)
+            {
+                SetPreferenceCookie("language", currentLang);
+            }
+
+            if (theme != null)
+            {
+                SetPreferenceCookie("theme", currentTheme);
+            }
+
+            var settings = settingEntities.ToDictionary(
+                s => s.Key,
+                s => currentLang == "ar" && !string.IsNullOrWhiteSpace(s.ValueAr) ? s.ValueAr : s.ValueEn,
+                StringComparer.OrdinalIgnoreCase);
+
+            ViewBag.Settings = settings;
+            ViewBag.Language = currentLang;
+            ViewBag.CurrentLanguage = currentLang;
+            ViewBag.CurrentTheme = currentTheme;
+
+            return (currentLang, currentTheme, settings);
         }
 
         private async Task TrackPageView(string pageUrl)
@@ -295,6 +369,18 @@ namespace Portfolio.Web.Controllers
             return string.Equals(language, "ar", StringComparison.OrdinalIgnoreCase) ? "ar" : "en";
         }
 
+        private static string ToAbsoluteUrl(string? path, string baseUrl)
+        {
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                return string.Empty;
+            }
+
+            return path.StartsWith("http", StringComparison.OrdinalIgnoreCase)
+                ? path
+                : $"{baseUrl}/{path.TrimStart('/')}";
+        }
+
         private static string NormalizeTheme(string? theme)
         {
             return string.Equals(theme, "light", StringComparison.OrdinalIgnoreCase) ? "light" : "dark";
@@ -321,5 +407,10 @@ namespace Portfolio.Web.Controllers
     {
         public string? RequestId { get; set; }
         public bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
+    }
+
+    public class ThemePreferenceDto
+    {
+        public string? Theme { get; set; }
     }
 }

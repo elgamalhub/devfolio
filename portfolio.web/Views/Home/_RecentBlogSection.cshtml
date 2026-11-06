@@ -1,143 +1,75 @@
 ﻿@model Portfolio.Core.DTOs.HomeViewModel
 @{
     var lang = Model.CurrentLanguage;
-    var recentPosts = ViewBag.RecentPosts as List<Portfolio.Core.Entities.BlogPost>;
+    var recentPosts = ViewBag.RecentPosts as List<Portfolio.Core.Entities.BlogPost> ?? new List<Portfolio.Core.Entities.BlogPost>();
 }
 
-@if (recentPosts != null && recentPosts.Any())
+@if (recentPosts.Any())
 {
     <div class="container">
-        <h2 class="section-title">@(lang == "en" ? "Latest from Blog" : "أحدث المقالات")</h2>
-        <p class="text-center text-muted mb-5">@(lang == "en" ? "Check out my recent thoughts and tutorials" : "تحقق من أفكاري ودروسي الأخيرة")</p>
+        <h2 class="section-title">@(lang == "en" ? "From the Blog" : "من المدونة")</h2>
+        <p class="section-subtitle">@(lang == "en" ? "Notes on .NET, architecture, and the craft of building software." : "ملاحظات عن .NET والهندسة المعمارية وفن بناء البرمجيات.")</p>
 
         <div class="row g-4">
             @foreach (var post in recentPosts.Take(3))
             {
-                <div class="col-md-4">
-                    <div class="blog-preview-card">
-                        @if (!string.IsNullOrEmpty(post.FeaturedImage))
+                var title = lang == "en" ? post.TitleEn : post.TitleAr;
+                var content = lang == "en" ? post.ContentEn : post.ContentAr;
+                var plainText = System.Text.RegularExpressions.Regex.Replace(content, "<.*?>", " ");
+                var excerpt = plainText.Length > 120 ? plainText[..120].TrimEnd() + "…" : plainText.Trim();
+                var words = plainText.Split(new[] { ' ', '\n', '\r', '\t' }, StringSplitOptions.RemoveEmptyEntries).Length;
+                var readMinutes = Math.Max(1, (int)Math.Ceiling(words / 200.0));
+                var image = post.FeaturedImage;
+                var hasImage = !string.IsNullOrWhiteSpace(image)
+                    && (image.StartsWith("/", StringComparison.Ordinal) || image.StartsWith("http", StringComparison.OrdinalIgnoreCase))
+                    && !image.Contains('\'');
+
+                <div class="col-md-6 col-lg-4">
+                    <article class="blog-preview-card">
+                        @if (hasImage)
                         {
-                            <div class="blog-preview-image" style="background-image: url('@post.FeaturedImage');"></div>
+                            <div class="blog-preview-image" style="background-image:url('@image')" role="img" aria-label="@title"></div>
                         }
                         else
                         {
-                            <div class="blog-preview-image" style="background: linear-gradient(135deg, #667eea, #764ba2);"></div>
+                            <div class="blog-preview-image"></div>
                         }
 
                         <div class="blog-preview-content">
                             <div class="blog-preview-meta">
-                                <span><i class="fas fa-calendar"></i> @post.PublishedAt.ToString("MMM dd, yyyy")</span>
-                                <span><i class="fas fa-eye"></i> @post.ViewCount</span>
+                                <span><i class="fas fa-calendar" aria-hidden="true"></i> @post.PublishedAt.ToString("MMM dd, yyyy")</span>
+                                <span><i class="fas fa-clock" aria-hidden="true"></i> @readMinutes @(lang == "en" ? "min" : "د")</span>
+                                <span><i class="fas fa-eye" aria-hidden="true"></i> @post.ViewCount</span>
                             </div>
 
-                            <h4 class="blog-preview-title">@(lang == "en" ? post.TitleEn : post.TitleAr)</h4>
+                            <h3 class="blog-preview-title">@title</h3>
+                            <p class="blog-preview-excerpt">@excerpt</p>
 
-                            <p class="blog-preview-excerpt">
-                                @{
-                                    var content = lang == "en" ? post.ContentEn : post.ContentAr;
-                                    var excerpt = System.Text.RegularExpressions.Regex.Replace(content, "<.*?>", "");
-                                    excerpt = excerpt.Length > 100 ? excerpt.Substring(0, 100) + "..." : excerpt;
-                                }
-                                @excerpt
-                            </p>
+                            @if (post.Tags.Any())
+                            {
+                                <div class="blog-preview-tags">
+                                    @foreach (var tag in post.Tags.Take(2))
+                                    {
+                                        <a class="blog-tag" href="@Url.Action("Index", "Blog", new { lang, tag = tag.TagName })">#@tag.TagName</a>
+                                    }
+                                </div>
+                            }
 
-                            <div class="blog-preview-tags mb-3">
-                                @foreach (var tag in post.Tags.Take(2))
-                                {
-                                    <span class="blog-tag">@tag.TagName</span>
-                                }
-                            </div>
-
-                            <a href="@Url.Action("Post", "Blog", new { slug = post.Slug, lang })" class="btn btn-custom btn-sm">
-                                @(lang == "en" ? "Read More" : "اقرأ المزيد") <i class="fas fa-arrow-right ms-2"></i>
+                            <a href="@Url.Action("Post", "Blog", new { slug = post.Slug, lang })" class="btn btn-custom">
+                                @(lang == "en" ? "Read article" : "اقرأ المقال")
+                                <i class="fas fa-arrow-right" aria-hidden="true"></i>
                             </a>
                         </div>
-                    </div>
+                    </article>
                 </div>
             }
         </div>
 
         <div class="text-center mt-5">
-            <a href="@Url.Action("Index", "Blog", new { lang })" class="btn btn-custom-outline btn-lg">
-                <i class="fas fa-blog me-2"></i> @(lang == "en" ? "View All Posts" : "عرض جميع المقالات")
+            <a href="@Url.Action("Index", "Blog", new { lang })" class="btn btn-custom-outline">
+                <i class="fas fa-blog me-2" aria-hidden="true"></i>
+                @(lang == "en" ? "View all posts" : "عرض جميع المقالات")
             </a>
         </div>
     </div>
 }
-
-<style>
-    .blog-preview-card {
-        background: white;
-        border-radius: 15px;
-        overflow: hidden;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-        height: 100%;
-    }
-
-        .blog-preview-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 20px 50px rgba(0,0,0,0.2);
-        }
-
-    .blog-preview-image {
-        height: 200px;
-        background-size: cover;
-        background-position: center;
-    }
-
-    .blog-preview-content {
-        padding: 25px;
-    }
-
-    .blog-preview-meta {
-        display: flex;
-        gap: 15px;
-        color: #999;
-        font-size: 0.85rem;
-        margin-bottom: 15px;
-    }
-
-        .blog-preview-meta span {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-    .blog-preview-title {
-        font-size: 1.3rem;
-        font-weight: bold;
-        color: #333;
-        margin-bottom: 15px;
-        line-height: 1.4;
-    }
-
-    .blog-preview-excerpt {
-        color: #666;
-        font-size: 0.95rem;
-        line-height: 1.6;
-        margin-bottom: 15px;
-    }
-
-    .blog-tag {
-        display: inline-block;
-        background: #f0f0f0;
-        padding: 5px 12px;
-        border-radius: 15px;
-        font-size: 0.8rem;
-        color: #667eea;
-        margin-right: 8px;
-    }
-
-    body.light-mode .blog-preview-card {
-        background: white;
-    }
-
-    body.light-mode .blog-preview-title {
-        color: #333;
-    }
-
-    body.light-mode .blog-preview-excerpt {
-        color: #666;
-    }
-</style>

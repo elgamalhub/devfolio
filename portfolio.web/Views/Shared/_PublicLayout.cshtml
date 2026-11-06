@@ -1,0 +1,413 @@
+@using System.Text.RegularExpressions
+@using Portfolio.Core.Entities
+@{
+    var lang = (ViewBag.Language as string) ?? (ViewBag.CurrentLanguage as string) ?? Context.Request.Cookies["language"] ?? "en";
+    if (!string.Equals(lang, "ar", StringComparison.OrdinalIgnoreCase))
+    {
+        lang = "en";
+    }
+
+    var theme = (ViewBag.CurrentTheme as string) ?? Context.Request.Cookies["theme"] ?? "dark";
+    if (!string.Equals(theme, "light", StringComparison.OrdinalIgnoreCase))
+    {
+        theme = "dark";
+    }
+
+    var settings = ViewBag.Settings as Dictionary<string, string> ?? new Dictionary<string, string>();
+    var navSections = ViewBag.Sections as List<Section> ?? new List<Section>();
+    var typingTitles = ViewBag.TypingTitles as IEnumerable<string> ?? Enumerable.Empty<string>();
+    var socialLinks = ViewBag.SocialLinks as IEnumerable<SocialLink> ?? Enumerable.Empty<SocialLink>();
+
+    var isHome = ViewBag.IsHomePage is bool homeFlag
+        ? homeFlag
+        : string.Equals(ViewContext.RouteData.Values["controller"]?.ToString(), "Home", StringComparison.OrdinalIgnoreCase)
+          && string.Equals(ViewContext.RouteData.Values["action"]?.ToString(), "Index", StringComparison.OrdinalIgnoreCase);
+
+    var hasCertificates = ViewBag.HasCertificates is bool certFlag && certFlag;
+    var hasCertificateSection = navSections.Any(s => string.Equals(s.Identifier, "certificates", StringComparison.OrdinalIgnoreCase) && s.ShowInNavbar);
+
+    var siteTitle = lang == "ar"
+        ? settings.GetValueOrDefault("site_title_ar", "أحمد الجمل")
+        : settings.GetValueOrDefault("site_title_en", "Ahmed Elgamal");
+
+    var metaDescription = lang == "ar"
+        ? settings.GetValueOrDefault("meta_description_ar", "مطور .NET متكامل يبني تطبيقات ويب احترافية وآمنة.")
+        : settings.GetValueOrDefault("meta_description_en", "Full Stack .NET developer building secure, polished web applications.");
+
+    var pageDescription = ViewData["Description"] as string;
+    if (string.IsNullOrWhiteSpace(pageDescription))
+    {
+        pageDescription = metaDescription;
+    }
+
+    var pageTitle = ViewData["Title"] as string;
+    var fullTitle = string.IsNullOrWhiteSpace(pageTitle) || string.Equals(pageTitle, "Portfolio", StringComparison.OrdinalIgnoreCase)
+        ? siteTitle
+        : $"{pageTitle} | {siteTitle}";
+
+    var primaryColor = settings.GetValueOrDefault("primary_color", "#667eea");
+    if (!Regex.IsMatch(primaryColor, "^#[0-9a-fA-F]{6}$"))
+    {
+        primaryColor = "#667eea";
+    }
+
+    var secondaryColor = settings.GetValueOrDefault("secondary_color", "#764ba2");
+    if (!Regex.IsMatch(secondaryColor, "^#[0-9a-fA-F]{6}$"))
+    {
+        secondaryColor = "#764ba2";
+    }
+
+    string ToAbsoluteUrl(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return string.Empty;
+        }
+
+        if (value.StartsWith("http://", StringComparison.OrdinalIgnoreCase) ||
+            value.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
+        {
+            return value;
+        }
+
+        return $"{Context.Request.Scheme}://{Context.Request.Host}{Url.Content(value)}";
+    }
+
+    var canonicalUrl = ViewData["CanonicalUrl"] as string;
+    if (string.IsNullOrWhiteSpace(canonicalUrl))
+    {
+        canonicalUrl = $"{Context.Request.Scheme}://{Context.Request.Host}{Context.Request.PathBase}{Context.Request.Path}";
+    }
+    else if (canonicalUrl.StartsWith("/", StringComparison.Ordinal))
+    {
+        canonicalUrl = $"{Context.Request.Scheme}://{Context.Request.Host}{canonicalUrl}";
+    }
+
+    var ogImage = ToAbsoluteUrl(ViewData["OgImage"] as string ?? settings.GetValueOrDefault("og_image", ""));
+    var ogType = ViewData["OgType"] as string ?? "website";
+    var noIndex = ViewData["NoIndex"] is bool noIndexFlag && noIndexFlag;
+
+    var otherQuery = Context.Request.Query
+        .Where(q => !string.Equals(q.Key, "lang", StringComparison.OrdinalIgnoreCase))
+        .ToDictionary(q => q.Key, q => (string?)q.Value.ToString());
+    otherQuery["lang"] = lang == "en" ? "ar" : "en";
+    var switchLanguageUrl = $"{Context.Request.PathBase}{Context.Request.Path}{QueryString.Create(otherQuery)}";
+
+    var enQuery = new Dictionary<string, string?>(otherQuery) { ["lang"] = "en" };
+    var arQuery = new Dictionary<string, string?>(otherQuery) { ["lang"] = "ar" };
+    var enUrl = $"{Context.Request.Scheme}://{Context.Request.Host}{Context.Request.PathBase}{Context.Request.Path}{QueryString.Create(enQuery)}";
+    var arUrl = $"{Context.Request.Scheme}://{Context.Request.Host}{Context.Request.PathBase}{Context.Request.Path}{QueryString.Create(arQuery)}";
+
+    var enablePreloader = settings.GetValueOrDefault("enable_preloader", "false") == "true";
+    var preloaderStyle = settings.GetValueOrDefault("preloader_style", "spinner");
+    var preloaderDuration = settings.GetValueOrDefault("preloader_duration", "600");
+    var preloaderColor = settings.GetValueOrDefault("preloader_color", "#667eea");
+    if (!Regex.IsMatch(preloaderColor, "^#[0-9a-fA-F]{6}$"))
+    {
+        preloaderColor = "#ffffff";
+    }
+
+    var preloaderLogo = settings.GetValueOrDefault("preloader_logo", "");
+    var preloaderBg = settings.GetValueOrDefault("preloader_background", "gradient");
+    var preloaderBgImage = settings.GetValueOrDefault("preloader_background_image", "");
+    var showBackToTop = settings.GetValueOrDefault("show_back_to_top", "true") == "true";
+
+    string preloaderBackground;
+    if (preloaderBg == "image" && !string.IsNullOrWhiteSpace(preloaderBgImage))
+    {
+        preloaderBackground = $"background-image:url('{ToAbsoluteUrl(preloaderBgImage)}');background-size:cover;background-position:center;";
+    }
+    else if (preloaderBg == "solid")
+    {
+        preloaderBackground = $"background:{primaryColor};";
+    }
+    else
+    {
+        preloaderBackground = $"background:linear-gradient(135deg,{primaryColor} 0%,{secondaryColor} 100%);";
+    }
+
+    var themeLabel = lang == "ar" ? "تبديل الوضع الليلي والنهاري" : "Toggle dark and light mode";
+    var languageLabel = lang == "ar" ? "Switch to English" : "التبديل إلى العربية";
+    var adminLabel = lang == "ar" ? "لوحة التحكم" : "Admin dashboard";
+    var navHomeLabel = lang == "ar" ? "الرئيسية" : "Home";
+    var navBlogLabel = lang == "ar" ? "المدونة" : "Blog";
+    var navContactLabel = lang == "ar" ? "تواصل معي" : "Contact";
+    var navCertificatesLabel = lang == "ar" ? "الشهادات" : "Certificates";
+    var skipLabel = lang == "ar" ? "تخطَّ إلى المحتوى" : "Skip to content";
+}
+
+<!DOCTYPE html>
+<html lang="@lang" dir="@(lang == "ar" ? "rtl" : "ltr")">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@fullTitle</title>
+    <meta name="description" content="@pageDescription" />
+    <meta name="author" content="@siteTitle" />
+    <meta name="theme-color" content="@primaryColor" />
+    <meta name="color-scheme" content="@(theme == "light" ? "light" : "dark")" />
+    @if (noIndex)
+    {
+        <meta name="robots" content="noindex, follow" />
+    }
+    else
+    {
+        <meta name="robots" content="index, follow, max-image-preview:large" />
+    }
+
+    <link rel="canonical" href="@canonicalUrl" />
+    @if (!noIndex)
+    {
+        <link rel="alternate" hreflang="en" href="@enUrl" />
+        <link rel="alternate" hreflang="ar" href="@arUrl" />
+        <link rel="alternate" hreflang="x-default" href="@enUrl" />
+    }
+    <link rel="alternate" type="application/rss+xml" title="@siteTitle — Blog" href="@Url.Content("~/feed.xml")" />
+
+    <meta property="og:type" content="@ogType" />
+    <meta property="og:site_name" content="@siteTitle" />
+    <meta property="og:title" content="@fullTitle" />
+    <meta property="og:description" content="@pageDescription" />
+    <meta property="og:url" content="@canonicalUrl" />
+    <meta property="og:locale" content="@(lang == "ar" ? "ar_AR" : "en_US")" />
+    @if (!string.IsNullOrWhiteSpace(ogImage))
+    {
+        <meta property="og:image" content="@ogImage" />
+        <meta name="twitter:image" content="@ogImage" />
+    }
+
+    <meta name="twitter:card" content="@(string.IsNullOrWhiteSpace(ogImage) ? "summary" : "summary_large_image")" />
+    <meta name="twitter:title" content="@fullTitle" />
+    <meta name="twitter:description" content="@pageDescription" />
+
+    <link rel="icon" href="~/favicon.ico" sizes="any" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/@(lang == "ar" ? "bootstrap.rtl.min.css" : "bootstrap.min.css")" asp-append-version="true" />
+    <link rel="stylesheet" href="~/lib/fontawesome/css/all.min.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/portfolio.css" asp-append-version="true" />
+    <style>
+        :root {
+            --primary-color: @primaryColor;
+            --secondary-color: @secondaryColor;
+        }
+    </style>
+
+    @if (ViewData["StructuredData"] is string structuredData && !string.IsNullOrWhiteSpace(structuredData))
+    {
+        <script type="application/ld+json">@Html.Raw(structuredData)</script>
+    }
+
+    @await RenderSectionAsync("Head", required: false)
+</head>
+<body class="@(lang == "ar" ? "rtl" : "") @(theme == "light" ? "light-mode" : "") @(isHome ? "home-page" : "inner-page")"
+      data-theme="@theme">
+    <a class="skip-link" href="#main">@skipLabel</a>
+
+    <div class="d-none" aria-hidden="true">@Html.AntiForgeryToken()</div>
+
+    @if (enablePreloader)
+    {
+        <div id="preloader" data-duration="@preloaderDuration" style="@preloaderBackground">
+            @if (preloaderStyle == "spinner")
+            {
+                <div class="spinner" style="border-top-color:@preloaderColor;"></div>
+            }
+            else if (preloaderStyle == "dots")
+            {
+                <div class="dots-loader">
+                    <div style="background:@preloaderColor;"></div>
+                    <div style="background:@preloaderColor;"></div>
+                    <div style="background:@preloaderColor;"></div>
+                </div>
+            }
+            else if (preloaderStyle == "pulse")
+            {
+                <div class="pulse-loader" style="background:@preloaderColor;"></div>
+            }
+            else if (preloaderStyle == "bars")
+            {
+                <div class="bars-loader">
+                    <div style="background:@preloaderColor;"></div>
+                    <div style="background:@preloaderColor;"></div>
+                    <div style="background:@preloaderColor;"></div>
+                    <div style="background:@preloaderColor;"></div>
+                    <div style="background:@preloaderColor;"></div>
+                </div>
+            }
+            else if (preloaderStyle == "circle")
+            {
+                <div class="circle-loader" style="border-top-color:@preloaderColor;border-inline-end-color:@preloaderColor;"></div>
+            }
+            else if (preloaderStyle == "logo" && !string.IsNullOrWhiteSpace(preloaderLogo))
+            {
+                <div class="logo-loader">
+                    <img src="@preloaderLogo" alt="" />
+                </div>
+            }
+        </div>
+    }
+
+    <div id="scrollProgress" aria-hidden="true"></div>
+
+    @if (showBackToTop)
+    {
+        <button id="backToTop" type="button" aria-label="@(lang == "ar" ? "العودة إلى الأعلى" : "Back to top")">
+            <i class="fas fa-arrow-up" aria-hidden="true"></i>
+        </button>
+    }
+
+    <nav class="navbar navbar-expand-lg fixed-top" aria-label="@(lang == "ar" ? "التنقل الرئيسي" : "Main navigation")">
+        <div class="container">
+            <a class="navbar-brand" href="@Url.Action("Index", "Home", new { lang })">
+                <span class="brand-mark"><i class="fas fa-code" aria-hidden="true"></i></span>
+                <span>@siteTitle</span>
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar"
+                    aria-controls="mainNavbar" aria-expanded="false" aria-label="@(lang == "ar" ? "فتح القائمة" : "Toggle navigation")">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="mainNavbar">
+                <ul class="navbar-nav ms-auto">
+                    @if (isHome)
+                    {
+                        @foreach (var sec in navSections.Where(s => s.ShowInNavbar))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" href="#@sec.Identifier">@(lang == "en" ? sec.NameEn : sec.NameAr)</a>
+                            </li>
+                            @if (!hasCertificateSection && hasCertificates && string.Equals(sec.Identifier, "skills", StringComparison.OrdinalIgnoreCase))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#certificates">@navCertificatesLabel</a>
+                                </li>
+                            }
+                        }
+                        @if (!navSections.Any(s => string.Equals(s.Identifier, "blog", StringComparison.OrdinalIgnoreCase) && s.ShowInNavbar))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" href="@Url.Action("Index", "Blog", new { lang })">@navBlogLabel</a>
+                            </li>
+                        }
+                        @if (!hasCertificateSection && hasCertificates && !navSections.Any(s => string.Equals(s.Identifier, "skills", StringComparison.OrdinalIgnoreCase)))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" href="#certificates">@navCertificatesLabel</a>
+                            </li>
+                        }
+                    }
+                    else
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" href="@Url.Action("Index", "Home", new { lang })">@navHomeLabel</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="@Url.Action("Index", "Blog", new { lang })">@navBlogLabel</a>
+                        </li>
+                        @if (hasCertificates)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" href="@Url.Action("Index", "Home", new { lang })#certificates">@navCertificatesLabel</a>
+                            </li>
+                        }
+                        <li class="nav-item">
+                            <a class="nav-link" href="@Url.Action("Index", "Home", new { lang })#contact">@navContactLabel</a>
+                        </li>
+                    }
+                </ul>
+
+                <div class="navbar-controls ms-lg-3">
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <a class="control-btn" href="@Url.Action("Index", "Dashboard", new { area = "Admin" })" title="@adminLabel" aria-label="@adminLabel">
+                            <i class="fas fa-gauge-high" aria-hidden="true"></i>
+                        </a>
+                    }
+                    <a class="control-btn" href="@switchLanguageUrl" title="@languageLabel" aria-label="@languageLabel" hreflang="@(lang == "en" ? "ar" : "en")">
+                        <i class="fas fa-language" aria-hidden="true"></i>
+                    </a>
+                    <button class="control-btn" id="themeToggle" type="button" title="@themeLabel"
+                            aria-label="@themeLabel" aria-pressed="@(theme == "light" ? "true" : "false")">
+                        <i class="fas @(theme == "dark" ? "fa-moon" : "fa-sun")" aria-hidden="true"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main id="main">
+        @RenderBody()
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <h3>@siteTitle</h3>
+                    <p>@metaDescription</p>
+                </div>
+
+                <div>
+                    <h4 class="footer-title">@(lang == "ar" ? "روابط سريعة" : "Quick links")</h4>
+                    <ul class="footer-links">
+                        <li><a href="@Url.Action("Index", "Home", new { lang })">@navHomeLabel</a></li>
+                        <li><a href="@Url.Action("Index", "Blog", new { lang })">@navBlogLabel</a></li>
+                        <li><a href="@Url.Action("Index", "Home", new { lang })#contact">@navContactLabel</a></li>
+                        <li><a href="@Url.Content("~/feed.xml")">@(lang == "ar" ? "خلاصة RSS" : "RSS feed")</a></li>
+                        <li><a href="@Url.Action("Privacy", "Home")">@(lang == "ar" ? "الخصوصية" : "Privacy")</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="footer-title">@(lang == "ar" ? "تابعني" : "Follow me")</h4>
+                    @if (socialLinks.Any())
+                    {
+                        <div class="footer-social">
+                            @foreach (var link in socialLinks)
+                            {
+                                <a class="social-icon" href="@link.Url" target="_blank" rel="noopener noreferrer"
+                                   title="@link.Platform" aria-label="@link.Platform">
+                                    <i class="@link.IconClass" aria-hidden="true"></i>
+                                </a>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="mb-0">@(lang == "ar" ? "تواصل معي عبر نموذج الموقع." : "Reach out through the contact form.")</p>
+                    }
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <span>&copy; @DateTime.Now.Year @siteTitle. @(lang == "ar" ? "جميع الحقوق محفوظة." : "All rights reserved.")</span>
+                <span>
+                    <a href="@Url.Content("~/feed.xml")">RSS</a>
+                    <span aria-hidden="true">·</span>
+                    <a href="https://dotnet.microsoft.com/" target="_blank" rel="noopener noreferrer">ASP.NET Core</a>
+                </span>
+            </div>
+        </div>
+    </footer>
+
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js" asp-append-version="true"></script>
+    <script>
+        window.portfolioConfig = {
+            lang: @Html.Raw(Json.Serialize(lang)),
+            typingTitles: @Html.Raw(Json.Serialize(typingTitles)),
+            messages: {
+                sending: @Html.Raw(Json.Serialize(lang == "ar" ? "جارٍ الإرسال..." : "Sending...")),
+                sent: @Html.Raw(Json.Serialize(lang == "ar" ? "تم إرسال الرسالة بنجاح!" : "Message sent successfully!")),
+                failed: @Html.Raw(Json.Serialize(lang == "ar" ? "فشل إرسال الرسالة." : "Failed to send message.")),
+                rateLimited: @Html.Raw(Json.Serialize(lang == "ar" ? "عدد الرسائل كبير. يرجى المحاولة لاحقًا." : "Too many messages. Please try again later.")),
+                error: @Html.Raw(Json.Serialize(lang == "ar" ? "حدث خطأ. يرجى المحاولة مرة أخرى." : "An error occurred. Please try again.")),
+                showMore: @Html.Raw(Json.Serialize(lang == "ar" ? "عرض المزيد من المشاريع" : "Show more projects")),
+                showLess: @Html.Raw(Json.Serialize(lang == "ar" ? "عرض أقل من المشاريع" : "Show fewer projects")),
+                copied: @Html.Raw(Json.Serialize(lang == "ar" ? "تم نسخ الرابط" : "Link copied"))
+            }
+        };
+    </script>
+    <script src="~/js/portfolio.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

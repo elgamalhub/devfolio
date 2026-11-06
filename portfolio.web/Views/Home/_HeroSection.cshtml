@@ -1,53 +1,65 @@
 ﻿@model Portfolio.Core.DTOs.HomeViewModel
 @{
     var lang = Model.CurrentLanguage;
-    var settings = ViewBag.Settings as Dictionary<string, string>;
-    var heroImage = settings?.GetValueOrDefault("hero_background_image", "");
+    var settings = ViewBag.Settings as Dictionary<string, string> ?? new Dictionary<string, string>();
+    var heroImage = settings.GetValueOrDefault("hero_background_image", "");
+    var hasHeroImage = !string.IsNullOrWhiteSpace(heroImage)
+        && (heroImage.StartsWith("/", StringComparison.Ordinal) || heroImage.StartsWith("http", StringComparison.OrdinalIgnoreCase))
+        && !heroImage.Contains('\'')
+        && !heroImage.Contains('(');
+
+    var name = lang == "en" ? Model.About?.NameEn : Model.About?.NameAr;
+    var location = Model.About?.Location;
+    var availability = lang == "en" ? "Open to opportunities" : "متاح لفرص العمل";
 }
 
-<div class="hero" style="@(!string.IsNullOrEmpty(heroImage) ? $"background-image: url('{heroImage}'); background-size: cover; background-position: center;" : "")">
-    @if (string.IsNullOrEmpty(heroImage))
-    {
-        <canvas id="particles-canvas"></canvas>
-    }
+<div class="hero @(hasHeroImage ? "has-image" : "")"
+     style="@(hasHeroImage ? $"background-image:url('{heroImage}');" : "")">
     <div class="hero-content">
-        <h1>@(lang == "en" ? $"Hi, I'm {Model.About?.NameEn}" : $"مرحباً، أنا {Model.About?.NameAr}")</h1>
+        <span class="hero-eyebrow">
+            <span class="status-dot" aria-hidden="true"></span>
+            @availability
+        </span>
+
+        <h1>@(lang == "en" ? $"Hi, I'm {name}" : $"مرحباً، أنا {name}")</h1>
+
         <p class="tagline">
-            <span class="typing-text" id="typingText"></span>
+            <span class="typing-text" id="typingText" aria-live="polite"></span>
         </p>
+
         <div class="hero-buttons">
-            <button class="btn btn-custom me-3" onclick="document.getElementById('contact').scrollIntoView({behavior: 'smooth'})">
-                @(lang == "en" ? "Get In Touch" : "تواصل معي") <i class="fas fa-arrow-right ms-2"></i>
-            </button>
-            @if (!string.IsNullOrEmpty(Model.About?.CVFilePath))
+            <a class="btn btn-custom" href="#contact">
+                @(lang == "en" ? "Get in touch" : "تواصل معي")
+                <i class="fas fa-arrow-right" aria-hidden="true"></i>
+            </a>
+            @if (!string.IsNullOrWhiteSpace(Model.About?.CVFilePath))
             {
                 <a href="@Model.About.CVFilePath" download class="btn btn-custom-outline">
-                    <i class="fas fa-download me-2"></i> @(lang == "en" ? "Download CV" : "تحميل السيرة الذاتية")
+                    <i class="fas fa-download" aria-hidden="true"></i>
+                    @(lang == "en" ? "Download CV" : "تحميل السيرة الذاتية")
                 </a>
             }
         </div>
+
+        @if (Model.SocialLinks.Any())
+        {
+            <div class="hero-socials">
+                @foreach (var link in Model.SocialLinks)
+                {
+                    <a class="social-icon" href="@link.Url" target="_blank" rel="noopener noreferrer"
+                       title="@link.Platform" aria-label="@link.Platform">
+                        <i class="@link.IconClass" aria-hidden="true"></i>
+                    </a>
+                }
+            </div>
+        }
     </div>
+
+    @if (!string.IsNullOrWhiteSpace(location))
+    {
+        <a class="hero-scroll" href="#about" aria-label="@(lang == "en" ? "Scroll to about section" : "انتقل إلى قسم عني")">
+            <span>@location</span>
+            <i class="fas fa-chevron-down" aria-hidden="true"></i>
+        </a>
+    }
 </div>
-
-<style>
-.hero {
-    position: relative;
-    overflow: hidden;
-}
-
-.hero::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.4);
-    z-index: 1;
-}
-
-.hero-content {
-    position: relative;
-    z-index: 2;
-}
-</style>

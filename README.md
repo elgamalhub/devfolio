@@ -6,6 +6,7 @@ The public site is fully data-driven: hero typing titles, about, skills, experie
 
 [![.NET](https://img.shields.io/badge/.NET-9.0-512BD4?logo=dotnet)](https://dotnet.microsoft.com/)
 [![SQL Server](https://img.shields.io/badge/SQL%20Server-2019%2B-CC2927?logo=microsoftsqlserver)](https://www.microsoft.com/sql-server)
+[![Build](https://github.com/elgamalhub/devfolio/actions/workflows/ci.yml/badge.svg)](https://github.com/elgamalhub/devfolio/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 ---
@@ -99,7 +100,7 @@ Requests flow through controllers → repository interfaces → `ApplicationDbCo
 ## Project structure
 
 ```text
-portfolio/
+devfolio/
 ├─ Portfolio.Core/
 │  ├─ DTOs/                 # View models and request DTOs
 │  ├─ Entities/             # EF Core entities
@@ -134,8 +135,8 @@ portfolio/
 ### 1. Clone
 
 ```bash
-git clone <YOUR_REPOSITORY_URL>
-cd portfolio
+git clone https://github.com/elgamalhub/devfolio.git
+cd devfolio
 ```
 
 ### 2. Configure the database

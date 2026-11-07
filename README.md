@@ -20,6 +20,7 @@ The public site is fully data-driven: hero typing titles, about, skills, experie
 - [Configuration](#configuration)
 - [Admin account seeding](#admin-account-seeding)
 - [Database & migrations](#database--migrations)
+- [Continuous integration](#continuous-integration)
 - [Security notes](#security-notes)
 - [Roadmap](#roadmap)
 - [Author](#author)
@@ -50,7 +51,7 @@ The public site is fully data-driven: hero typing titles, about, skills, experie
 ### Admin area
 
 - Dashboard with project, message, page-view, and blog statistics plus popular projects and recent messages.
-- Full CRUD for about, typing titles, skills, experience, project categories, projects, testimonials, and blog posts.
+- Full CRUD for about, typing titles, skills, experience, project categories, projects, testimonials, certificates, and blog posts.
 - Central site settings: branding, colours, theme/language defaults, particles, preloader, SEO, and hero image.
 - Section manager: reorder, rename, show/hide, navbar visibility, and custom HTML sections.
 - Contact inbox with read state, notes, and deletion.
@@ -240,6 +241,24 @@ sqlcmd -S . -Q "ALTER DATABASE PortfolioDB SET SINGLE_USER WITH ROLLBACK IMMEDIA
 ```
 
 > The app uses SQL Server only. There is no SQLite fallback.
+
+---
+
+## Continuous integration
+
+`.github/workflows/ci.yml` runs on every push and pull request to `main`:
+
+1. Sets up the .NET 9 SDK on a Windows runner.
+2. Restores and builds the whole solution in `Release` configuration.
+3. Publishes `portfolio.web` and uploads the output as a build artifact.
+
+The workflow does not need a database: migrations and seeding run at application startup, not during the build. You can run the same checks locally with:
+
+```bash
+dotnet restore portfolio.sln
+dotnet build portfolio.sln --configuration Release
+dotnet publish portfolio.web/portfolio.web.csproj --configuration Release --output publish
+```
 
 ---
 

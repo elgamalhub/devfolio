@@ -16,8 +16,9 @@ Thanks for taking a look at this portfolio project.
 - Prefer async EF Core APIs (`ToListAsync`, `FirstOrDefaultAsync`, …).
 - Keep controllers thin; place reusable logic in services or repositories.
 - Use `[ValidateAntiForgeryToken]` on every POST action.
-- Validate uploads through `IImageUploadService`.
+- Validate uploads through `IFileStorage`.
 - Use the configured `ILogger<T>`/Serilog instead of `Console.WriteLine`.
+- Keep the public and admin areas free of CDN dependencies; vendor assets under `wwwroot/lib`.
 
 ## Database changes
 

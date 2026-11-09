@@ -119,7 +119,19 @@ namespace portfolio.web.Areas.Admin.Controllers
             var typingTitles = (await _titleRepo.GetAllAsync()).Where(t => t.IsActive).OrderBy(t => t.Order).ToList();
             var testimonials = (await _testimonialRepo.GetAllAsync()).Where(t => t.IsActive).OrderBy(t => t.Order).ToList();
             var settings = (await _settingsRepo.GetAllAsync()).ToDictionary(s => s.Key, s => s.ValueEn);
-            var sections = (await _sectionRepo.GetAllAsync()).Where(s => s.IsVisible).OrderBy(s => s.Order).ToList();
+            var sections = (await _sectionRepo.GetAllAsync())
+                .Where(s => s.IsVisible)
+                .OrderBy(s => s.Order)
+                .ToList();
+
+            // The static export only renders these built-in sections. Anything else
+            // (Blog, Certificates, custom sections) has no static generator, so keep it
+            // out of the navigation to avoid empty anchors and dead links.
+            var supportedSectionIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "home", "about", "experience", "skills", "projects", "testimonials", "contact"
+            };
+            sections = sections.Where(s => supportedSectionIds.Contains(s.Identifier)).ToList();
 
             var primaryColor = settings.GetValueOrDefault("primary_color", "#667eea");
             var secondaryColor = settings.GetValueOrDefault("secondary_color", "#764ba2");
@@ -260,7 +272,7 @@ namespace portfolio.web.Areas.Admin.Controllers
                 html.AppendLine("                    </button>");
                 if (!string.IsNullOrEmpty(about.CVFilePath))
                 {
-                    html.AppendLine($"                    <a href=\"{about.CVFilePath}\" download class=\"btn btn-custom-outline\">");
+                    html.AppendLine($"                    <a href=\".{about.CVFilePath}\" download class=\"btn btn-custom-outline\">");
                     html.AppendLine($"                        <i class=\"fas fa-download me-2\"></i> {(lang == "en" ? "Download CV" : "تحميل السيرة الذاتية")}");
                     html.AppendLine("                    </a>");
                 }

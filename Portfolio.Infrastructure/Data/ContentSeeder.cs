@@ -16,6 +16,9 @@ namespace Portfolio.Infrastructure.Data
             await SeedAboutAsync(context);
             await SeedExperiencesAsync(context);
             await SeedProjectsAsync(context);
+            await SeedModernProjectsAsync(context);
+            await SeedSkillsAsync(context);
+            await SeedSocialLinksAsync(context);
             await SeedCertificatesAsync(context);
             await SeedSectionsAsync(context);
             await SeedBlogAsync(context);
@@ -115,27 +118,19 @@ namespace Portfolio.Infrastructure.Data
                 about.NameAr = "أحمد عبد الرحمن الجمال";
             }
 
-            var legacyDescription = about.DescriptionEn?.Contains(
-                "Passionate .NET Developer with comprehensive hands-on experience",
-                StringComparison.Ordinal) == true;
+            about.DescriptionEn =
+                "Full-stack .NET developer who ships production-shaped systems end to end — from database design and secure APIs to polished Angular interfaces and containerised deployment. " +
+                "I work daily with C#, ASP.NET Core, Entity Framework Core, SQL Server, Angular, and TypeScript, and I care about clean architecture, concurrency safety, observability, and automated tests. " +
+                "Recent work includes EvTicket (a .NET 10 + Angular 21 ticketing platform with atomic seat locking and real-time availability), NileLearn (a bilingual LMS API with payments and secure video), and this data-driven portfolio. " +
+                "I completed intensive training through ITI's ITP program, the Digital Egypt Pioneers Initiative (DEPI), FWD, and ITI's Summer Code Camp.";
 
-            if (legacyDescription || string.IsNullOrWhiteSpace(about.DescriptionEn))
-            {
-                about.DescriptionEn =
-                    ".NET Developer with hands-on experience in C#, ASP.NET Core (MVC and API), and Entity Framework Core. " +
-                    "I build structured, scalable applications backed by SQL Server and modern Angular front ends, with a focus on clean architecture, maintainability, and measurable performance. " +
-                    "I completed intensive training through ITI's ITP program, the Digital Egypt Pioneers Initiative (DEPI), FWD, and ITI's Summer Code Camp. " +
-                    "My work spans streaming platforms, job portals, school attendance systems, and e-commerce applications — from database design to deployment.";
-            }
+            about.DescriptionAr =
+                "مطور .NET متكامل يبني أنظمة جاهزة للإنتاج من البداية للنهاية — من تصميم قاعدة البيانات وواجهات API الآمنة إلى واجهات Angular المصقولة والنشر باستخدام الحاويات. " +
+                "أعمل يوميًا بـ C# وASP.NET Core وEntity Framework Core وSQL Server وAngular وTypeScript، وأهتم بالهندسة النظيفة وسلامة التزامن وقابلية المراقبة والاختبارات الآلية. " +
+                "من أحدث أعمالي EvTicket (منصة تذاكر بـ .NET 10 وAngular 21 مع حجز مقاعد ذري وتوافر لحظي)، وNileLearn (واجهة API لنظام تعليمي ثنائي اللغة مع المدفوعات والفيديو الآمن)، وهذا الموقع الشخصي المدفوع بالبيانات. " +
+                "أكملت برامج تدريبية مكثفة من خلال برنامج ITP في معهد تكنولوجيا المعلومات، ومبادرة رواد مصر الرقمية (DEPI)، وبرنامج FWD، والمعسكر الصيفي لـ ITI.";
 
-            if (legacyDescription || string.IsNullOrWhiteSpace(about.DescriptionAr))
-            {
-                about.DescriptionAr =
-                    "مطور .NET لديه خبرة عملية في C# وASP.NET Core (MVC وAPI) وEntity Framework Core. " +
-                    "أبني تطبيقات منظمة وقابلة للتوسع باستخدام SQL Server وواجهات Angular حديثة، مع التركيز على الهندسة النظيفة وقابلية الصيانة والأداء. " +
-                    "أكملت برامج تدريبية مكثفة من خلال برنامج ITP في معهد تكنولوجيا المعلومات، ومبادرة رواد مصر الرقمية (DEPI)، وبرنامج FWD، والمعسكر الصيفي لـ ITI. " +
-                    "تشمل أعمالي منصات بث، وبوابات وظائف، وأنظمة حضور مدرسي، وتطبيقات تجارة إلكترونية — من تصميم قاعدة البيانات حتى النشر.";
-            }
+            about.CVFilePath = "/files/cv/Ahmed_Abdelrahman_Elgamal_CV.pdf";
 
             about.Email = string.IsNullOrWhiteSpace(about.Email)
                 ? "ahmed.elgamal.dev22@gmail.com"
@@ -213,6 +208,234 @@ namespace Portfolio.Infrastructure.Data
                     context.Experiences.Add(seed);
                 }
             }
+        }
+
+        private static async Task SeedModernProjectsAsync(ApplicationDbContext context)
+        {
+            var projects = await context.Projects
+                .Include(p => p.Technologies)
+                .ToListAsync();
+
+            Project Upsert(string titleEn, Action<Project> apply)
+            {
+                var project = projects.FirstOrDefault(p =>
+                    string.Equals(p.TitleEn, titleEn, StringComparison.OrdinalIgnoreCase));
+
+                if (project is null)
+                {
+                    project = new Project
+                    {
+                        TitleEn = titleEn,
+                        CreatedAt = DateTime.UtcNow
+                    };
+                    context.Projects.Add(project);
+                    projects.Add(project);
+                }
+
+                apply(project);
+                return project;
+            }
+
+            void Tech(Project project, params string[] names)
+            {
+                foreach (var name in names)
+                {
+                    if (project.Technologies.Any(t =>
+                            string.Equals(t.TechnologyName, name, StringComparison.OrdinalIgnoreCase)))
+                    {
+                        continue;
+                    }
+
+                    project.Technologies.Add(new ProjectTechnology { TechnologyName = name });
+                }
+            }
+
+            var evTicket = Upsert("EvTicket — Event Ticketing Platform", project =>
+            {
+                project.TitleAr = "EvTicket — منصة حجز تذاكر الفعاليات";
+                project.ShortDescriptionEn =
+                    "A production-shaped ticketing platform that prevents double-booking with geography-aware seat maps, atomic seat holds, live availability, and QR tickets.";
+                project.ShortDescriptionAr =
+                    "منصة تذاكر جاهزة للإنتاج تمنع الحجز المزدوج عبر خرائط مقاعد جغرافية وحجز ذري وتوافر لحظي وتذاكر QR.";
+                project.FullDescriptionEn =
+                    "EvTicket is a .NET 10 + Angular 21 monorepo built around one hard guarantee: two people can never buy the same seat. " +
+                    "The API uses EF Core 10 with atomic ExecuteUpdateAsync holds, explicit transactions, a background expiry worker, and SignalR to broadcast live seat availability. " +
+                    "It ships with JWT access tokens, rotating hashed refresh tokens, QR-coded tickets, organizer analytics, an admin console, Scalar/OpenAPI docs, SQLite for local demos plus SQL Server for production, a single-container Docker image, and xUnit integration tests that reproduce the checkout race (one 200, one 409).";
+                project.FullDescriptionAr =
+                    "EvTicket مشروع monorepo مبني بـ .NET 10 وAngular 21 ويقوم على ضمان واحد صارم: لا يمكن لشخصين شراء نفس المقعد. " +
+                    "تستخدم الواجهة الخلفية EF Core 10 مع حجز ذري عبر ExecuteUpdateAsync ومعاملات صريحة وعامل خلفي لانتهاء الحجوزات وSignalR لبث توافر المقاعد لحظيًا. " +
+                    "يتضمن مصادقة JWT ورموز تحديث دوارة ومشفرة وتذاكر QR وتحليلات للمنظمين ولوحة إدارة وتوثيق Scalar/OpenAPI وSQLite للعرض المحلي وSQL Server للإنتاج وصورة Docker واحدة واختبارات تكامل xUnit تعيد إنتاج سباق الدفع (200 و409).";
+                project.IconClass = "fas fa-ticket-alt";
+                project.Category = "web";
+                project.GithubUrl = "https://github.com/elgamalhub/EvTicketApi";
+                project.DemoUrl = string.Empty;
+                project.ImagePath = "/images/projects/evticket.jpg";
+                project.IsHidden = false;
+                project.IsActive = true;
+                project.Order = 1;
+            });
+            Tech(evTicket, ".NET 10", "ASP.NET Core", "C#", "Angular 21", "Entity Framework Core",
+                "SignalR", "SQL Server", "SQLite", "JWT", "Docker", "xUnit");
+
+            var nileLearn = Upsert("NileLearn — Learning Management System", project =>
+            {
+                project.TitleAr = "NileLearn — نظام إدارة التعلم";
+                project.ShortDescriptionEn =
+                    "A bilingual LMS platform with course authoring, subscriptions, Egyptian payment gateways, secure video, progress tracking, certificates, and admin analytics.";
+                project.ShortDescriptionAr =
+                    "منصة تعلم ثنائية اللغة تتضمن تأليف الدورات والاشتراكات وبوابات الدفع المصرية والفيديو الآمن وتتبع التقدم والشهادات وتحليلات الإدارة.";
+                project.FullDescriptionEn =
+                    "NileLearn is an enterprise-style learning management system built with ASP.NET Core 8 and a clean layered architecture (Domain, Application, Infrastructure, API). " +
+                    "It covers course authoring and publishing, sections and lessons, free previews, subscriptions and coupons, Egyptian payment gateways (Paymob, Fawry, Kashier) plus Stripe and a sandbox gateway, chunked video upload with signed playback and heartbeat tracking, progress and certificates, quizzes, audit logs, and role-based admin analytics. " +
+                    "Security uses ASP.NET Core Identity with JWT access and refresh tokens; the data layer uses EF Core with SQL Server or SQLite, and the suite includes unit and WebApplicationFactory integration tests.";
+                project.FullDescriptionAr =
+                    "NileLearn نظام إدارة تعلم بمستوى المؤسسات مبني بـ ASP.NET Core 8 وهندسة طبقية نظيفة (Domain وApplication وInfrastructure وAPI). " +
+                    "يغطي تأليف الدورات ونشرها والأقسام والدروس والمعاينات المجانية والاشتراكات والكوبونات وبوابات الدفع المصرية (Paymob وFawry وKashier) مع Stripe وبوابة تجريبية، ورفع الفيديو على أجزاء والتشغيل الموقّع وتتبع المشاهدة، والتقدم والشهادات والاختبارات وسجلات التدقيق وتحليلات الإدارة حسب الأدوار. " +
+                    "يعتمد الأمان على ASP.NET Core Identity مع JWT ورموز تحديث، وطبقة البيانات على EF Core مع SQL Server أو SQLite، ويشمل المشروع اختبارات وحدة وتكامل عبر WebApplicationFactory.";
+                project.IconClass = "fas fa-graduation-cap";
+                project.Category = "web";
+                project.GithubUrl = "https://github.com/elgamalhub/NileLearn";
+                project.DemoUrl = string.Empty;
+                project.ImagePath = "/images/projects/nilelearn.jpg";
+                project.IsHidden = false;
+                project.IsActive = true;
+                project.Order = 2;
+            });
+            Tech(nileLearn, ".NET 8", "ASP.NET Core", "C#", "Entity Framework Core", "SQL Server",
+                "JWT", "Paymob", "Fawry", "Kashier", "Stripe", "xUnit");
+
+            var devfolio = Upsert("Developer Portfolio — Devfolio", project =>
+            {
+                project.TitleAr = "الموقع الشخصي — Devfolio";
+                project.ShortDescriptionEn =
+                    "A bilingual, data-driven portfolio and CMS with an admin studio, blog, SEO, static export, and a live GitHub Pages deployment.";
+                project.ShortDescriptionAr =
+                    "موقع شخصي ثنائي اللغة ومدفوع بالبيانات مع لوحة إدارة ومدونة وتحسين محركات بحث وتصدير ثابت ونشر مباشر على GitHub Pages.";
+                project.FullDescriptionEn =
+                    "Devfolio is the portfolio you are reading. It is a data-driven ASP.NET Core 9 MVC application with a clean Core/Infrastructure split, EF Core and SQL Server, ASP.NET Core Identity, Serilog, and a full admin studio. " +
+                    "Every public section — hero, about, experience, skills, projects, certificates, testimonials, blog, contact, colours, and SEO metadata — is editable from the admin area. " +
+                    "It also generates a self-contained static export that is published to GitHub Pages, so the same content powers both the dynamic site and the always-on public version.";
+                project.FullDescriptionAr =
+                    "Devfolio هو الموقع الشخصي الذي تقرأه الآن؛ تطبيق ASP.NET Core 9 MVC مدفوع بالبيانات بفصل نظيف بين Core وInfrastructure، مع EF Core وSQL Server وASP.NET Core Identity وSerilog ولوحة إدارة كاملة. " +
+                    "كل قسم عام — الواجهة الرئيسية والعن والملف والخبرات والمهارات والمشاريع والشهادات وآراء العملاء والمدونة والتواصل والألوان وبيانات SEO — قابل للتحرير من لوحة الإدارة. " +
+                    "كما يولّد نسخة ثابتة مستقلة تُنشر على GitHub Pages، لتستخدم نفس المحتوى في الموقع الديناميكي والنسخة العامة الدائمة.";
+                project.IconClass = "fas fa-laptop-code";
+                project.Category = "web";
+                project.GithubUrl = "https://github.com/elgamalhub/devfolio";
+                project.DemoUrl = "https://elgamalhub.github.io/devfolio/";
+                project.ImagePath = "/images/projects/devfolio.jpg";
+                project.IsHidden = false;
+                project.IsActive = true;
+                project.Order = 3;
+            });
+            Tech(devfolio, "ASP.NET Core 9", "C#", "Entity Framework Core", "SQL Server",
+                "Identity", "Bootstrap", "Serilog", "GitHub Pages");
+
+            var netflix = Upsert("Netflix Clone Streaming Platform", project =>
+            {
+                project.GithubUrl = "https://github.com/elgamalhub/NetflixCloneAPI";
+                project.ImagePath = "/images/projects/netflix.jpg";
+                project.IsHidden = false;
+                project.IsActive = true;
+                project.Order = 4;
+            });
+            Tech(netflix, "ASP.NET Core", "Angular", "Entity Framework Core", "SQL Server",
+                "SignalR", "Docker", "Stripe");
+
+            var jobPortal = Upsert("Job Portal System", project =>
+            {
+                project.GithubUrl = "https://github.com/elgamalhub/JobPortal";
+                project.ImagePath = "/images/projects/job-portal.jpg";
+                project.IsHidden = false;
+                project.IsActive = true;
+                project.Order = 5;
+            });
+            Tech(jobPortal, "ASP.NET Core MVC", "Razor Views", "Entity Framework Core", "SQL Server");
+
+            var attendance = Upsert("School Attendance System", project =>
+            {
+                project.GithubUrl = "https://github.com/elgamalhub/AttendanceApp";
+                project.ImagePath = "/images/projects/attendance.jpg";
+                project.IsHidden = false;
+                project.IsActive = true;
+                project.Order = 6;
+            });
+            Tech(attendance, "C#", "Windows Forms", "Entity Framework Core", "SQL Server");
+
+            var ecommerce = Upsert("E-Commerce Website", project =>
+            {
+                project.GithubUrl = "https://github.com/Tanta-itp-team1/ecommerce-project";
+                project.DemoUrl = "https://tanta-itp-team1.github.io/ecommerce-project/Home/homepage.html";
+                project.IconClass = "fas fa-shopping-cart";
+                project.IsHidden = false;
+                project.IsActive = true;
+                project.Order = 7;
+            });
+            Tech(ecommerce, "HTML", "CSS", "JavaScript", "Bootstrap");
+        }
+
+        private static async Task SeedSkillsAsync(ApplicationDbContext context)
+        {
+            var skills = await context.Skills.ToListAsync();
+
+            void Upsert(string nameEn, string nameAr, int percentage, int order)
+            {
+                var skill = skills.FirstOrDefault(s =>
+                    string.Equals(s.NameEn, nameEn, StringComparison.OrdinalIgnoreCase));
+
+                if (skill is null)
+                {
+                    skill = new Skill { NameEn = nameEn };
+                    context.Skills.Add(skill);
+                    skills.Add(skill);
+                }
+
+                skill.NameAr = nameAr;
+                skill.Percentage = percentage;
+                skill.Order = order;
+                skill.IsActive = true;
+            }
+
+            Upsert("C# / .NET", "C# / .NET", 90, 1);
+            Upsert("ASP.NET Core (API & MVC)", "ASP.NET Core (API & MVC)", 88, 2);
+            Upsert("Entity Framework Core", "Entity Framework Core", 85, 3);
+            Upsert("SQL Server / T-SQL", "SQL Server / T-SQL", 82, 4);
+            Upsert("Angular 21 / TypeScript", "Angular 21 / TypeScript", 82, 5);
+            Upsert("HTML / CSS / Bootstrap", "HTML / CSS / Bootstrap", 90, 6);
+            Upsert("SignalR / Real-time systems", "SignalR / الأنظمة اللحظية", 78, 7);
+            Upsert("Docker / CI-CD", "Docker / CI-CD", 75, 8);
+            Upsert("JWT / Identity / Security", "JWT / Identity / الأمان", 80, 9);
+            Upsert("xUnit / Integration testing", "xUnit / اختبارات التكامل", 75, 10);
+            Upsert("Clean Architecture / DDD", "الهندسة النظيفة / DDD", 80, 11);
+            Upsert("Git / GitHub / Postman", "Git / GitHub / Postman", 85, 12);
+        }
+
+        private static async Task SeedSocialLinksAsync(ApplicationDbContext context)
+        {
+            var links = await context.SocialLinks.ToListAsync();
+
+            void Upsert(string platform, string url, string iconClass, int order)
+            {
+                var link = links.FirstOrDefault(l =>
+                    string.Equals(l.Platform, platform, StringComparison.OrdinalIgnoreCase));
+
+                if (link is null)
+                {
+                    link = new SocialLink { Platform = platform };
+                    context.SocialLinks.Add(link);
+                    links.Add(link);
+                }
+
+                link.Url = url;
+                link.IconClass = iconClass;
+                link.Order = order;
+                link.IsActive = true;
+            }
+
+            Upsert("GitHub", "https://github.com/elgamalhub", "fab fa-github", 1);
+            Upsert("LinkedIn", "https://www.linkedin.com/in/ahmed-elgamal1", "fab fa-linkedin", 2);
+            Upsert("Email", "mailto:ahmed.elgamal.dev22@gmail.com", "fas fa-envelope", 3);
+            Upsert("Phone", "tel:+201022172951", "fas fa-phone", 4);
         }
 
         private static async Task SeedProjectsAsync(ApplicationDbContext context)

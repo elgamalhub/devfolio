@@ -2,6 +2,8 @@
 
 A dynamic, bilingual (English / Arabic) portfolio and content-management system for a full-stack .NET developer. Built with **ASP.NET Core 9 MVC**, **Entity Framework Core**, **SQL Server**, and **ASP.NET Core Identity**.
 
+**Live site:** <https://elgamalhub.github.io/devfolio/>
+
 The public site is fully data-driven: hero typing titles, about, skills, experience, projects, certificates, testimonials, blog posts, social links, navigation sections, colours, and SEO metadata are all managed from a protected admin area.
 
 [![.NET](https://img.shields.io/badge/.NET-9.0-512BD4?logo=dotnet)](https://dotnet.microsoft.com/)

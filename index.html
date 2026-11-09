@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ahmed Elgamal</title>
+    <meta name="description" content="Full Stack .NET developer in Cairo building secure, scalable web applications with ASP.NET Core, SQL Server, and Angular.">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="css/portfolio.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+        }
+    </style>
+</head>
+<body>
+    <div id="preloader">
+        <div class="spinner"></div>
+    </div>
+    <div id="scrollProgress"></div>
+    <button id="backToTop"><i class="fas fa-arrow-up"></i></button>
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#"><i class="fas fa-code"></i> Ahmed Elgamal</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="#home">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#experience">Experience</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#skills">Skills</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#projects">Projects</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <section id="home">
+        <div class="hero">
+            <canvas id="particles-canvas"></canvas>
+            <div class="hero-content">
+                <h1>Hi, I'm Ahmed Abdelrahman Elgamal</h1>
+                <p class="tagline">
+                    <span class="typing-text" id="typingText"></span>
+                </p>
+                <div class="hero-buttons">
+                    <button class="btn btn-custom me-3" onclick="document.getElementById('contact').scrollIntoView({behavior: 'smooth'})">
+                        Get In Touch <i class="fas fa-arrow-right ms-2"></i>
+                    </button>
+                    <a href="./files/cv/Ahmed_Abdelrahman_Elgamal_CV.pdf" download class="btn btn-custom-outline">
+                        <i class="fas fa-download me-2"></i> Download CV
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section id="about">
+        <div class="container">
+            <h2 class="section-title">About Me</h2>
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="about-card">
+                        <div class="text-center mb-4">
+                            <img src="./images/profile/b4b438f1-43c3-49f8-b16c-1ea254af39b7_ChatGPT Image Jul 1, 2025, 02_21_20 AM.png" alt="Ahmed Abdelrahman Elgamal" class="rounded-circle" style="width: 200px; height: 200px; object-fit: cover; border: 5px solid var(--primary-color);">
+                        </div>
+                        <p class="lead">Full-stack .NET developer who ships production-shaped systems end to end — from database design and secure APIs to polished Angular interfaces and containerised deployment. I work daily with C#, ASP.NET Core, Entity Framework Core, SQL Server, Angular, and TypeScript, and I care about clean architecture, concurrency safety, observability, and automated tests. Recent work includes EvTicket (a .NET 10 + Angular 21 ticketing platform with atomic seat locking and real-time availability), NileLearn (a bilingual LMS API with payments and secure video), and this data-driven portfolio. I completed intensive training through ITI's ITP program, the Digital Egypt Pioneers Initiative (DEPI), FWD, and ITI's Summer Code Camp.</p>
+                        <div class="social-links mt-4 text-center">
+                            <a href="https://github.com/elgamalhub" target="_blank" class="social-icon" title="GitHub">
+                                <i class="fab fa-github"></i>
+                            </a>
+                            <a href="https://www.linkedin.com/in/ahmed-elgamal1" target="_blank" class="social-icon" title="LinkedIn">
+                                <i class="fab fa-linkedin"></i>
+                            </a>
+                            <a href="mailto:ahmed.elgamal.dev22@gmail.com" target="_blank" class="social-icon" title="Email">
+                                <i class="fas fa-envelope"></i>
+                            </a>
+                            <a href="tel:+201022172951" target="_blank" class="social-icon" title="Phone">
+                                <i class="fas fa-phone"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section id="experience">
+        <div class="container">
+            <h2 class="section-title">Experience Journey</h2>
+            <div class="timeline">
+                <div class="timeline-item left">
+                    <div class="timeline-content">
+                        <div class="timeline-date">
+                            Jul 2025 - Nov 2025
+                        </div>
+                        <h3>Full Stack Developer (.NET Track)</h3>
+                        <h4>Information Technology Institute (ITI) — ITP</h4>
+                        <p>Intensive five-month training program covering ASP.NET Core, SQL Server, Angular, clean architecture, and team-based delivery of a full-stack graduation project.</p>
+                    </div>
+                </div>
+                <div class="timeline-item right">
+                    <div class="timeline-content">
+                        <div class="timeline-date">
+                            Oct 2024 - May 2025
+                        </div>
+                        <h3>Full Stack .NET Developer Track</h3>
+                        <h4>Digital Egypt Pioneers Initiative (DEPI)</h4>
+                        <p>Eight-month scholarship track focused on full-stack .NET development, databases, and practical project work at ITC College, Tanta.</p>
+                    </div>
+                </div>
+                <div class="timeline-item left">
+                    <div class="timeline-content">
+                        <div class="timeline-date">
+                            Aug 2022 - Nov 2022
+                        </div>
+                        <h3>Front End Web Developer</h3>
+                        <h4>Ministry of Communications and Information Technology (MCIT) — FWD</h4>
+                        <p>Remote front-end training program covering HTML, CSS, JavaScript, responsive design, and modern web development practices.</p>
+                    </div>
+                </div>
+                <div class="timeline-item right">
+                    <div class="timeline-content">
+                        <div class="timeline-date">
+                            Jul 2021 - Jul 2021
+                        </div>
+                        <h3>Front End Web Developer</h3>
+                        <h4>Information Technology Institute (ITI)</h4>
+                        <p>Intensive summer training program at Information Technology Institute focusing on frontend web development fundamentals and best practices.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section id="skills">
+        <div class="container">
+            <h2 class="section-title">Skills</h2>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="skill-item">
+                        <div class="skill-name">C# / .NET Core</div>
+                        <div class="progress">
+                            <div class="progress-bar" role="progressbar" style="width: 0%" data-width="80%"></div>
+                        </div>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-name">C# / .NET</div>
+                        <div class="progress">
+                            <div class="progress-bar" role="progressbar" style="width: 0%" data-width="90%"></div>
+                        </div>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-name">SQL Server / T-SQL / Database</div>
+                        <div class="progress">
+                            <div class="progress-bar" role="progressbar" style="width: 0%" data-width="70%"></div>
+                        </div>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-name">ASP.NET Core (API & MVC)</div>
+                        <div class="progress">
+                            <div class="progress-bar" role="progressbar" style="width: 0%" data-width="88%"></div>
+                        </div>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-name">Entity Framework Core</div>
+                        <div class="progress">
+                            <div class="progress-bar" role="progressbar" style="width: 0%" data-width="85%"></div>
+                        </div>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-name">Angular / TypeScript / JavaScript</div>
+                        <div class="progress">
+                            <div class="progress-bar" role="progressbar" style="width: 0%" data-width="70%"></div>
+                        </div>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-name">SQL Server / T-SQL</div>
+                        <div class="progress">
+                            <div class="progress-bar" role="progressbar" style="width: 0%" data-width="82%"></div>
+                        </div>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-name">Angular 21 / TypeScript</div>
+                        <div class="progress">
+                            <div class="progress-bar" role="progressbar" style="width: 0%" data-width="82%"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="skill-item">
+                        <div class="skill-name">HTML / CSS / Bootstrap</div>
+                        <div class="progress">
+                            <div class="progress-bar" role="progressbar" style="width: 0%" data-width="90%"></div>
+                        </div>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-name">SignalR / Real-time systems</div>
+                        <div class="progress">
+                            <div class="progress-bar" role="progressbar" style="width: 0%" data-width="78%"></div>
+                        </div>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-name">Docker / CI-CD</div>
+                        <div class="progress">
+                            <div class="progress-bar" role="progressbar" style="width: 0%" data-width="75%"></div>
+                        </div>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-name">JWT / Identity / Security</div>
+                        <div class="progress">
+                            <div class="progress-bar" role="progressbar" style="width: 0%" data-width="80%"></div>
+                        </div>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-name">xUnit / Integration testing</div>
+                        <div class="progress">
+                            <div class="progress-bar" role="progressbar" style="width: 0%" data-width="75%"></div>
+                        </div>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-name">Clean Architecture / DDD</div>
+                        <div class="progress">
+                            <div class="progress-bar" role="progressbar" style="width: 0%" data-width="80%"></div>
+                        </div>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-name">Git / GitHub / Postman</div>
+                        <div class="progress">
+                            <div class="progress-bar" role="progressbar" style="width: 0%" data-width="85%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section id="projects">
+        <div class="container">
+            <h2 class="section-title">Projects</h2>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="project-card">
+                        <div class="project-image">
+                            <img src="./images/projects/evticket.jpg" alt="EvTicket — Event Ticketing Platform" />
+                        </div>
+                        <div class="project-content">
+                            <h3 class="project-title">EvTicket — Event Ticketing Platform</h3>
+                            <p class="project-desc">A production-shaped ticketing platform that prevents double-booking with geography-aware seat maps, atomic seat holds, live availability, and QR tickets.</p>
+                            <div>
+                                <span class="tech-tag">.NET 10</span>
+                                <span class="tech-tag">ASP.NET Core</span>
+                                <span class="tech-tag">C#</span>
+                                <span class="tech-tag">Angular 21</span>
+                                <span class="tech-tag">Entity Framework Core</span>
+                                <span class="tech-tag">SignalR</span>
+                                <span class="tech-tag">SQL Server</span>
+                                <span class="tech-tag">SQLite</span>
+                                <span class="tech-tag">JWT</span>
+                                <span class="tech-tag">Docker</span>
+                                <span class="tech-tag">xUnit</span>
+                            </div>
+                            <div class="mt-3">
+                                <a href="https://github.com/elgamalhub/EvTicketApi" target="_blank" class="btn btn-sm btn-custom me-2">
+                                    <i class="fab fa-github"></i> GitHub
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="project-card">
+                        <div class="project-image">
+                            <img src="./images/projects/nilelearn.jpg" alt="NileLearn — Learning Management System" />
+                        </div>
+                        <div class="project-content">
+                            <h3 class="project-title">NileLearn — Learning Management System</h3>
+                            <p class="project-desc">A bilingual LMS platform with course authoring, subscriptions, Egyptian payment gateways, secure video, progress tracking, certificates, and admin analytics.</p>
+                            <div>
+                                <span class="tech-tag">.NET 8</span>
+                                <span class="tech-tag">ASP.NET Core</span>
+                                <span class="tech-tag">C#</span>
+                                <span class="tech-tag">Entity Framework Core</span>
+                                <span class="tech-tag">SQL Server</span>
+                                <span class="tech-tag">JWT</span>
+                                <span class="tech-tag">Paymob</span>
+                                <span class="tech-tag">Fawry</span>
+                                <span class="tech-tag">Kashier</span>
+                                <span class="tech-tag">Stripe</span>
+                                <span class="tech-tag">xUnit</span>
+                            </div>
+                            <div class="mt-3">
+                                <a href="https://github.com/elgamalhub/NileLearn" target="_blank" class="btn btn-sm btn-custom me-2">
+                                    <i class="fab fa-github"></i> GitHub
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="project-card">
+                        <div class="project-image">
+                            <img src="./images/projects/devfolio.jpg" alt="Developer Portfolio — Devfolio" />
+                        </div>
+                        <div class="project-content">
+                            <h3 class="project-title">Developer Portfolio — Devfolio</h3>
+                            <p class="project-desc">A bilingual, data-driven portfolio and CMS with an admin studio, blog, SEO, static export, and a live GitHub Pages deployment.</p>
+                            <div>
+                                <span class="tech-tag">ASP.NET Core 9</span>
+                                <span class="tech-tag">C#</span>
+                                <span class="tech-tag">Entity Framework Core</span>
+                                <span class="tech-tag">SQL Server</span>
+                                <span class="tech-tag">Identity</span>
+                                <span class="tech-tag">Bootstrap</span>
+                                <span class="tech-tag">Serilog</span>
+                                <span class="tech-tag">GitHub Pages</span>
+                            </div>
+                            <div class="mt-3">
+                                <a href="https://github.com/elgamalhub/devfolio" target="_blank" class="btn btn-sm btn-custom me-2">
+                                    <i class="fab fa-github"></i> GitHub
+                                </a>
+                                <a href="https://elgamalhub.github.io/devfolio/" target="_blank" class="btn btn-sm btn-custom-outline">
+                                    <i class="fas fa-external-link-alt"></i> Demo
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="project-card">
+                        <div class="project-image">
+                            <img src="./images/projects/netflix.jpg" alt="Netflix Clone Streaming Platform" />
+                        </div>
+                        <div class="project-content">
+                            <h3 class="project-title">Netflix Clone Streaming Platform</h3>
+                            <p class="project-desc">A full-stack streaming platform with subscriptions, secure authentication, real-time notifications, and a complete admin dashboard.</p>
+                            <div>
+                                <span class="tech-tag">ASP.NET Core</span>
+                                <span class="tech-tag">C#</span>
+                                <span class="tech-tag">Angular</span>
+                                <span class="tech-tag">Entity Framework Core</span>
+                                <span class="tech-tag">SQL Server</span>
+                                <span class="tech-tag">SignalR</span>
+                                <span class="tech-tag">Docker</span>
+                                <span class="tech-tag">Stripe</span>
+                            </div>
+                            <div class="mt-3">
+                                <a href="https://github.com/elgamalhub/NetflixCloneAPI" target="_blank" class="btn btn-sm btn-custom me-2">
+                                    <i class="fab fa-github"></i> GitHub
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="project-card">
+                        <div class="project-image">
+                            <img src="./images/projects/job-portal.jpg" alt="Job Portal System" />
+                        </div>
+                        <div class="project-content">
+                            <h3 class="project-title">Job Portal System</h3>
+                            <p class="project-desc">A full-stack job portal connecting employers and job seekers with dashboards, CV uploads, and application tracking.</p>
+                            <div>
+                                <span class="tech-tag">ASP.NET Core MVC</span>
+                                <span class="tech-tag">Razor Views</span>
+                                <span class="tech-tag">Entity Framework Core</span>
+                                <span class="tech-tag">SQL Server</span>
+                            </div>
+                            <div class="mt-3">
+                                <a href="https://github.com/elgamalhub/JobPortal" target="_blank" class="btn btn-sm btn-custom me-2">
+                                    <i class="fab fa-github"></i> GitHub
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="project-card">
+                        <div class="project-image">
+                            <img src="./images/projects/attendance.jpg" alt="School Attendance System" />
+                        </div>
+                        <div class="project-content">
+                            <h3 class="project-title">School Attendance System</h3>
+                            <p class="project-desc">A desktop application that automates attendance tracking and reporting for schools and training centres.</p>
+                            <div>
+                                <span class="tech-tag">C#</span>
+                                <span class="tech-tag">Windows Forms</span>
+                                <span class="tech-tag">Entity Framework Core</span>
+                                <span class="tech-tag">SQL Server</span>
+                            </div>
+                            <div class="mt-3">
+                                <a href="https://github.com/elgamalhub/AttendanceApp" target="_blank" class="btn btn-sm btn-custom me-2">
+                                    <i class="fab fa-github"></i> GitHub
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="project-card">
+                        <div class="project-image">
+                            <img src="./images/projects/41a12fd2-72c0-4515-b1f1-55784a51cf5e_203be522b7b02d10672f6f6147762cf52bfcfc54.png" alt="E-Commerce Website" />
+                        </div>
+                        <div class="project-content">
+                            <h3 class="project-title">E-Commerce Website</h3>
+                            <p class="project-desc">A responsive storefront for mobile phone sales with product browsing, cart, checkout, and admin and seller dashboards.</p>
+                            <div>
+                                <span class="tech-tag">HTML</span>
+                                <span class="tech-tag">CSS</span>
+                                <span class="tech-tag">JavaScript</span>
+                                <span class="tech-tag">Bootstrap</span>
+                            </div>
+                            <div class="mt-3">
+                                <a href="https://github.com/Tanta-itp-team1/ecommerce-project" target="_blank" class="btn btn-sm btn-custom me-2">
+                                    <i class="fab fa-github"></i> GitHub
+                                </a>
+                                <a href="https://tanta-itp-team1.github.io/ecommerce-project/Home/homepage.html" target="_blank" class="btn btn-sm btn-custom-outline">
+                                    <i class="fas fa-external-link-alt"></i> Demo
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section id="contact">
+        <div class="container">
+            <h2 class="section-title">Get In Touch</h2>
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="row">
+                        <div class="col-md-4 mb-4">
+                            <div class="contact-info-card">
+                                <div class="contact-icon"><i class="fas fa-envelope"></i></div>
+                                <h5>Email</h5>
+                                <a href="mailto:ahmed.elgamal.dev22@gmail.com">ahmed.elgamal.dev22@gmail.com</a>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-4">
+                            <div class="contact-info-card">
+                                <div class="contact-icon"><i class="fas fa-phone"></i></div>
+                                <h5>Phone</h5>
+                                <a href="tel:+201022172951">+201022172951</a>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-4">
+                            <div class="contact-info-card">
+                                <div class="contact-icon"><i class="fas fa-map-marker-alt"></i></div>
+                                <h5>Location</h5>
+                                <p>Cairo, Egypt</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="social-links-section text-center my-5">
+                        <h4 class="mb-4">Connect With Me</h4>
+                        <div class="social-links-grid">
+                            <a href="https://github.com/elgamalhub" target="_blank" class="social-link-card" title="GitHub">
+                                <i class="fab fa-github"></i>
+                                <span>GitHub</span>
+                            </a>
+                            <a href="https://www.linkedin.com/in/ahmed-elgamal1" target="_blank" class="social-link-card" title="LinkedIn">
+                                <i class="fab fa-linkedin"></i>
+                                <span>LinkedIn</span>
+                            </a>
+                            <a href="mailto:ahmed.elgamal.dev22@gmail.com" target="_blank" class="social-link-card" title="Email">
+                                <i class="fas fa-envelope"></i>
+                                <span>Email</span>
+                            </a>
+                            <a href="tel:+201022172951" target="_blank" class="social-link-card" title="Phone">
+                                <i class="fas fa-phone"></i>
+                                <span>Phone</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 Ahmed Abdelrahman Elgamal. All rights reserved.</p>
+        </div>
+    </footer>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script>
+        const typingTitles = ["Full Stack Developer","Backend .Net Developer","Angular Developer","ASP.NET Core Specialist"];
+        const currentLang = 'en';
+        const enableParticles = true;
+    </script>
+    <script src="js/portfolio.js"></script>
+</body>
+</html>

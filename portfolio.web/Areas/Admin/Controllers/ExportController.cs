@@ -427,8 +427,12 @@ namespace portfolio.web.Areas.Admin.Controllers
                     }
                     if (!string.IsNullOrEmpty(project.DemoUrl))
                     {
+                        var isDemoTour = project.DemoUrl.StartsWith("./demos", StringComparison.OrdinalIgnoreCase);
+                        var demoLabel = isDemoTour
+                            ? (lang == "en" ? "Demo tour" : "جولة المشروع")
+                            : (lang == "en" ? "Live demo" : "معاينة مباشرة");
                         html.AppendLine($"                                <a href=\"{project.DemoUrl}\" target=\"_blank\" class=\"btn btn-sm btn-custom-outline\">");
-                        html.AppendLine("                                    <i class=\"fas fa-external-link-alt\"></i> Demo");
+                        html.AppendLine($"                                    <i class=\"fas fa-external-link-alt\"></i> {demoLabel}");
                         html.AppendLine("                                </a>");
                     }
                     html.AppendLine("                            </div>");

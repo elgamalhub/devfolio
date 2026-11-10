@@ -9,6 +9,7 @@ This is a static HTML export of your portfolio website.
 - `js/portfolio.js` - JavaScript functionality
 - `images/` - All portfolio images
 - `files/` - CV and other files
+- `demos/` - Self-contained project demo tours
 
 ## How to Use
 
@@ -49,4 +50,4 @@ This is a static HTML export of your portfolio website.
 ## Support
 For any issues or questions, please contact the original site administrator.
 
-Generated on: 2026-11-09 12:30:54
+Generated on: 2026-11-10 23:16:45

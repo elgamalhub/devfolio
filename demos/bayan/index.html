@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Bayan — Bilingual Publishing Platform · Project Demo</title>
+    <meta name="description" content="A guided tour of Bayan, a bilingual English/Arabic publishing platform built with ASP.NET Core 8 MVC, EF Core and Identity." />
+    <link rel="stylesheet" href="../demo.css" />
+</head>
+<body>
+
+<nav class="demo-nav">
+    <div class="container demo-nav-inner">
+        <a class="demo-brand" href="../../">
+            <span class="demo-brand-dot">AE</span>
+            <span>Ahmed Elgamal</span>
+        </a>
+        <span class="demo-nav-spacer"></span>
+        <a class="demo-nav-link" href="../../">&larr; <span>Portfolio</span></a>
+        <a class="demo-nav-link" href="https://github.com/elgamalhub/bayan" target="_blank" rel="noopener noreferrer">Source code</a>
+    </div>
+</nav>
+
+<header class="demo-hero">
+    <div class="container">
+        <span class="eyebrow"><span class="dot"></span> Case study · ASP.NET Core 8 MVC</span>
+        <h1>Bayan — a calm, <span class="grad">bilingual home</span> for writers and readers.</h1>
+        <p class="demo-lede">
+            Bayan (Arabic for eloquent expression) is a publishing platform with a distraction-free rich-text editor,
+            comments, likes, author profiles and a complete English / Arabic experience with automatic RTL layout.
+            This page is a guided tour of the real application running with seeded demo content.
+        </p>
+
+        <div class="demo-cta">
+            <a class="btn btn-primary" href="https://github.com/elgamalhub/bayan" target="_blank" rel="noopener noreferrer">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .5a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2.1c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1.1-.8.1-.8.1-.8 1.2.1 1.9 1.3 1.9 1.3 1.1 1.9 2.9 1.3 3.6 1 .1-.8.4-1.3.8-1.7-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.3-3.2-.1-.3-.6-1.6.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17.5 4.6 18.5 5 18.5 5c.7 1.7.2 3 .1 3.3.8.8 1.3 1.9 1.3 3.2 0 4.6-2.8 5.5-5.5 5.8.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .5Z"/></svg>
+                View the source
+            </a>
+            <a class="btn" href="#tour">Jump to the screenshot tour</a>
+        </div>
+
+        <div class="chip-row">
+            <span class="chip">.NET 8</span>
+            <span class="chip">ASP.NET Core MVC</span>
+            <span class="chip">Entity Framework Core</span>
+            <span class="chip">SQL Server</span>
+            <span class="chip">ASP.NET Core Identity</span>
+            <span class="chip">Bootstrap 5</span>
+            <span class="chip">JavaScript</span>
+        </div>
+
+        <ul class="stat-strip">
+            <li><strong>6</strong><span>Seeded articles</span></li>
+            <li><strong>10</strong><span>Writers &amp; readers</span></li>
+            <li><strong>4</strong><span>Topics</span></li>
+            <li><strong>37</strong><span>Likes across posts</span></li>
+        </ul>
+    </div>
+</header>
+
+<main>
+    <section class="section">
+        <div class="container">
+            <div class="section-head">
+                <div>
+                    <div class="section-kicker">What it does</div>
+                    <h2>Publishing features, built end to end</h2>
+                    <p>Everything below is implemented in the repository: authentication, authoring, reading, discussion and localisation.</p>
+                </div>
+            </div>
+
+            <div class="feature-grid">
+                <article class="feature-card">
+                    <div class="feature-icon">EN</div>
+                    <h3>Bilingual by design</h3>
+                    <p>English and Arabic share one codebase. A cookie-based culture provider switches language, direction, dates and Bootstrap RTL assets.</p>
+                </article>
+                <article class="feature-card">
+                    <div class="feature-icon">✎</div>
+                    <h3>Distraction-free editor</h3>
+                    <p>A compact rich-text editor with headings, lists, quotes, links, code blocks and inline image uploads — no plugin framework.</p>
+                </article>
+                <article class="feature-card">
+                    <div class="feature-icon">♥</div>
+                    <h3>Comments and likes</h3>
+                    <p>Signed-in readers can like an article once and join the discussion. Counts are projected straight from EF Core.</p>
+                </article>
+                <article class="feature-card">
+                    <div class="feature-icon">⚿</div>
+                    <h3>Identity and roles</h3>
+                    <p>Cookie authentication with Admin and User roles, custom profile fields, antiforgery tokens and per-post ownership checks.</p>
+                </article>
+                <article class="feature-card">
+                    <div class="feature-icon">⌕</div>
+                    <h3>Search, filter, sort</h3>
+                    <p>Search titles and content, filter by topic, and sort by newest or most liked with server-side paging.</p>
+                </article>
+                <article class="feature-card">
+                    <div class="feature-icon">⇪</div>
+                    <h3>Safe cover uploads</h3>
+                    <p>Extension, content-type and size checks plus a file-signature test. Files are stored under GUID names in allow-listed folders.</p>
+                </article>
+                <article class="feature-card">
+                    <div class="feature-icon">☾</div>
+                    <h3>Dark reading mode</h3>
+                    <p>A second reading environment defined through the same design tokens, with contrast tuned for long sessions.</p>
+                </article>
+                <article class="feature-card">
+                    <div class="feature-icon">◎</div>
+                    <h3>Author profiles</h3>
+                    <p>Every writer gets a public page with bio, links, join date and their published articles.</p>
+                </article>
+                <article class="feature-card">
+                    <div class="feature-icon">▤</div>
+                    <h3>Responsive layout</h3>
+                    <p>Mobile-first reading column, collapsible navigation and images that never overflow their container.</p>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="tour">
+        <div class="container">
+            <div class="section-head">
+                <div>
+                    <div class="section-kicker">Screenshot tour</div>
+                    <h2>Ten screens from the running app</h2>
+                    <p>Captured locally against a seeded <em>BayanDemo</em> database — real UI, real content, no mockups.</p>
+                </div>
+            </div>
+
+            <figure class="shot">
+                <div class="shot-frame"><img src="shots/home.jpg" alt="Bayan home page with featured article, latest posts and topic cards" loading="lazy" /></div>
+                <figcaption><span class="shot-index">01</span><span><strong>Home</strong>Featured story, latest articles, a most-liked list and topic cards — all driven by one set of EF Core queries.</span></figcaption>
+            </figure>
+
+            <figure class="shot">
+                <div class="shot-frame"><img src="shots/articles.jpg" alt="Bayan article index with search field, topic filters and post cards" loading="lazy" /></div>
+                <figcaption><span class="shot-index">02</span><span><strong>Article index</strong>Search, topic filtering, sorting and paging in the query string, so every view is linkable and shareable.</span></figcaption>
+            </figure>
+
+            <figure class="shot">
+                <div class="shot-frame"><img src="shots/article.jpg" alt="Bayan article page with cover image, byline and reading time" loading="lazy" /></div>
+                <figcaption><span class="shot-index">03</span><span><strong>Article page</strong>Cover, category, byline, reading time and the author avatar — with editing actions shown only to the owner or an admin.</span></figcaption>
+            </figure>
+
+            <figure class="shot">
+                <div class="shot-frame"><img src="shots/article-body.jpg" alt="Bayan long-form reading column with headings, lists and a pull quote" loading="lazy" /></div>
+                <figcaption><span class="shot-index">04</span><span><strong>Long-form reading</strong>A narrow measure, generous line height and an editorial type scale. The stored HTML is sanitised through an allow-list before rendering.</span></figcaption>
+            </figure>
+
+            <figure class="shot">
+                <div class="shot-frame"><img src="shots/comments.jpg" alt="Bayan comments section and article action bar" loading="lazy" /></div>
+                <figcaption><span class="shot-index">05</span><span><strong>Discussion</strong>Like button, copy-link action and a comments thread. State-changing requests are antiforgery-protected.</span></figcaption>
+            </figure>
+
+            <figure class="shot">
+                <div class="shot-frame"><img src="shots/editor.jpg" alt="Bayan rich-text article editor with toolbar, fields and publish panel" loading="lazy" /></div>
+                <figcaption><span class="shot-index">06</span><span><strong>Writer workspace</strong>Title, topic, cover and body — with a quiet toolbar. Autosave keeps the draft, and validation is shown next to the field that failed.</span></figcaption>
+            </figure>
+
+            <figure class="shot">
+                <div class="shot-frame"><img src="shots/profile.jpg" alt="Bayan public author profile with bio, links and published articles" loading="lazy" /></div>
+                <figcaption><span class="shot-index">07</span><span><strong>Author profile</strong>Public profile page with bio, external links, join date, total likes and the writer's published articles.</span></figcaption>
+            </figure>
+
+            <figure class="shot">
+                <div class="shot-frame"><img src="shots/dark.jpg" alt="Bayan article page in dark reading mode" loading="lazy" /></div>
+                <figcaption><span class="shot-index">08</span><span><strong>Dark reading mode</strong>The same components, re-tokenised for night reading. The choice persists in local storage and respects the system preference on first visit.</span></figcaption>
+            </figure>
+
+            <figure class="shot">
+                <div class="shot-frame"><img src="shots/arabic.jpg" alt="Bayan home page in Arabic with right-to-left layout" loading="lazy" /></div>
+                <figcaption><span class="shot-index">09</span><span><strong>Arabic, not a translation layer</strong>The whole document flips to RTL: navigation, cards, arrows, spacing and dates. Bootstrap's RTL build and logical CSS properties do the heavy lifting.</span></figcaption>
+            </figure>
+
+            <figure class="shot">
+                <div class="shot-frame"><img src="shots/login.jpg" alt="Bayan sign-in page" loading="lazy" /></div>
+                <figcaption><span class="shot-index">10</span><span><strong>Identity</strong>Cookie-based sign-in with a password toggle, remember-me and safe local return URLs after authentication.</span></figcaption>
+            </figure>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <div class="section-head">
+                <div>
+                    <div class="section-kicker">Under the hood</div>
+                    <h2>Small stack, deliberate choices</h2>
+                </div>
+            </div>
+
+            <div class="split">
+                <div class="panel">
+                    <h3>Implementation notes</h3>
+                    <ul>
+                        <li><strong>Server-rendered MVC.</strong> Controllers talk to the DbContext and return view models — no generic repository layer wrapped around EF Core.</li>
+                        <li><strong>Content safety.</strong> Stored article HTML passes through an allow-list of tags and attributes; links and image sources are validated by scheme.</li>
+                        <li><strong>Uploads.</strong> Extension, MIME type, 5 MB limit and magic-byte signature checks before a file reaches <code>wwwroot</code>.</li>
+                        <li><strong>Data model.</strong> Posts, categories, comments and likes with indexes on created date, author and category; one like per user per post enforced in the database.</li>
+                        <li><strong>Localisation.</strong> Resource-backed strings, a request-culture cookie and direction-aware layout assets.</li>
+                        <li><strong>Migrations.</strong> EF Core migrations run automatically in Development; roles and the admin account are seeded at startup.</li>
+                    </ul>
+                </div>
+
+                <aside class="panel">
+                    <h3>Stack</h3>
+                    <ul class="stack-list">
+                        <li>.NET <span>8.0</span></li>
+                        <li>ASP.NET Core MVC <span>Razor views</span></li>
+                        <li>Entity Framework Core <span>code first</span></li>
+                        <li>SQL Server <span>local / Azure ready</span></li>
+                        <li>ASP.NET Core Identity <span>cookies + roles</span></li>
+                        <li>Bootstrap <span>LTR + RTL builds</span></li>
+                        <li>JavaScript <span>editor + theme</span></li>
+                    </ul>
+                    <p style="margin-top:16px">The repository includes the solution, migrations, seed data and a README with the exact run steps.</p>
+                    <a class="btn btn-primary" href="https://github.com/elgamalhub/bayan" target="_blank" rel="noopener noreferrer" style="margin-top:4px">Open the repository</a>
+                </aside>
+            </div>
+
+            <div class="panel" style="margin-top:18px">
+                <h3>About this demo</h3>
+                <p>
+                    Bayan is a .NET web application, so this tour uses screenshots rather than an embedded live instance.
+                    All screens were captured from the application running on a local SQL Server database seeded with the articles,
+                    comments and likes shown above. To run it yourself, clone the repository and follow the README — the app applies
+                    its EF Core migrations on first start in Development.
+                </p>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer class="demo-footer">
+    <div class="container demo-footer-inner">
+        <span>Bayan · built by Ahmed Elgamal</span>
+        <span><a href="../../">&larr; Back to the portfolio</a> · <a href="https://github.com/elgamalhub/bayan" target="_blank" rel="noopener noreferrer">GitHub</a></span>
+    </div>
+</footer>
+
+<a class="back-top" href="#" aria-label="Back to top">↑</a>
+
+</body>
+</html>

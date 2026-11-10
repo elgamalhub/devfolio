@@ -579,6 +579,14 @@ namespace portfolio.web.Areas.Admin.Controllers
             {
                 CopyDirectory(sourceFilesDir, filesDir);
             }
+
+            // Copy project demo tours
+            var demosDir = Path.Combine(destPath, "demos");
+            var sourceDemosDir = Path.Combine(_env.WebRootPath, "demos");
+            if (Directory.Exists(sourceDemosDir))
+            {
+                CopyDirectory(sourceDemosDir, demosDir);
+            }
         }
 
         private void CopyDirectory(string sourceDir, string destDir)
@@ -608,6 +616,7 @@ This is a static HTML export of your portfolio website.
 - `js/portfolio.js` - JavaScript functionality
 - `images/` - All portfolio images
 - `files/` - CV and other files
+- `demos/` - Self-contained project demo tours
 
 ## How to Use
 

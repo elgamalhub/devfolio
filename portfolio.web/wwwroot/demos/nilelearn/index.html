@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>NileLearn — Bilingual Learning Platform · Project Demo</title>
+    <meta name="description" content="A guided tour of NileLearn: a bilingual Arabic/English LMS with courses, commerce, video learning, assessments, certificates and an administration console. ASP.NET Core 8 + Angular 20." />
+    <link rel="stylesheet" href="../demo.css" />
+</head>
+<body>
+
+<nav class="demo-nav">
+    <div class="container demo-nav-inner">
+        <a class="demo-brand" href="../../">
+            <span class="demo-brand-dot">AE</span>
+            <span>Ahmed Elgamal</span>
+        </a>
+        <span class="demo-nav-spacer"></span>
+        <a class="demo-nav-link" href="../../">&larr; <span>Portfolio</span></a>
+        <a class="demo-nav-link" href="https://github.com/elgamalhub/NileLearn" target="_blank" rel="noopener noreferrer">Source code</a>
+    </div>
+</nav>
+
+<header class="demo-hero">
+    <div class="container">
+        <span class="eyebrow"><span class="dot"></span> Case study · ASP.NET Core 8 + Angular 20</span>
+        <h1>NileLearn — a <span class="grad">bilingual learning business</span>, not just a course page.</h1>
+        <p class="demo-lede">
+            A production-shaped LMS for the Egyptian and international market: an Arabic-first catalogue with full RTL support,
+            EGP checkout with provider-independent payments, authorised video delivery, timed assessments, verifiable
+            certificates and a complete administration console.
+        </p>
+
+        <div class="demo-cta">
+            <a class="btn btn-primary" href="https://github.com/elgamalhub/NileLearn" target="_blank" rel="noopener noreferrer">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .5a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2.1c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1.1-.8.1-.8.1-.8 1.2.1 1.9 1.3 1.9 1.3 1.1 1.9 2.9 1.3 3.6 1 .1-.8.4-1.3.8-1.7-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.3-3.2-.1-.3-.6-1.6.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17.5 4.6 18.5 5 18.5 5c.7 1.7.2 3 .1 3.3.8.8 1.3 1.9 1.3 3.2 0 4.6-2.8 5.5-5.5 5.8.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .5Z"/></svg>
+                View the source
+            </a>
+            <a class="btn" href="#tour">Jump to the screenshot tour</a>
+        </div>
+
+        <div class="chip-row">
+            <span class="chip">ASP.NET Core 8</span>
+            <span class="chip">Angular 20</span>
+            <span class="chip">Entity Framework Core</span>
+            <span class="chip">SQL Server / SQLite</span>
+            <span class="chip">JWT + refresh tokens</span>
+            <span class="chip">Payments</span>
+            <span class="chip">xUnit</span>
+            <span class="chip">Docker</span>
+            <span class="chip">CI</span>
+        </div>
+
+        <ul class="stat-strip">
+            <li><strong>2</strong><span>Languages, AR + EN</span></li>
+            <li><strong>3</strong><span>Role-based workspaces</span></li>
+            <li><strong>2</strong><span>Database providers</span></li>
+            <li><strong>1</strong><span>API, one domain model</span></li>
+        </ul>
+    </div>
+</header>
+
+<main>
+    <section class="section">
+        <div class="container">
+            <div class="section-head">
+                <div>
+                    <div class="section-kicker">What it does</div>
+                    <h2>The whole learning lifecycle</h2>
+                    <p>Discovery, purchase, playback, assessment and certification — with the operations console behind it.</p>
+                </div>
+            </div>
+
+            <div class="feature-grid">
+                <article class="feature-card">
+                    <div class="feature-icon">ع</div>
+                    <h3>Arabic-first, bilingual</h3>
+                    <p>Arabic RTL and English LTR share one Angular build. Content, navigation, dates and layout direction all switch together.</p>
+                </article>
+                <article class="feature-card">
+                    <div class="feature-icon">◈</div>
+                    <h3>Course catalogue</h3>
+                    <p>Search, category, level and price filters, sorting and paging — with curriculum previews, outcomes, instructors and reviews.</p>
+                </article>
+                <article class="feature-card">
+                    <div class="feature-icon">₤</div>
+                    <h3>Commerce in EGP</h3>
+                    <p>Provider-independent payment orchestration with signed webhooks, idempotent state transitions, coupons and invoices.</p>
+                </article>
+                <article class="feature-card">
+                    <div class="feature-icon">▶</div>
+                    <h3>Protected video</h3>
+                    <p>Playback tokens and entitlement checks on every request. Resume, speed, quality, PiP, theatre mode and a moving watermark.</p>
+                </article>
+                <article class="feature-card">
+                    <div class="feature-icon">⏱</div>
+                    <h3>Assessments</h3>
+                    <p>Timed quizzes with server-side deadlines and attempt limits, plus article lessons inside the same curriculum.</p>
+                </article>
+                <article class="feature-card">
+                    <div class="feature-icon">✦</div>
+                    <h3>Certificates</h3>
+                    <p>Verifiable completion certificates that can be checked from a public link.</p>
+                </article>
+                <article class="feature-card">
+                    <div class="feature-icon">◫</div>
+                    <h3>Instructor studio</h3>
+                    <p>Revenue share, student and rating metrics, a course editor and resumable chunked video upload that survives network loss.</p>
+                </article>
+                <article class="feature-card">
+                    <div class="feature-icon">▤</div>
+                    <h3>Administration</h3>
+                    <p>Revenue and MRR, users and roles, course status, plans and coupons, payment ledger with refunds, support desk and audit log.</p>
+                </article>
+                <article class="feature-card">
+                    <div class="feature-icon">⚿</div>
+                    <h3>Account security</h3>
+                    <p>JWT access tokens, rotating refresh tokens hashed at rest, optional email-code 2FA and session/device revocation.</p>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="tour">
+        <div class="container">
+            <div class="section-head">
+                <div>
+                    <div class="section-kicker">Screenshot tour</div>
+                    <h2>Five screens across the product</h2>
+                    <p>Real captures from the application, taken from the project's documented screenshot set.</p>
+                </div>
+            </div>
+
+            <figure class="shot">
+                <div class="shot-frame"><img src="shots/home-ar.jpg" alt="NileLearn Arabic home page with RTL layout, hero and course catalogue" loading="lazy" /></div>
+                <figcaption><span class="shot-index">01</span><span><strong>Home, Arabic (RTL)</strong>The primary experience: right-to-left navigation, Arabic typography, hero, categories and course cards.</span></figcaption>
+            </figure>
+
+            <div class="shot-grid">
+                <figure class="shot">
+                    <div class="shot-frame"><img src="shots/home-en.jpg" alt="NileLearn English home page with LTR layout and course catalogue" loading="lazy" /></div>
+                    <figcaption><span class="shot-index">02</span><span><strong>Home, English (LTR)</strong>The same components and data, mirrored for English. Direction is a layout concern, not a translation patch.</span></figcaption>
+                </figure>
+
+                <figure class="shot">
+                    <div class="shot-frame"><img src="shots/dashboard-ar.jpg" alt="NileLearn student dashboard with streak, minutes watched and continue learning" loading="lazy" /></div>
+                    <figcaption><span class="shot-index">03</span><span><strong>Student dashboard</strong>Streak, minutes watched, continue-learning cards and progress across enrolled courses.</span></figcaption>
+                </figure>
+
+                <figure class="shot">
+                    <div class="shot-frame"><img src="shots/player-ar.jpg" alt="NileLearn video player with curriculum sidebar and lesson navigation" loading="lazy" /></div>
+                    <figcaption><span class="shot-index">04</span><span><strong>Learning player</strong>Protected video with resume, speed and quality controls, plus the curriculum and lesson navigation in Arabic.</span></figcaption>
+                </figure>
+
+                <figure class="shot">
+                    <div class="shot-frame"><img src="shots/admin-ar.jpg" alt="NileLearn administration console with revenue, users and course management" loading="lazy" /></div>
+                    <figcaption><span class="shot-index">05</span><span><strong>Administration</strong>Revenue, MRR, enrolment analytics, payment success rate, users, courses and the payment ledger.</span></figcaption>
+                </figure>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <div class="section-head">
+                <div>
+                    <div class="section-kicker">Under the hood</div>
+                    <h2>Commerce and media, handled carefully</h2>
+                    <p>The interesting work is in the edges: money state, playback authorisation and a bilingual UI that stays consistent.</p>
+                </div>
+            </div>
+
+            <div class="split">
+                <div class="panel">
+                    <h3>Implementation notes</h3>
+                    <ul>
+                        <li><strong>Payment state machine.</strong> Provider webhooks are signature-checked and idempotent; refunds revoke entitlements in the same transaction.</li>
+                        <li><strong>Authorised playback.</strong> Every playback request checks entitlement and issues a short-lived token before the player can stream.</li>
+                        <li><strong>Server-side assessment rules.</strong> Quiz deadlines and attempt counts are enforced by the API, never by the browser.</li>
+                        <li><strong>Resumable uploads.</strong> Instructors upload video in chunks, so a dropped connection resumes instead of restarting.</li>
+                        <li><strong>Two database modes.</strong> SQLite for a zero-config demo, SQL Server through EF Core migrations for production.</li>
+                        <li><strong>Tested in CI.</strong> xUnit unit tests plus WebApplicationFactory integration flows: health, catalogue, register, login, checkout, webhook.</li>
+                    </ul>
+                </div>
+
+                <aside class="panel">
+                    <h3>Stack</h3>
+                    <ul class="stack-list">
+                        <li>ASP.NET Core <span>.NET 8</span></li>
+                        <li>Angular <span>20 SPA</span></li>
+                        <li>Entity Framework Core <span>migrations</span></li>
+                        <li>SQL Server / SQLite <span>prod / demo</span></li>
+                        <li>JWT + 2FA <span>sessions and devices</span></li>
+                        <li>Payments <span>signed webhooks</span></li>
+                        <li>xUnit <span>unit + integration</span></li>
+                        <li>Docker + CI <span>compose profiles</span></li>
+                    </ul>
+                    <p style="margin-top:16px">The README documents demo accounts for each role, environment variables and both database modes.</p>
+                    <a class="btn btn-primary" href="https://github.com/elgamalhub/NileLearn" target="_blank" rel="noopener noreferrer" style="margin-top:4px">Open the repository</a>
+                </aside>
+            </div>
+
+            <div class="panel" style="margin-top:18px">
+                <h3>About this demo</h3>
+                <p>
+                    NileLearn is a full-stack application, so this tour uses the screenshots kept in the repository's
+                    <code>docs/images</code> folder. The README covers the local run steps, the seeded catalogue, demo accounts
+                    for student, instructor and admin, and the SQLite zero-config mode used for evaluation.
+                </p>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer class="demo-footer">
+    <div class="container demo-footer-inner">
+        <span>NileLearn · built by Ahmed Elgamal</span>
+        <span><a href="../../">&larr; Back to the portfolio</a> · <a href="https://github.com/elgamalhub/NileLearn" target="_blank" rel="noopener noreferrer">GitHub</a></span>
+    </div>
+</footer>
+
+<a class="back-top" href="#" aria-label="Back to top">↑</a>
+
+</body>
+</html>

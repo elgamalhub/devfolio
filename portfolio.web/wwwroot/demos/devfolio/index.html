@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Devfolio — Developer Portfolio · Project Demo</title>
+    <meta name="description" content="A tour of Devfolio: a bilingual, content-managed developer portfolio built with ASP.NET Core 9 and exported as a static site to GitHub Pages." />
+    <link rel="stylesheet" href="../demo.css" />
+</head>
+<body>
+
+<nav class="demo-nav">
+    <div class="container demo-nav-inner">
+        <a class="demo-brand" href="../../">
+            <span class="demo-brand-dot">AE</span>
+            <span>Ahmed Elgamal</span>
+        </a>
+        <span class="demo-nav-spacer"></span>
+        <a class="demo-nav-link" href="../../">&larr; <span>Portfolio</span></a>
+        <a class="demo-nav-link" href="https://github.com/elgamalhub/devfolio" target="_blank" rel="noopener noreferrer">Source code</a>
+    </div>
+</nav>
+
+<header class="demo-hero">
+    <div class="container">
+        <span class="eyebrow"><span class="dot"></span> Live case study · ASP.NET Core 9</span>
+        <h1>Devfolio — the <span class="grad">portfolio you are reading</span>, with a CMS behind it.</h1>
+        <p class="demo-lede">
+            Devfolio is a bilingual developer portfolio with a private admin area for projects, skills, experience, posts and
+            messages. The public site is exported to plain static files and published on GitHub Pages, so it stays fast and
+            free to host while the content lives in SQL Server.
+        </p>
+
+        <div class="demo-cta">
+            <a class="btn btn-primary" href="https://elgamalhub.github.io/devfolio/" target="_blank" rel="noopener noreferrer">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3h7v7h-2V6.4l-8.3 8.3-1.4-1.4L17.6 5H14V3ZM5 5h6v2H7v10h10v-4h2v6H5V5Z"/></svg>
+                Open the live site
+            </a>
+            <a class="btn" href="https://github.com/elgamalhub/devfolio" target="_blank" rel="noopener noreferrer">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .5a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2.1c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1.1-.8.1-.8.1-.8 1.2.1 1.9 1.3 1.9 1.3 1.1 1.9 2.9 1.3 3.6 1 .1-.8.4-1.3.8-1.7-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.3-3.2-.1-.3-.6-1.6.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17.5 4.6 18.5 5 18.5 5c.7 1.7.2 3 .1 3.3.8.8 1.3 1.9 1.3 3.2 0 4.6-2.8 5.5-5.5 5.8.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .5Z"/></svg>
+                View the source
+            </a>
+        </div>
+
+        <div class="chip-row">
+            <span class="chip">ASP.NET Core 9</span>
+            <span class="chip">C#</span>
+            <span class="chip">Entity Framework Core</span>
+            <span class="chip">SQL Server</span>
+            <span class="chip">Identity</span>
+            <span class="chip">Bootstrap 5</span>
+            <span class="chip">Serilog</span>
+            <span class="chip">GitHub Pages</span>
+        </div>
+
+        <ul class="stat-strip">
+            <li><strong>8</strong><span>Projects managed</span></li>
+            <li><strong>2</strong><span>Languages, EN + AR</span></li>
+            <li><strong>12</strong><span>Skill entries</span></li>
+            <li><strong>0</strong><span>Server needed at runtime</span></li>
+        </ul>
+    </div>
+</header>
+
+<main>
+    <section class="section">
+        <div class="container">
+            <div class="section-head">
+                <div>
+                    <div class="section-kicker">What it does</div>
+                    <h2>A portfolio that is also a small product</h2>
+                    <p>The public page is static; the authoring experience is a normal authenticated web application.</p>
+                </div>
+            </div>
+
+            <div class="feature-grid">
+                <article class="feature-card">
+                    <div class="feature-icon">▤</div>
+                    <h3>Content-managed sections</h3>
+                    <p>Projects, skills, experience, posts, messages and site settings are stored in SQL Server and edited from an admin area.</p>
+                </article>
+                <article class="feature-card">
+                    <div class="feature-icon">ع</div>
+                    <h3>Bilingual presentation</h3>
+                    <p>English and Arabic content for every section, with an RTL layout, translated navigation and a persistent language choice.</p>
+                </article>
+                <article class="feature-card">
+                    <div class="feature-icon">◐</div>
+                    <h3>Dark and light themes</h3>
+                    <p>A token-based theme with a toggle that remembers the choice and respects the operating-system preference on first visit.</p>
+                </article>
+                <article class="feature-card">
+                    <div class="feature-icon">⌗</div>
+                    <h3>Project filtering</h3>
+                    <p>Category filters, technology chips, demo and source links, and project cards driven entirely by the database.</p>
+                </article>
+                <article class="feature-card">
+                    <div class="feature-icon">✉</div>
+                    <h3>Contact inbox</h3>
+                    <p>Messages are validated, stored and read from the admin area — no third-party form service required.</p>
+                </article>
+                <article class="feature-card">
+                    <div class="feature-icon">↧</div>
+                    <h3>One-click static export</h3>
+                    <p>The admin export renders the public site to self-contained HTML and assets, ready for GitHub Pages or any static host.</p>
+                </article>
+                <article class="feature-card">
+                    <div class="feature-icon">⌕</div>
+                    <h3>SEO basics</h3>
+                    <p>Per-page titles and descriptions, canonical URLs, Open Graph tags and a generated sitemap for the public pages.</p>
+                </article>
+                <article class="feature-card">
+                    <div class="feature-icon">✓</div>
+                    <h3>Security</h3>
+                    <p>Identity-backed admin access, antiforgery validation, role checks and hardened cookie settings.</p>
+                </article>
+                <article class="feature-card">
+                    <div class="feature-icon">◈</div>
+                    <h3>Performance</h3>
+                    <p>Local assets, lazy-loaded images, minimal JavaScript and a static deployment with no application server in the request path.</p>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="tour">
+        <div class="container">
+            <div class="section-head">
+                <div>
+                    <div class="section-kicker">Screenshot tour</div>
+                    <h2>The live site, section by section</h2>
+                    <p>Captured from <span style="color:var(--text)">elgamalhub.github.io/devfolio</span> — the real deployed export.</p>
+                </div>
+            </div>
+
+            <figure class="shot">
+                <div class="shot-frame"><img src="shots/home.jpg" alt="Devfolio hero section with animated typing effect and call to action" loading="lazy" /></div>
+                <figcaption><span class="shot-index">01</span><span><strong>Hero</strong>Name, role, a typed tagline and the two actions that matter: view the work or download the CV.</span></figcaption>
+            </figure>
+
+            <div class="shot-grid">
+                <figure class="shot">
+                    <div class="shot-frame"><img src="shots/about.jpg" alt="Devfolio about and experience sections" loading="lazy" /></div>
+                    <figcaption><span class="shot-index">02</span><span><strong>About and experience</strong>A short profile followed by a timeline of roles and education.</span></figcaption>
+                </figure>
+
+                <figure class="shot">
+                    <div class="shot-frame"><img src="shots/skills.jpg" alt="Devfolio skills section with progress bars grouped by area" loading="lazy" /></div>
+                    <figcaption><span class="shot-index">03</span><span><strong>Skills</strong>Grouped, readable proficiency bars — content managed, not hard-coded.</span></figcaption>
+                </figure>
+
+                <figure class="shot">
+                    <div class="shot-frame"><img src="shots/projects.jpg" alt="Devfolio projects grid with filters, technology tags and links" loading="lazy" /></div>
+                    <figcaption><span class="shot-index">04</span><span><strong>Projects</strong>Filterable cards with technology tags, demo buttons and source links. Bayan, EvTicket and NileLearn are all managed here.</span></figcaption>
+                </figure>
+
+                <figure class="shot">
+                    <div class="shot-frame"><img src="shots/contact.jpg" alt="Devfolio contact section with email, phone, GitHub and LinkedIn links" loading="lazy" /></div>
+                    <figcaption><span class="shot-index">05</span><span><strong>Contact</strong>Direct channels plus a form that writes to the admin inbox.</span></figcaption>
+                </figure>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <div class="section-head">
+                <div>
+                    <div class="section-kicker">Under the hood</div>
+                    <h2>Dynamic authoring, static delivery</h2>
+                    <p>The admin app does the work; visitors get plain files.</p>
+                </div>
+            </div>
+
+            <div class="split">
+                <div class="panel">
+                    <h3>How the export works</h3>
+                    <ul>
+                        <li><strong>Render.</strong> The export controller requests the public pages server-side and rewrites links so the result can live in any subdirectory.</li>
+                        <li><strong>Collect assets.</strong> CSS, JavaScript, fonts, project images and the CV PDF are copied into a versioned package.</li>
+                        <li><strong>Package.</strong> The result downloads as a ZIP from the admin area — no build server or deployment credentials needed.</li>
+                        <li><strong>Publish.</strong> The ZIP is pushed to the <code>gh-pages</code> branch; GitHub Pages serves it at the custom project URL.</li>
+                        <li><strong>Iterate.</strong> Edit content in the admin app, export again, and the public site updates without a database in the request path.</li>
+                    </ul>
+                </div>
+
+                <aside class="panel">
+                    <h3>Stack</h3>
+                    <ul class="stack-list">
+                        <li>ASP.NET Core MVC <span>.NET 9</span></li>
+                        <li>Entity Framework Core <span>SQL Server</span></li>
+                        <li>ASP.NET Core Identity <span>admin area</span></li>
+                        <li>Razor views <span>server-rendered</span></li>
+                        <li>Bootstrap 5 <span>responsive grid</span></li>
+                        <li>Vanilla JavaScript <span>theme, nav, typing</span></li>
+                        <li>Serilog <span>structured logs</span></li>
+                        <li>GitHub Pages <span>static hosting</span></li>
+                    </ul>
+                    <p style="margin-top:16px">This tour itself is served from the same export pipeline — the demo pages live beside the portfolio and travel with it.</p>
+                    <a class="btn btn-primary" href="https://github.com/elgamalhub/devfolio" target="_blank" rel="noopener noreferrer" style="margin-top:4px">Open the repository</a>
+                </aside>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer class="demo-footer">
+    <div class="container demo-footer-inner">
+        <span>Devfolio · built by Ahmed Elgamal</span>
+        <span><a href="../../">&larr; Back to the portfolio</a> · <a href="https://elgamalhub.github.io/devfolio/" target="_blank" rel="noopener noreferrer">Live site</a></span>
+    </div>
+</footer>
+
+<a class="back-top" href="#" aria-label="Back to top">↑</a>
+
+</body>
+</html>

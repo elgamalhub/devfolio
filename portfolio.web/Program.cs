@@ -166,7 +166,8 @@ namespace portfolio.web
             }
 
             app.UseHttpsRedirection();
-            app.UseStaticFiles();
+            app.UseDefaultFiles();
+app.UseStaticFiles();
 
             app.UseSerilogRequestLogging();
 

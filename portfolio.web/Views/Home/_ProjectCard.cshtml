@@ -3,6 +3,11 @@
     var lang = ViewBag.Language as string ?? "en";
     var title = lang == "en" ? Model.TitleEn : Model.TitleAr;
     var description = lang == "en" ? Model.ShortDescriptionEn : Model.ShortDescriptionAr;
+    var isDemoTour = !string.IsNullOrWhiteSpace(Model.DemoUrl)
+        && Model.DemoUrl.StartsWith("./demos", StringComparison.OrdinalIgnoreCase);
+    var demoLabel = isDemoTour
+        ? (lang == "en" ? "Demo tour" : "جولة المشروع")
+        : (lang == "en" ? "Live demo" : "معاينة مباشرة");
 }
 
 <div class="col-md-6 col-lg-4 project-item @(Model.IsHidden ? "hidden-project" : "")"
@@ -42,7 +47,7 @@
                         <a class="project-link is-primary" href="@Model.DemoUrl" target="_blank" rel="noopener noreferrer"
                            data-track-project="@Model.Id">
                             <i class="fas fa-arrow-up-right-from-square" aria-hidden="true"></i>
-                            @(lang == "en" ? "Live demo" : "معاينة مباشرة")
+                            @demoLabel
                         </a>
                     }
                     @if (!string.IsNullOrWhiteSpace(Model.GithubUrl))

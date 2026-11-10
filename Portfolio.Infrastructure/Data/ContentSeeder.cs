@@ -268,7 +268,7 @@ namespace Portfolio.Infrastructure.Data
                 project.IconClass = "fas fa-ticket-alt";
                 project.Category = "web";
                 project.GithubUrl = "https://github.com/elgamalhub/EvTicketApi";
-                project.DemoUrl = string.Empty;
+                project.DemoUrl = "./demos/evticket/";
                 project.ImagePath = "/images/projects/evticket.jpg";
                 project.IsHidden = false;
                 project.IsActive = true;
@@ -295,7 +295,7 @@ namespace Portfolio.Infrastructure.Data
                 project.IconClass = "fas fa-graduation-cap";
                 project.Category = "web";
                 project.GithubUrl = "https://github.com/elgamalhub/NileLearn";
-                project.DemoUrl = string.Empty;
+                project.DemoUrl = "./demos/nilelearn/";
                 project.ImagePath = "/images/projects/nilelearn.jpg";
                 project.IsHidden = false;
                 project.IsActive = true;
@@ -322,7 +322,7 @@ namespace Portfolio.Infrastructure.Data
                 project.IconClass = "fas fa-laptop-code";
                 project.Category = "web";
                 project.GithubUrl = "https://github.com/elgamalhub/devfolio";
-                project.DemoUrl = "https://elgamalhub.github.io/devfolio/";
+                project.DemoUrl = "./demos/devfolio/";
                 project.ImagePath = "/images/projects/devfolio.jpg";
                 project.IsHidden = false;
                 project.IsActive = true;
@@ -331,13 +331,42 @@ namespace Portfolio.Infrastructure.Data
             Tech(devfolio, "ASP.NET Core 9", "C#", "Entity Framework Core", "SQL Server",
                 "Identity", "Bootstrap", "Serilog", "GitHub Pages");
 
+            var bayan = Upsert("Bayan — Bilingual Publishing Platform", project =>
+            {
+                project.TitleAr = "Bayan — منصة نشر ثنائية اللغة";
+                project.ShortDescriptionEn =
+                    "A bilingual publishing platform with a distraction-free rich-text editor, comments, likes, author profiles and full RTL support.";
+                project.ShortDescriptionAr =
+                    "منصة نشر ثنائية اللغة بمحرر نصوص غني خالٍ من التشتيت وتعليقات وإعجابات وصفحات مؤلفين ودعم كامل للاتجاه من اليمين إلى اليسار.";
+                project.FullDescriptionEn =
+                    "Bayan (Arabic for eloquent expression) is a bilingual English/Arabic publishing platform built with ASP.NET Core 8 MVC and EF Core. " +
+                    "Writers get a built-in contenteditable editor with headings, lists, quotes, links and inline image uploads; readers get search, category filtering, pagination, comments, likes, author profiles, dark mode and a calm responsive layout. " +
+                    "The UI switches between English and Arabic with automatic RTL direction, direction-aware Bootstrap assets and Arabic date formatting. " +
+                    "Security uses ASP.NET Core Identity with Admin/User roles, antiforgery validation on every state-changing request, and upload validation by extension, content type and size.";
+                project.FullDescriptionAr =
+                    "Bayan منصة نشر ثنائية اللغة (إنجليزي/عربي) مبنية بـ ASP.NET Core 8 MVC وEF Core. " +
+                    "يحصل الكتّاب على محرر نصوص غني مدمج يدعم العناوين والقوائم والاقتباسات والروابط ورفع الصور داخل المقال، بينما يحصل القراء على البحث والتصفية حسب التصنيف والصفحات والتعليقات والإعجابات وصفحات المؤلفين والوضع الداكن وتصميم هادئ متجاوب. " +
+                    "تتبدل الواجهة بين الإنجليزية والعربية مع اتجاه RTL تلقائي وملفات Bootstrap موجهة حسب الاتجاه وتنسيق تواريخ عربي. " +
+                    "يعتمد الأمان على ASP.NET Core Identity بأدوار Admin وUser، والتحقق من مكافحة التزوير في كل طلب يغيّر الحالة، والتحقق من الملفات المرفوعة حسب الامتداد ونوع المحتوى والحجم.";
+                project.IconClass = "fas fa-book-open";
+                project.Category = "web";
+                project.GithubUrl = "https://github.com/elgamalhub/bayan";
+                project.DemoUrl = "./demos/bayan/";
+                project.ImagePath = "/images/projects/bayan.jpg";
+                project.IsHidden = false;
+                project.IsActive = true;
+                project.Order = 4;
+            });
+            Tech(bayan, ".NET 8", "ASP.NET Core MVC", "C#", "Entity Framework Core", "SQL Server",
+                "Identity", "Bootstrap", "JavaScript");
+
             var netflix = Upsert("Netflix Clone Streaming Platform", project =>
             {
                 project.GithubUrl = "https://github.com/elgamalhub/NetflixCloneAPI";
                 project.ImagePath = "/images/projects/netflix.jpg";
                 project.IsHidden = false;
                 project.IsActive = true;
-                project.Order = 4;
+                project.Order = 5;
             });
             Tech(netflix, "ASP.NET Core", "Angular", "Entity Framework Core", "SQL Server",
                 "SignalR", "Docker", "Stripe");
@@ -348,7 +377,7 @@ namespace Portfolio.Infrastructure.Data
                 project.ImagePath = "/images/projects/job-portal.jpg";
                 project.IsHidden = false;
                 project.IsActive = true;
-                project.Order = 5;
+                project.Order = 6;
             });
             Tech(jobPortal, "ASP.NET Core MVC", "Razor Views", "Entity Framework Core", "SQL Server");
 
@@ -358,7 +387,7 @@ namespace Portfolio.Infrastructure.Data
                 project.ImagePath = "/images/projects/attendance.jpg";
                 project.IsHidden = false;
                 project.IsActive = true;
-                project.Order = 6;
+                project.Order = 7;
             });
             Tech(attendance, "C#", "Windows Forms", "Entity Framework Core", "SQL Server");
 
@@ -369,7 +398,7 @@ namespace Portfolio.Infrastructure.Data
                 project.IconClass = "fas fa-shopping-cart";
                 project.IsHidden = false;
                 project.IsActive = true;
-                project.Order = 7;
+                project.Order = 8;
             });
             Tech(ecommerce, "HTML", "CSS", "JavaScript", "Bootstrap");
         }

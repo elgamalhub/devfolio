@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>EvTicket — Event Ticketing Platform · Project Demo</title>
+    <meta name="description" content="A guided tour of EvTicket: exact-seat ticketing with atomic holds, SignalR live availability, QR tickets, an organizer studio and an admin console. .NET 10 + Angular 21." />
+    <link rel="stylesheet" href="../demo.css" />
+</head>
+<body>
+
+<nav class="demo-nav">
+    <div class="container demo-nav-inner">
+        <a class="demo-brand" href="../../">
+            <span class="demo-brand-dot">AE</span>
+            <span>Ahmed Elgamal</span>
+        </a>
+        <span class="demo-nav-spacer"></span>
+        <a class="demo-nav-link" href="../../">&larr; <span>Portfolio</span></a>
+        <a class="demo-nav-link" href="https://github.com/elgamalhub/EvTicketApi" target="_blank" rel="noopener noreferrer">Source code</a>
+    </div>
+</nav>
+
+<header class="demo-hero">
+    <div class="container">
+        <span class="eyebrow"><span class="dot"></span> Case study · .NET 10 + Angular 21</span>
+        <h1>EvTicket — <span class="grad">two people can never buy</span> the same seat.</h1>
+        <p class="demo-lede">
+            A production-shaped ticketing platform: browse events, pick real seats on a venue map, pay, and walk in with a QR ticket.
+            Organizers get a studio for events and check-ins; admins get a platform console. The engineering centrepiece is an
+            atomic seat hold that closes the race window without distributed locks.
+        </p>
+
+        <div class="demo-cta">
+            <a class="btn btn-primary" href="https://github.com/elgamalhub/EvTicketApi" target="_blank" rel="noopener noreferrer">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .5a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2.1c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1.1-.8.1-.8.1-.8 1.2.1 1.9 1.3 1.9 1.3 1.1 1.9 2.9 1.3 3.6 1 .1-.8.4-1.3.8-1.7-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.3-3.2-.1-.3-.6-1.6.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17.5 4.6 18.5 5 18.5 5c.7 1.7.2 3 .1 3.3.8.8 1.3 1.9 1.3 3.2 0 4.6-2.8 5.5-5.5 5.8.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .5Z"/></svg>
+                View the source
+            </a>
+            <a class="btn" href="#tour">Jump to the screenshot tour</a>
+        </div>
+
+        <div class="chip-row">
+            <span class="chip">.NET 10</span>
+            <span class="chip">ASP.NET Core</span>
+            <span class="chip">Angular 21</span>
+            <span class="chip">Entity Framework Core 10</span>
+            <span class="chip">SQL Server / SQLite</span>
+            <span class="chip">SignalR</span>
+            <span class="chip">JWT + refresh tokens</span>
+            <span class="chip">xUnit</span>
+            <span class="chip">Docker</span>
+        </div>
+
+        <ul class="stat-strip">
+            <li><strong>5</strong><span>Hand-built venues</span></li>
+            <li><strong>11</strong><span>Seeded events</span></li>
+            <li><strong>~80</strong><span>Demo bookings</span></li>
+            <li><strong>10 min</strong><span>Atomic seat hold</span></li>
+        </ul>
+    </div>
+</header>
+
+<main>
+    <section class="section">
+        <div class="container">
+            <div class="section-head">
+                <div>
+                    <div class="section-kicker">What it does</div>
+                    <h2>Three products in one platform</h2>
+                    <p>Guest booking, organizer operations and platform administration share one API, one domain model and one permission system.</p>
+                </div>
+            </div>
+
+            <div class="feature-grid">
+                <article class="feature-card">
+                    <div class="feature-icon">⌖</div>
+                    <h3>Exact-seat venue maps</h3>
+                    <p>Interactive SVG seating plans with zoom, pan, section filtering, hover previews and live availability per seat.</p>
+                </article>
+                <article class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Atomic seat locking</h3>
+                    <p>A single conditional <code>UPDATE</code> claims a seat. No distributed lock and no race window — the database decides the winner.</p>
+                </article>
+                <article class="feature-card">
+                    <div class="feature-icon">◉</div>
+                    <h3>SignalR live updates</h3>
+                    <p>Holds, releases and notifications stream to every open browser, so a seat disappears from other maps immediately.</p>
+                </article>
+                <article class="feature-card">
+                    <div class="feature-icon">▣</div>
+                    <h3>Checkout and QR tickets</h3>
+                    <p>Ten-minute hold timer, card validation, demo payments and a unique QR code per ticket that is scannable once.</p>
+                </article>
+                <article class="feature-card">
+                    <div class="feature-icon">◫</div>
+                    <h3>Organizer studio</h3>
+                    <p>Revenue, tickets sold, sell-through, attendance and a 14-day sales chart, plus event creation and publishing.</p>
+                </article>
+                <article class="feature-card">
+                    <div class="feature-icon">✓</div>
+                    <h3>Check-in desk</h3>
+                    <p>Large code entry with success and rejection feedback, attendee search and CSV export for the door team.</p>
+                </article>
+                <article class="feature-card">
+                    <div class="feature-icon">▤</div>
+                    <h3>Admin console</h3>
+                    <p>Platform revenue and category mix, top events, recent signups, user roles, all bookings and CSV exports.</p>
+                </article>
+                <article class="feature-card">
+                    <div class="feature-icon">⚿</div>
+                    <h3>Real auth</h3>
+                    <p>ASP.NET Core Identity with JWT access tokens and rotating, SHA-256-hashed refresh tokens that detect reuse.</p>
+                </article>
+                <article class="feature-card">
+                    <div class="feature-icon">⚙</div>
+                    <h3>Production plumbing</h3>
+                    <p>Background expiry worker, rate limiting, health checks, Problem Details, response compression and Scalar API docs.</p>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="tour">
+        <div class="container">
+            <div class="section-head">
+                <div>
+                    <div class="section-kicker">Screenshot tour</div>
+                    <h2>From discovery to the door</h2>
+                    <p>Real captures from the running application, taken from the project's documented screenshot set.</p>
+                </div>
+            </div>
+
+            <figure class="shot">
+                <div class="shot-frame"><img src="shots/home.jpg" alt="EvTicket landing page with hero, featured events and categories" loading="lazy" /></div>
+                <figcaption><span class="shot-index">01</span><span><strong>Landing page</strong>Full-page capture: hero, featured events, category browsing and the path into the catalogue.</span></figcaption>
+            </figure>
+
+            <figure class="shot">
+                <div class="shot-frame"><img src="shots/events.jpg" alt="EvTicket event catalogue with search, filters and event cards" loading="lazy" /></div>
+                <figcaption><span class="shot-index">02</span><span><strong>Event discovery</strong>Search, category and city filters, price ranges and sorting — all server-driven and linkable.</span></figcaption>
+            </figure>
+
+            <div class="shot-grid">
+                <figure class="shot">
+                    <div class="shot-frame"><img src="shots/seat-map.jpg" alt="Interactive venue seat map with sections, zoom and live availability" loading="lazy" /></div>
+                    <figcaption><span class="shot-index">03</span><span><strong>Seat map</strong>Zoom, pan, filter by section and hover for price. Availability updates live over SignalR.</span></figcaption>
+                </figure>
+
+                <figure class="shot">
+                    <div class="shot-frame"><img src="shots/ticket.jpg" alt="Confirmed booking with QR ticket and booking summary" loading="lazy" /></div>
+                    <figcaption><span class="shot-index">04</span><span><strong>QR ticket</strong>A confirmed booking with a unique, single-use QR code and the full order summary.</span></figcaption>
+                </figure>
+
+                <figure class="shot">
+                    <div class="shot-frame"><img src="shots/account.jpg" alt="EvTicket account area with upcoming and past tickets" loading="lazy" /></div>
+                    <figcaption><span class="shot-index">05</span><span><strong>Account area</strong>Upcoming and past tickets, profile editing and password changes.</span></figcaption>
+                </figure>
+
+                <figure class="shot">
+                    <div class="shot-frame"><img src="shots/organizer.jpg" alt="Organizer studio dashboard with revenue, sell-through and sales chart" loading="lazy" /></div>
+                    <figcaption><span class="shot-index">06</span><span><strong>Organizer studio</strong>Revenue, tickets sold, sell-through, attendance and a 14-day sales chart.</span></figcaption>
+                </figure>
+
+                <figure class="shot">
+                    <div class="shot-frame"><img src="shots/check-in.jpg" alt="Check-in desk with ticket code entry and attendee list" loading="lazy" /></div>
+                    <figcaption><span class="shot-index">07</span><span><strong>Check-in desk</strong>Paste a ticket code: the first scan succeeds, the second reports it is already checked in.</span></figcaption>
+                </figure>
+
+                <figure class="shot">
+                    <div class="shot-frame"><img src="shots/admin.jpg" alt="Admin console with platform analytics, users and bookings" loading="lazy" /></div>
+                    <figcaption><span class="shot-index">08</span><span><strong>Admin console</strong>Revenue, category mix, top events, user management and every booking on the platform.</span></figcaption>
+                </figure>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <div class="section-head">
+                <div>
+                    <div class="section-kicker">Under the hood</div>
+                    <h2>The seat is the hard problem</h2>
+                    <p>Everything else follows from getting concurrency, identity and money right.</p>
+                </div>
+            </div>
+
+            <div class="split">
+                <div class="panel">
+                    <h3>How the hold works</h3>
+                    <ul>
+                        <li><strong>Claim.</strong> Selecting seats runs a single conditional update that only succeeds if every seat is still available. The affected-row count is the answer.</li>
+                        <li><strong>Hold.</strong> The claim writes a hold with a ten-minute expiry and the current user. A background worker expires abandoned holds and releases the seats.</li>
+                        <li><strong>Broadcast.</strong> SignalR publishes the change, so every open map re-renders availability without polling.</li>
+                        <li><strong>Confirm.</strong> Payment confirmation flips the booking and generates one QR ticket per seat, usable once at the door.</li>
+                        <li><strong>Recover.</strong> Refresh tokens are rotated and hashed at rest; reuse of an old token invalidates the session family.</li>
+                    </ul>
+                </div>
+
+                <aside class="panel">
+                    <h3>Stack</h3>
+                    <ul class="stack-list">
+                        <li>ASP.NET Core <span>.NET 10</span></li>
+                        <li>Angular <span>21, zoneless signals</span></li>
+                        <li>Entity Framework Core <span>10, migrations</span></li>
+                        <li>SQL Server / SQLite <span>prod / demo</span></li>
+                        <li>SignalR <span>live seats</span></li>
+                        <li>Identity + JWT <span>rotating refresh</span></li>
+                        <li>xUnit <span>integration tests</span></li>
+                        <li>Docker + GitHub Actions <span>CI</span></li>
+                    </ul>
+                    <p style="margin-top:16px">The README includes a five-minute demo script covering booking, the concurrency proof, organizer tools and admin flows.</p>
+                    <a class="btn btn-primary" href="https://github.com/elgamalhub/EvTicketApi" target="_blank" rel="noopener noreferrer" style="margin-top:4px">Open the repository</a>
+                </aside>
+            </div>
+
+            <div class="panel" style="margin-top:18px">
+                <h3>About this demo</h3>
+                <p>
+                    EvTicket is a full-stack application, so this tour uses the screenshots kept in the repository's
+                    <code>docs/screenshots</code> folder rather than an embedded instance. The README documents the local run steps,
+                    seeded demo accounts, demo card numbers and a reset path that recreates the database from scratch.
+                </p>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer class="demo-footer">
+    <div class="container demo-footer-inner">
+        <span>EvTicket · built by Ahmed Elgamal</span>
+        <span><a href="../../">&larr; Back to the portfolio</a> · <a href="https://github.com/elgamalhub/EvTicketApi" target="_blank" rel="noopener noreferrer">GitHub</a></span>
+    </div>
+</footer>
+
+<a class="back-top" href="#" aria-label="Back to top">↑</a>
+
+</body>
+</html>

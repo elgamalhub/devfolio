@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Maaloma — Paid Course Platform in Telegram · Client Work</title>
+    <meta name="description" content="A guided tour of Maaloma, a freelance project: a Telegram bot that sells and delivers paid courses, plus the Arabic RTL marketing site built for the same client." />
+    <link rel="stylesheet" href="../demo.css" />
+</head>
+<body>
+
+<nav class="demo-nav">
+    <div class="container demo-nav-inner">
+        <a class="demo-brand" href="../../">
+            <span class="demo-brand-dot">AE</span>
+            <span>Ahmed Elgamal</span>
+        </a>
+        <span class="demo-nav-spacer"></span>
+        <a class="demo-nav-link" href="../../">&larr; <span>Portfolio</span></a>
+    </div>
+</nav>
+
+<header class="demo-hero">
+    <div class="container">
+        <span class="eyebrow"><span class="dot"></span> Client work · Python + SQLite</span>
+        <h1>Maaloma — a paid course platform that <span class="grad">lives inside Telegram.</span></h1>
+        <p class="demo-lede">
+            A freelance delivery for a real client: instead of subscribing to an LMS, students browse the catalogue on the
+            website and get their lessons from a Telegram bot that only answers approved, paid subscribers.
+            The bot ships with its own admin panel, so the client runs the whole business from a chat — no dashboard to maintain.
+        </p>
+
+        <div class="demo-cta">
+            <a class="btn btn-primary" href="#tour">Jump to the screenshot tour</a>
+            <a class="btn" href="#architecture">How the bot works</a>
+        </div>
+
+        <div class="chip-row">
+            <span class="chip">Python</span>
+            <span class="chip">python-telegram-bot</span>
+            <span class="chip">SQLite</span>
+            <span class="chip">Fernet encryption</span>
+            <span class="chip">Bootstrap 5</span>
+            <span class="chip">JavaScript (RTL)</span>
+        </div>
+
+        <ul class="stat-strip">
+            <li><strong>8</strong><span>Courses</span></li>
+            <li><strong>40</strong><span>Lessons</span></li>
+            <li><strong>56</strong><span>Stored files</span></li>
+            <li><strong>~3k</strong><span>Lines of bot code</span></li>
+        </ul>
+    </div>
+</header>
+
+<main>
+    <section class="section">
+        <div class="container">
+            <div class="section-head">
+                <div>
+                    <div class="section-kicker">What it does</div>
+                    <h2>Subscription, delivery and administration — all in one bot</h2>
+                    <p>The client sells access, the bot enforces it. Every item below is implemented in the delivered code.</p>
+                </div>
+            </div>
+
+            <div class="feature-grid">
+                <article class="feature-card">
+                    <div class="feature-icon">◉</div>
+                    <h3>Paid access gating</h3>
+                    <p>Only approved users with an active subscription can open a lesson. Every request re-checks access against SQLite before a file is sent.</p>
+                </article>
+                <article class="feature-card">
+                    <div class="feature-icon">⚙</div>
+                    <h3>Admin panel inside the chat</h3>
+                    <p>Courses, lessons, fields and users are managed through guided bot conversations — no separate CMS to host, secure or teach.</p>
+                </article>
+                <article class="feature-card">
+                    <div class="feature-icon">⚿</div>
+                    <h3>Encrypted content links</h3>
+                    <p>Lesson links are stored encrypted with Fernet and decrypted only for authorised users, so forwarded messages never leak the source file.</p>
+                </article>
+                <article class="feature-card">
+                    <div class="feature-icon">✎</div>
+                    <h3>Signed callbacks</h3>
+                    <p>Inline buttons carry signed tokens instead of raw IDs, preventing tampered payloads from reaching admin or download actions.</p>
+                </article>
+                <article class="feature-card">
+                    <div class="feature-icon">⇪</div>
+                    <h3>Large file delivery</h3>
+                    <p>Big lessons are sent in chunks with a live progress bar, transfer speed and ETA, then cleaned up from disk automatically.</p>
+                </article>
+                <article class="feature-card">
+                    <div class="feature-icon">◎</div>
+                    <h3>Broadcast and support</h3>
+                    <p>The client sends announcements to all approved users and replies to student messages from a threaded support inbox.</p>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="tour">
+        <div class="container">
+            <div class="section-head">
+                <div>
+                    <div class="section-kicker">Screenshot tour</div>
+                    <h2>The marketing site delivered with the bot</h2>
+                    <p>Captured from the real site running locally — Arabic RTL, course catalogue loaded from JSON, per-course pages.</p>
+                </div>
+            </div>
+
+            <figure class="shot">
+                <div class="shot-frame"><img src="shots/home.jpg" alt="Maaloma home page hero in Arabic with the headline and call to action" loading="lazy" /></div>
+                <figcaption><span class="shot-index">01</span><span><strong>Home hero</strong>The first screen explains the offer and pushes visitors straight into the Telegram bot — the only sign-up path the client needs.</span></figcaption>
+            </figure>
+
+            <figure class="shot">
+                <div class="shot-frame"><img src="shots/courses.jpg" alt="Maaloma course catalogue grid with course cards" loading="lazy" /></div>
+                <figcaption><span class="shot-index">02</span><span><strong>Course catalogue</strong>Eight courses rendered from <code>config/courses.json</code> — the client edits one file to publish a new course, no rebuild.</span></figcaption>
+            </figure>
+
+            <figure class="shot">
+                <div class="shot-frame"><img src="shots/features.jpg" alt="Maaloma benefit cards section" loading="lazy" /></div>
+                <figcaption><span class="shot-index">03</span><span><strong>Why this platform</strong>Benefit cards with icons and short copy, aimed at students deciding whether to subscribe.</span></figcaption>
+            </figure>
+
+            <figure class="shot">
+                <div class="shot-frame"><img src="shots/tracking.jpg" alt="Maaloma follow-up and progress strip" loading="lazy" /></div>
+                <figcaption><span class="shot-index">04</span><span><strong>Follow-up promise</strong>A narrow strip that answers the client's main objection — that online courses are just videos with no accountability.</span></figcaption>
+            </figure>
+
+            <figure class="shot">
+                <div class="shot-frame"><img src="shots/course.jpg" alt="Maaloma course page with title, details and instructor card" loading="lazy" /></div>
+                <figcaption><span class="shot-index">05</span><span><strong>Course page</strong>Each course has its own page with description, curriculum and a call to action, built from the same JSON entry.</span></figcaption>
+            </figure>
+
+            <figure class="shot">
+                <div class="shot-frame"><img src="shots/curriculum.jpg" alt="Maaloma curriculum and related courses section" loading="lazy" /></div>
+                <figcaption><span class="shot-index">06</span><span><strong>Curriculum</strong>Weeks and lessons are listed so students know exactly what they are buying before they message the bot.</span></figcaption>
+            </figure>
+
+            <figure class="shot">
+                <div class="shot-frame"><img src="shots/mobile.jpg" alt="Maaloma home page on a mobile viewport" loading="lazy" /></div>
+                <figcaption><span class="shot-index">07</span><span><strong>Mobile first</strong>Most traffic arrives from Instagram and TikTok, so the layout is checked at phone width with the same RTL rules.</span></figcaption>
+            </figure>
+        </div>
+    </section>
+
+    <section class="section" id="architecture">
+        <div class="container">
+            <div class="section-head">
+                <div>
+                    <div class="section-kicker">Under the hood</div>
+                    <h2>One Python process, one database file</h2>
+                </div>
+            </div>
+
+            <div class="panel">
+                <h3>Access flow</h3>
+                <svg viewBox="0 0 900 190" role="img" aria-label="Student sends a message to the bot, the bot checks the subscription in SQLite, then either sends the decrypted lesson or replies with a paywall message." style="width:100%;height:auto;display:block">
+                    <defs>
+                        <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                            <path d="M0 0 L10 5 L0 10 z" fill="currentColor" />
+                        </marker>
+                    </defs>
+                    <g fill="none" stroke="currentColor" stroke-width="1.6" marker-end="url(#arrow)" opacity="0.55">
+                        <path d="M150 95 H210" />
+                        <path d="M360 95 H420" />
+                        <path d="M590 95 H650" />
+                    </g>
+                    <g font-family="inherit" text-anchor="middle">
+                        <rect x="20" y="60" width="130" height="70" rx="12" fill="rgba(99,102,241,.12)" stroke="rgba(99,102,241,.45)" />
+                        <text x="85" y="90" font-size="14" font-weight="600">Student</text>
+                        <text x="85" y="110" font-size="11" opacity=".7">Telegram chat</text>
+
+                        <rect x="210" y="60" width="150" height="70" rx="12" fill="rgba(20,184,166,.12)" stroke="rgba(20,184,166,.45)" />
+                        <text x="285" y="90" font-size="14" font-weight="600">Bot handler</text>
+                        <text x="285" y="110" font-size="11" opacity=".7">Python, asyncio</text>
+
+                        <rect x="420" y="60" width="170" height="70" rx="12" fill="rgba(245,158,11,.12)" stroke="rgba(245,158,11,.45)" />
+                        <text x="505" y="86" font-size="14" font-weight="600">Access check</text>
+                        <text x="505" y="104" font-size="11" opacity=".7">approved + subscription</text>
+                        <text x="505" y="118" font-size="11" opacity=".7">SQLite</text>
+
+                        <rect x="650" y="20" width="230" height="66" rx="12" fill="rgba(34,197,94,.12)" stroke="rgba(34,197,94,.45)" />
+                        <text x="765" y="48" font-size="13" font-weight="600">Lesson delivered</text>
+                        <text x="765" y="66" font-size="11" opacity=".7">decrypted link or chunked file</text>
+
+                        <rect x="650" y="105" width="230" height="66" rx="12" fill="rgba(239,68,68,.12)" stroke="rgba(239,68,68,.45)" />
+                        <text x="765" y="133" font-size="13" font-weight="600">Paywall reply</text>
+                        <text x="765" y="151" font-size="11" opacity=".7">subscribe to unlock</text>
+                    </g>
+                </svg>
+                <p style="margin-top:14px">Every state-changing action — approving a user, adding a lesson, sending a broadcast — is restricted to admins and recorded with the admin id that performed it.</p>
+            </div>
+
+            <div class="split" style="margin-top:18px">
+                <div class="panel">
+                    <h3>Implementation notes</h3>
+                    <ul>
+                        <li><strong>Single-file SQLite store.</strong> Ten tables cover users, courses, lessons, admins, messages, callback tokens and cached file references — easy to back up, no server to run.</li>
+                        <li><strong>Content at rest.</strong> Lesson links are encrypted with Fernet; the key lives in the environment, never in the code or the database.</li>
+                        <li><strong>Callback integrity.</strong> Inline buttons carry short-lived signed tokens, verified before any action runs.</li>
+                        <li><strong>Rate limiting.</strong> A per-user sliding window keeps one student from flooding the bot or the client's bandwidth.</li>
+                        <li><strong>Big uploads.</strong> Telegram's 50 MB limit is handled by splitting files, tracking progress and cleaning up temporary files.</li>
+                        <li><strong>Marketing site.</strong> Static HTML, CSS and JavaScript with Bootstrap 5 in RTL, a JSON catalogue and no build step.</li>
+                    </ul>
+                </div>
+
+                <aside class="panel">
+                    <h3>Stack</h3>
+                    <ul class="stack-list">
+                        <li>Python <span>3.x, asyncio</span></li>
+                        <li>python-telegram-bot <span>handlers + jobs</span></li>
+                        <li>SQLite <span>10 tables</span></li>
+                        <li>cryptography <span>Fernet tokens</span></li>
+                        <li>Bootstrap <span>5, RTL builds</span></li>
+                        <li>JavaScript <span>JSON catalogue</span></li>
+                        <li>Client work <span>delivered 2025</span></li>
+                    </ul>
+                    <p style="margin-top:16px">The bot's source is client-owned and not public, so this page is the case study: what was built, how it protects paid content, and what the client received.</p>
+                </aside>
+            </div>
+
+            <div class="panel" style="margin-top:18px">
+                <h3>About this demo</h3>
+                <p>
+                    Maaloma was delivered as freelance work: a Telegram bot that sells and delivers paid courses, plus the
+                    Arabic marketing site that funnels students into it. The screenshots above come from the site running locally
+                    against the delivered <code>courses.json</code>; the bot is a long-running Python process, so its interface is
+                    the Telegram app itself rather than a web page.
+                </p>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer class="demo-footer">
+    <div class="container demo-footer-inner">
+        <span>Maaloma · client work by Ahmed Elgamal</span>
+        <span><a href="../../">&larr; Back to the portfolio</a> · <a href="https://github.com/elgamalhub" target="_blank" rel="noopener noreferrer">GitHub</a></span>
+    </div>
+</footer>
+
+<a class="back-top" href="#" aria-label="Back to top">↑</a>
+
+</body>
+</html>

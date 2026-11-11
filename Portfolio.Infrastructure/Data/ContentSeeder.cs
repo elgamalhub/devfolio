@@ -360,13 +360,42 @@ namespace Portfolio.Infrastructure.Data
             Tech(bayan, ".NET 8", "ASP.NET Core MVC", "C#", "Entity Framework Core", "SQL Server",
                 "Identity", "Bootstrap", "JavaScript");
 
+            var maaloma = Upsert("Maaloma — Paid Course Platform (Client Work)", project =>
+            {
+                project.TitleAr = "معلومة — منصة كورسات مدفوعة (عمل حر)";
+                project.ShortDescriptionEn =
+                    "Freelance delivery: a Telegram bot that sells and delivers paid courses with its own in-chat admin panel, plus the Arabic RTL marketing site.";
+                project.ShortDescriptionAr =
+                    "عمل حر: بوت تليجرام يبيع الكورسات المدفوعة ويوصلها للمشتركين مع لوحة إدارة داخل المحادثة، بالإضافة إلى الموقع التسويقي العربي.";
+                project.FullDescriptionEn =
+                    "Maaloma is a freelance project for a real client: instead of subscribing to an expensive LMS, students browse a course catalogue on a static Arabic site and receive their lessons from a Telegram bot. " +
+                    "The bot (Python, python-telegram-bot, SQLite) gates every lesson behind an approved subscription, stores lesson links encrypted with Fernet so forwarded messages never expose the source file, and signs its inline callback tokens so payloads cannot be tampered with. " +
+                    "It also replaces a back office entirely: admins manage courses, lessons and fields, approve or remove users, promote other admins, broadcast announcements and answer students from a threaded support inbox - all inside a chat. " +
+                    "Large lessons are split and delivered with a live progress bar, transfer speed and ETA, with per-user rate limiting and automatic cleanup of temporary files. " +
+                    "The companion marketing site is static HTML, CSS and JavaScript with Bootstrap 5 in RTL, driven by a single courses.json file the client edits to publish new courses.";
+                project.FullDescriptionAr =
+                    "معلومة مشروع عمل حر لعميل حقيقي: بدلًا من الاشتراك في نظام إدارة تعلم مكلف، يتصفح الطالب كتالوج الكورسات على موقع عربي ثابت ثم يستلم دروسه من بوت تليجرام. " +
+                    "البوت (Python وpython-telegram-bot وSQLite) يتحقق من اشتراك المستخدم قبل كل درس، ويخزّن روابط الدروس مشفرة بـ Fernet حتى لا تكشف الرسائل المعاد توجيهها الملف الأصلي، ويوقّع أزراره التفاعلية لمنع التلاعب. " +
+                    "كما يستبدل لوحة تحكم كاملة: إدارة الكورسات والدروس والمجالات، وقبول المستخدمين أو حذفهم، وترقية مديرين، وإرسال إعلانات جماعية، والرد على الطلاب من صندوق رسائل داخل المحادثة. " +
+                    "الملفات الكبيرة تُقسَّم وتُرسل بشريط تقدم حي وسرعة ووقت متبقٍ، مع تحديد معدل الطلبات لكل مستخدم وتنظيف تلقائي للملفات المؤقتة. " +
+                    "أما الموقع التسويقي فهو HTML وCSS وJavaScript مع Bootstrap 5 بواجهة RTL، ويعتمد على ملف courses.json واحد يحرره العميل لإضافة كورس جديد.";
+                project.IconClass = "fab fa-telegram-plane";
+                project.Category = "web";
+                project.DemoUrl = "./demos/maaloma/";
+                project.ImagePath = "/images/projects/maaloma.jpg";
+                project.IsHidden = false;
+                project.IsActive = true;
+                project.Order = 5;
+            });
+            Tech(maaloma, "Python", "python-telegram-bot", "SQLite", "Fernet", "Bootstrap 5", "JavaScript");
+
             var netflix = Upsert("Netflix Clone Streaming Platform", project =>
             {
                 project.GithubUrl = "https://github.com/elgamalhub/NetflixCloneAPI";
                 project.ImagePath = "/images/projects/netflix.jpg";
                 project.IsHidden = false;
                 project.IsActive = true;
-                project.Order = 5;
+                project.Order = 6;
             });
             Tech(netflix, "ASP.NET Core", "Angular", "Entity Framework Core", "SQL Server",
                 "SignalR", "Docker", "Stripe");
@@ -377,7 +406,7 @@ namespace Portfolio.Infrastructure.Data
                 project.ImagePath = "/images/projects/job-portal.jpg";
                 project.IsHidden = false;
                 project.IsActive = true;
-                project.Order = 6;
+                project.Order = 7;
             });
             Tech(jobPortal, "ASP.NET Core MVC", "Razor Views", "Entity Framework Core", "SQL Server");
 
@@ -387,7 +416,7 @@ namespace Portfolio.Infrastructure.Data
                 project.ImagePath = "/images/projects/attendance.jpg";
                 project.IsHidden = false;
                 project.IsActive = true;
-                project.Order = 7;
+                project.Order = 8;
             });
             Tech(attendance, "C#", "Windows Forms", "Entity Framework Core", "SQL Server");
 
@@ -398,7 +427,7 @@ namespace Portfolio.Infrastructure.Data
                 project.IconClass = "fas fa-shopping-cart";
                 project.IsHidden = false;
                 project.IsActive = true;
-                project.Order = 8;
+                project.Order = 9;
             });
             Tech(ecommerce, "HTML", "CSS", "JavaScript", "Bootstrap");
         }
